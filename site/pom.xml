@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+   <parent>
+   	<groupId>gov.nasa.pds</groupId>
+   	<artifactId>superpom</artifactId>
+   	<version>0.1.0</version>
+   	<relativePath>../superpom/pom.xml</relativePath>
+   </parent>
+  <artifactId>site</artifactId>
+  <packaging>pom</packaging>
+  <name>Object Access Library Site Creation</name>
+   <build>
+  	<plugins>
+  		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-antrun-plugin</artifactId>
+			<version>${maven.antrun.version}</version>
+			<executions>
+				<execution>
+					<id>copy-site</id>
+					<phase>site</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+						<target>
+							<ant antfile="create-site.xml" useNativeBasedir="true">
+								<propertyset>
+									<propertyref builtin="all" />
+									<propertyref prefix="project." />
+								</propertyset>
+							</ant>
+						</target>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>  		
+  	</plugins>
+  </build>
+   <dependencies>
+   	<dependency>
+   		<groupId>org.apache.ant</groupId>
+   		<artifactId>ant-apache-xalan2</artifactId>
+   		<version>1.8.2</version>
+   		<type>jar</type>
+   	</dependency>
+   	<dependency>
+   		<groupId>org.apache.ant</groupId>
+   		<artifactId>ant</artifactId>
+   		<version>1.8.2</version>
+   		<type>jar</type>
+   	</dependency>
+   	<dependency>
+   		<groupId>gov.nasa.pds</groupId>
+   		<artifactId>dataModel</artifactId>
+   		<version>0.1.0</version>
+   	</dependency>
+   	<dependency>
+   		<groupId>gov.nasa.pds</groupId>
+   		<artifactId>objectAccess</artifactId>
+   		<version>0.1.0</version>
+   	</dependency>
+   </dependencies>  
+   <properties>
+		<maven.antrun.version>1.7</maven.antrun.version>
+	</properties>	
+</project>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Product_Bundle xmlns="http://pds.nasa.gov/schema/pds4/pds"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://pds.nasa.gov/schema/pds4/pds file:/D:/WINWORD/OnlineSystemDevelopment/PDS4_DataModel/Data_Preparers_HandBook/aaaVersion_7_20110307/schemas/Schema_0300e_110330/Product_Bundle_0300e.xsd">
+    <Identification_Area_Bundle>
+        <logical_identifier>logical_identifier0</logical_identifier>
+        <version_id>version_id0</version_id>
+        <product_class>Product_Bundle</product_class>
+        <title>title0</title>
+        <alternate_title>alternate_title0</alternate_title>
+        <alternate_id>alternate_id0</alternate_id>
+        <last_modification_date_time>last_modification_date_time0</last_modification_date_time>
+        <product_subclass>product_subclass0</product_subclass>
+        <Subject_Area>
+            <target_name>target_name0</target_name>
+            <data_set_name>data_set_name0</data_set_name>
+            <instrument_name>instrument_name0</instrument_name>
+            <instrument_host_name>instrument_host_name0</instrument_host_name>
+            <full_name>full_name0</full_name>
+            <investigation_name>investigation_name0</investigation_name>
+            <observing_system_name>observing_system_name0</observing_system_name>
+            <Name_Resolution>
+                <class_name>class_name0</class_name>
+                <lidvid_reference>URN:NASA:PDS:A +</lidvid_reference>
+                <name>name0</name>
+                <primary_name>primary_name0</primary_name>
+                <role>ALTERNATE</role>
+            </Name_Resolution>
+        </Subject_Area>
+    </Identification_Area_Bundle>
+    <Cross_Reference_Area_Bundle>
+        <Bibliographic_Reference>
+            <local_identifier>local_identifier0</local_identifier>
+            <description>description0</description>
+            <doi>doi0</doi>
+            <reference_text>reference_text0</reference_text>
+            <url>url0</url>
+        </Bibliographic_Reference>
+        <Reference_Entry>
+            <lid_reference>lid_reference0</lid_reference>
+            <lidvid_reference>URN:NASA:PDS:A +</lidvid_reference>
+            <reference_association_type>has_association</reference_association_type>
+        </Reference_Entry>
+    </Cross_Reference_Area_Bundle>
+    <Bundle_Member_Entry>
+        <file_specification_name>file_specification_name0</file_specification_name>
+        <lid_reference>lid_reference1</lid_reference>
+        <reference_association_type>has_member</reference_association_type>
+    </Bundle_Member_Entry>
+</Product_Bundle>

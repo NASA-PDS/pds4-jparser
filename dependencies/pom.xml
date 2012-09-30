@@ -1,0 +1,99 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>superpom</artifactId>
+    <groupId>gov.nasa.pds</groupId>
+    <version>0.1.0</version>
+    <relativePath>../superpom/pom.xml</relativePath>
+  </parent>
+  <artifactId>dependencies</artifactId>
+  <name>Object Access Dependencies</name>
+  <description>PDS Object Access dependencies</description>
+  <repositories>
+		<repository>
+			<id>JBoss</id>
+			<name>Maven JBoss Nexus</name>
+			<layout>default</layout>
+			<url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>maven2</id>
+			<name>Maven central</name>
+			<layout>default</layout>
+			<url>http://repo1.maven.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+  	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.3.1</version>
+				<executions>
+					<execution>
+						<id>install fits</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>src/lib/fits-1.0.jar</file>
+							<groupId>gov.nasa.pds</groupId>
+							<artifactId>fits</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install vicar</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>src/lib/vicarPDSIO-0.0.1.jar</file>
+							<groupId>gov.nasa.pds</groupId>
+							<artifactId>vicar</artifactId>
+							<version>0.0.1</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install tools</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>src/lib/product-tools-3.2.0.jar</file>
+							<groupId>gov.nasa.pds</groupId>
+							<artifactId>tools</artifactId>
+							<version>3.2.0</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install utils</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>src/lib/pds-utils-1.0.1.jar</file>
+							<groupId>gov.nasa.pds</groupId>
+							<artifactId>utils</artifactId>
+							<version>1.0.1</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

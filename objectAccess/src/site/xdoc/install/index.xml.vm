@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2010, by the California Institute of Technology.
+  ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
+  Any commercial use must be negotiated with the Office of Technology Transfer
+  at the California Institute of Technology.
+
+  This software is subject to U. S. export control laws and regulations
+  (22 C.F.R. 120-130 and 15 C.F.R. 730-774). To the extent that the software
+  is subject to U.S. export control laws and regulations, the recipient has
+  the responsibility to obtain export licenses or other export authority as
+  may be required before exporting such information to foreign countries or
+  providing access to foreign nationals.
+
+  $Id: index.xml.vm 9288 2011-08-08 22:27:49Z mcayanan $
+-->
+
+<document>
+  <properties>
+    <title>Installation</title>
+    <author email="mark.rose@nasa.gov">Mark Rose</author>
+  </properties>
+
+  <body>
+    <section name="Installation">
+      <p>This section describes how to install PDS4 Access package. The following topics can be found in this section:
+      </p>
+
+      <ul>
+        <li><a href="#System_Requirements">System Requirements</a></li>
+        <li><a href="#Unpacking_the_Package">Unpacking the Package</a></li>
+      </ul>
+    </section>
+
+    <section name="System Requirements">
+      <p>This was developed using Java and will run on any platform with a supported Java Runtime Environment (JRE). The tool was specifically developed under Sun Java version 1.6, so the tool will execute correctly under 1.6 and future versions.
+      </p>
+
+      
+    </section>
+
+    <section name="Unpacking the Package">
+      <p>The binary distribution is available in identical zip or tar/gzip packages. Unpack the selected binary distribution file with one of the following commands:
+      </p>
+
+      <source>
+% unzip ${xdoc-artifactId}-${xdoc-version}-bin.zip
+or
+% tar -xzvf ${xdoc-artifactId}-${xdoc-version}-bin.tar.gz
+      </source>
+
+
+    </section>
+  </body>
+</document>

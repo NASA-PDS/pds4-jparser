@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!-- PDS4 XML/Schema for Product_Document_0.3.0.0.e  Wed Mar 30 18:42:34 PDT 2011 -->
+  <!-- Generated from the PDS4 Information Model V0.3.0.0.e -->
+  <!-- *** This PDS4 product schema is a preliminary deliverable. *** -->
+  <!-- *** It is being made available for review and testing. *** -->
+  <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://pds.nasa.gov/schema/pds4/pds"
+    xmlns:pds="http://pds.nasa.gov/schema/pds4/pds"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="3.0.0">
+ 
+    <xsd:include schemaLocation="Class_Types_edited_0300e.xsd">
+      <xsd:annotation>
+        <xsd:documentation>PDS (common) Data Dictionary - Tagged Data Objects</xsd:documentation>
+      </xsd:annotation>
+    </xsd:include>
+ 
+  <!-- <xsd:import namespace="http://pds.nasa.gov/schema/pds4/anyNS"
+    schemaLocation="Any_Described_Data_Object_0300e.xsd"/> -->
+
+  <xsd:complexType name="Product_Document_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          A Product Document is a product consisting of a single logical document that may be comprised of one or more document formats.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="Identification_Area_Document" type="pds:Identification_Area_Document_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area_Document -->
+      <xsd:element name="Cross_Reference_Area_Document" type="pds:Cross_Reference_Area_Document_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Cross_Reference_Area_Document -->
+      <xsd:element name="Document_Format_Set" type="pds:Document_Format_Set_Type" minOccurs="1" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Format_Set -->
+      <xsd:element name="Document_Desc" type="pds:Document_Desc_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Identification_Area_Document_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The document identification area consists of attributesthat identify and name a document product.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="logical_identifier" type="pds:logical_identifier_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area:logical_identifier -->
+      <xsd:element name="version_id" type="pds:version_id_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area:version_id -->
+      <xsd:element name="product_class" type="pds:product_class_Type" fixed="Product_Document" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area:product_class -->
+      <xsd:element name="title" type="pds:title_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area:title -->
+      <xsd:element name="alternate_title" type="pds:alternate_title_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area:alternate_title -->
+      <xsd:element name="alternate_id" type="pds:alternate_id_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area:alternate_id -->
+      <xsd:element name="last_modification_date_time" type="pds:last_modification_date_time_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area:last_modification_date_time -->
+      <xsd:element name="product_subclass" type="pds:Identification_Area_Document_product_subclass_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Identification_Area_Document:product_subclass -->
+      <xsd:element name="Subject_Area" type="pds:Subject_Area_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Subject_Area -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Subject_Area_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Subject Area provides one or more topics associated with the identifiable using keywords, key phrases, or classification codes.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="target_name" type="pds:target_name_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Subject_Area:target_name -->
+      <xsd:element name="data_set_name" type="pds:data_set_name_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Subject_Area:data_set_name -->
+      <xsd:element name="instrument_name" type="pds:instrument_name_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Subject_Area:instrument_name -->
+      <xsd:element name="instrument_host_name" type="pds:instrument_host_name_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Subject_Area:instrument_host_name -->
+      <xsd:element name="full_name" type="pds:full_name_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Subject_Area:full_name -->
+      <xsd:element name="investigation_name" type="pds:investigation_name_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Subject_Area:investigation_name -->
+      <xsd:element name="observing_system_name" type="pds:observing_system_name_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Subject_Area:observing_system_name -->
+      <xsd:element name="Name_Resolution" type="pds:Name_Resolution_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Name_Resolution -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Name_Resolution_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Name_Resolution class provides both primary and alternate names of an object.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="class_name" type="pds:class_name_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Name_Resolution:class_name -->
+      <xsd:element name="lidvid_reference" type="pds:lidvid_reference_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Name_Resolution:lidvid_reference -->
+      <xsd:element name="name" type="pds:name_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Name_Resolution:name -->
+      <xsd:element name="primary_name" type="pds:primary_name_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Name_Resolution:primary_name -->
+      <xsd:element name="role" type="pds:role_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Name_Resolution:role -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Cross_Reference_Area_Document_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The document cross reference area provides references to associated registered products.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="Bibliographic_Reference" type="pds:Bibliographic_Reference_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Bibliographic_Reference -->
+      <xsd:element name="Observing_System" type="pds:Observing_System_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Observing_System -->
+      <xsd:element name="Reference_Entry" type="pds:Reference_Entry_Type" minOccurs="0" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Reference_Entry -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Bibliographic_Reference_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Bibliographic Reference  class provides references to documents that are not regisered with the PDS.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="local_identifier" type="pds:local_identifier_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:TNDO_Supplemental:local_identifier -->
+      <xsd:element name="description" type="pds:description_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:TNDO_Supplemental:description -->
+      <xsd:element name="doi" type="pds:doi_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Bibliographic_Reference:doi -->
+      <xsd:element name="reference_text" type="pds:reference_text_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Bibliographic_Reference:reference_text -->
+      <xsd:element name="url" type="pds:url_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Bibliographic_Reference:url -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Observing_System_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Observing_System class references one or more subsystems used to collect data. A subsystem can be an instrument_host, instrument, or any other similar product. The subsystems are grouped into components, for example a sensor or a source.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="local_identifier" type="pds:local_identifier_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Observing_System:local_identifier -->
+      <xsd:element name="title" type="pds:title_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Observing_System:title -->
+      <xsd:element name="description" type="pds:description_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:TNDO_Context:description -->
+      <xsd:element name="Observing_System_Component" type="pds:Observing_System_Component_Type" minOccurs="1" maxOccurs="2"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Observing_System_Component -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Observing_System_Component_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Observing System Component class references one or more subsystems that function as a sensor. A subsystem can be an instrument_host, instrument, or any other similar product.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="observing_system_component_type" type="pds:observing_system_component_type_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Observing_System_Component:observing_system_component_type -->
+      <xsd:element name="Observing_System_Reference_Entry" type="pds:Observing_System_Reference_Entry_Type" minOccurs="1" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Observing_System_Reference_Entry -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Observing_System_Reference_Entry_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Observing System Reference Entry class provides a product specific reference and type information about the reference. The references are to components of the observing system.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="lid_reference" type="pds:lid_reference_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Reference_Entry_Generic:lid_reference -->
+      <xsd:element name="lidvid_reference" type="pds:lidvid_reference_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Reference_Entry_Generic:lidvid_reference -->
+      <xsd:element name="reference_association_type" type="pds:Observing_System_Reference_Entry_reference_association_type_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Observing_System_Reference_Entry:reference_association_type -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Reference_Entry_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Reference Entry class provides a reference and type information about the reference. The reference is to a product.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="lid_reference" type="pds:lid_reference_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Reference_Entry_Generic:lid_reference -->
+      <xsd:element name="lidvid_reference" type="pds:lidvid_reference_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Reference_Entry_Generic:lidvid_reference -->
+      <xsd:element name="reference_association_type" type="pds:Reference_Entry_reference_association_type_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Reference_Entry:reference_association_type -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Document_Format_Set_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Document Format Set class is a set consisting of a document format and associated files.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="Document_File" type="pds:Document_File_Type" minOccurs="1" maxOccurs="unbounded"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_File -->
+      <xsd:element name="Document_Format" type="pds:Document_Format_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Format -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Document_File_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Document File class describes a file which is a part of a document.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="local_identifier" type="pds:local_identifier_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:File:local_identifier -->
+      <xsd:element name="comment" type="pds:comment_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:File:comment -->
+      <xsd:element name="creation_date_time" type="pds:creation_date_time_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:File:creation_date_time -->
+      <xsd:element name="directory_path_name" type="pds:directory_path_name_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_File:directory_path_name -->
+      <xsd:element name="encoding_type" type="pds:encoding_type_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_File:encoding_type -->
+      <xsd:element name="external_standard_id" type="pds:external_standard_id_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_File:external_standard_id -->
+      <xsd:element name="file_name" type="pds:file_name_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:File:file_name -->
+      <xsd:element name="file_size" type="pds:file_size_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:File:file_size -->
+      <xsd:element name="max_record_bytes" type="pds:max_record_bytes_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:File:max_record_bytes -->
+      <xsd:element name="md5_checksum" type="pds:md5_checksum_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:File:md5_checksum -->
+      <xsd:element name="records" type="pds:records_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:File:records -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Document_Format_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Document Format provides a description of a variant of a logical document that is stored in a specific format. For example the PDS Standards Reference has HTML and PDF formatted versions.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="description" type="pds:description_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Format:description -->
+      <xsd:element name="format_type" type="pds:format_type_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Format:format_type -->
+      <xsd:element name="starting_point_identifier" type="pds:starting_point_identifier_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Format:starting_point_identifier -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Document_Desc_Type">
+    <xsd:sequence>
+      <xsd:annotation>
+        <xsd:documentation>
+          The Document_Desc class describes a document.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="description" type="pds:description_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:description -->
+      <xsd:element name="acknowledgement_text" type="pds:acknowledgement_text_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:acknowledgement_text -->
+      <xsd:element name="author_list" type="pds:author_list_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:author_list -->
+      <xsd:element name="copyright" type="pds:copyright_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:copyright -->
+      <xsd:element name="document_title" type="pds:document_title_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:document_title -->
+      <xsd:element name="doi" type="pds:doi_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:doi -->
+      <xsd:element name="editor_list" type="pds:editor_list_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:editor_list -->
+      <xsd:element name="publication_date" type="pds:publication_date_Type" minOccurs="1" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:publication_date -->
+      <xsd:element name="revision_id" type="pds:revision_id_Type" minOccurs="0" maxOccurs="1"> </xsd:element>    <!-- RA_0001_NASA_PDS_1:PDS:Document_Desc:revision_id -->
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="Product_Document" type="pds:Product_Document_Type">
+    <xsd:annotation>
+      <xsd:documentation>
+        The Product_Document XML Schema
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>

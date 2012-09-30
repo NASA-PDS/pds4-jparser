@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://pds.nasa.gov/pds4/schema/released/ops/v03/PDS4_OPS_0300a.sch"?>
+
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v03"
+    xmlns:pds="http://pds.nasa.gov/pds4/pds/v03"
+    xmlns:dph="http://pds.nasa.gov/pds4/dph/v01"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v09 http://pds.nasa.gov/pds4/schema/released/ops/v03/PDS4_OPS_0300a.xsd">
+    
+    <Identification_Area>
+        <logical_identifier>>NH-J-LORRI-3-JUPITER-V1.0:LOR_0030598439_0X630_SCI_1</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>NEW HORIZONS</title>
+        <information_model_version>0.7.0.0.j</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>2012-01-10</modification_date>
+                <version_id>1.0</version_id>
+                <description>
+                    extracted metadata from PDS3 catalog and
+                    modified to comply with PDS4 Information Model
+                </description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    
+    <Observation_Area>
+        <comment>Observational Intent</comment>
+        <Time_Coordinates>
+            <start_date_time>2007-01-08T21:42:01.359</start_date_time>
+            <stop_date_time>2007-01-08T21:42:01.362</stop_date_time>
+            <local_mean_solar_time>not applicable</local_mean_solar_time>
+            <local_true_solar_time>not applicable</local_true_solar_time>
+        </Time_Coordinates>
+        <Investigation_Area>
+            <name>NEW HORIZONS</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lidvid_reference>unknown unknown unknown</lidvid_reference>
+                <reference_type>has_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <name>LONG RANGE RECONNAISSANCE IMAGER</name>
+            <Observing_System_Component>
+                <name>LORRI</name>
+                <observing_system_component_type>CCD</observing_system_component_type>
+                <description>description</description>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:instrument_host.MPFL</lid_reference>
+                    <reference_type>has_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>       
+        <Target_Identification>
+            <name>JUPITER</name>
+            <type>planet</type>
+            <description>description of JUPITER goes here</description>
+            <Internal_Reference>
+                <lidvid_reference>u0s0s0s0s0s0s0s0s0s0</lidvid_reference>
+                <reference_type>has_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        
+        <!-- ============================================================ -->
+        <!-- Reference the attributes that were imported from the         -->
+        <!-- local dictionary (using the local namespace (dph)            -->
+        <!-- ============================================================ -->                   
+        <Mission_Area>
+            <dph:spacecraft_clock_start_count>0030598438:48850</dph:spacecraft_clock_start_count>
+            <dph:spacecraft_clock_stop_count>0030598438:49000</dph:spacecraft_clock_stop_count>
+        </Mission_Area>
+        <Node_Area>
+        </Node_Area>
+    </Observation_Area>
+  
+    <Reference_List>
+        <Internal_Reference>
+            <lidvid_reference>u0s0s0s0s0s0s0s0s0s0</lidvid_reference>
+            <reference_type>has_investigation</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:instrument_host.MPFL</lid_reference>
+            <reference_type>has_instrument_host</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:instrument.IMP__MPFL</lid_reference>
+            <reference_type>has_instrument</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:target.MARS</lid_reference>
+            <reference_type>has_target</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:node.IMG</lid_reference>
+            <reference_type>has_node</reference_type>
+        </Internal_Reference>
+    </Reference_List>
+    
+    <File_Area_Observational>
+        <File>
+            <file_name>0030598439.raw</file_name>
+            <local_identifier>0030598439.raw</local_identifier>
+            <creation_date_time>2007-12-06T04:32:20</creation_date_time>
+           <file_size>4196160</file_size>
+            <records>1457</records>
+            <md5_checksum>d220dac0d1fe312f3f3b9c824f6ac294</md5_checksum>
+        </File>
+        
+        <Array_2D_Image>
+            <local_identifier>IMAGE</local_identifier>
+            <offset>0</offset>
+            <axes>2</axes>
+            <axis_index_order>FIRST_INDEX_FASTEST</axis_index_order>
+            <encoding_type>BINARY</encoding_type>
+
+            <Element_Array>
+                <data_type>IEEE754MSBSingle</data_type>
+                <unit>data number</unit>
+                <scaling_factor>0</scaling_factor>
+                <value_offset>0</value_offset>
+            </Element_Array>           
+            <Axis_Array>
+                <axis_name>LINE</axis_name>
+                <elements>1024</elements>
+                <unit>not applicable</unit>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>SAMPLE</axis_name>
+                <elements>1024</elements>
+                <unit>not applicable</unit>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+           
+            <Object_Statistics>
+                <local_identifier>MPFL_M_IMP_STATISTICS</local_identifier>
+                <maximum>0</maximum>
+                <minimum>0</minimum>
+                <mean>0</mean>
+                <standard_deviation>0</standard_deviation>
+            </Object_Statistics>
+
+            <Display_2D_Image>
+                <line_display_direction>UP</line_display_direction>
+                <sample_display_direction>RIGHT</sample_display_direction>
+            </Display_2D_Image>
+            
+        </Array_2D_Image>
+    </File_Area_Observational>
+    
+</Product_Observational>

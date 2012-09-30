@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!-- PDS4 XML/Schema for Base_Types_0.3.0.0.e  Wed Mar 30 18:42:34 PDT 2011 -->
+  <!-- Generated from the PDS4 Information Model V0.3.0.0.e -->
+  <!-- *** This PDS4 product schema is a preliminary deliverable. *** -->
+  <!-- *** It is being made available for review and testing. *** -->
+  <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://pds.nasa.gov/schema/pds4/pds"
+    xmlns:pds="http://pds.nasa.gov/schema/pds4/pds"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="3.0.0">
+
+    <xsd:annotation>
+      <xsd:documentation>This schema captures the base types for PDS4 and any constraints those types
+        may have. These types should be reused across schemas to promote compatibility. This is one
+        component of the common dictionary and thus falls into the common namespace, pds.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:simpleType name="ASCII_AnyURI">
+      <xsd:restriction base="xsd:anyURI">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Boolean_TF">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='(T|F)'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="1"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_DOI">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='10\.\S+/\S+'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Date_DOY">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='(-|)[0-9]{4}'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[0-9][1-9])|([1-2][0-9][0-9])|(3(([0-5][0-9])|(6[0-6]))))'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="8"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Date_Time_DOY">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='(-|)[0-9]{4}-((0[0-9][1-9])|([1-2][0-9][0-9])|(3(([0-5][0-9])|(6[0-6]))))(T| )(([0-1][0-9])|(2[0-3])):[0-5][0-9](Z|)'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[0-9][1-9])|([1-2][0-9][0-9])|(3(([0-5][0-9])|(6[0-6]))))(T| )(([0-1][0-9])|(2[0-3])):[0-5][0-9]:(([0-5][0-9])|60)((\.[0-9]+)|)(Z|)'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[0-9][1-9])|([1-2][0-9][0-9])|(3(([0-5][0-9])|(6[0-6]))))(T| )(([0-1][0-9])|(2[0-4]))(Z|)'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[0-9][1-9])|([1-2][0-9][0-9])|(3(([0-5][0-9])|(6[0-6]))))(T| )24:00((:00((\.0+)|))|)(Z|)'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="30"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Date_Time_YMD">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='(-|)[0-9]{4}-((0[1-9])|(1[0-2]))-((0[1-9])|([1-2][0-9])|(3[0-1]))(T| )(([0-1][0-9])|(2[0-3])):[0-5][0-9](Z|)'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[1-9])|(1[0-2]))-((0[1-9])|([1-2][0-9])|(3[0-1]))(T| )(([0-1][0-9])|(2[0-3])):[0-5][0-9]:(([0-5][0-9])|60)((\.[0-9]+)|)(Z|)'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[1-9])|(1[0-2]))-((0[1-9])|([1-2][0-9])|(3[0-1]))(T| )(([0-1][0-9])|(2[0-4]))(Z|)'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[1-9])|(1[0-2]))-((0[1-9])|([1-2][0-9])|(3[0-1]))(T| )24:00((:00((\.0+)|))|)(Z|)'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="30"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Date_YMD">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='(-|)[0-9]{4}'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[1-9])|(1[0-2]))'/>
+        <xsd:pattern value='(-|)[0-9]{4}-((0[1-9])|(1[0-2]))-((0[1-9])|([1-2][0-9])|(3[0-1]))'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="10"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Directory_Path_Name">
+      <xsd:restriction base="xsd:token">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_File_Name">
+      <xsd:restriction base="xsd:token">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_File_Specification_Name">
+      <xsd:restriction base="xsd:token">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Identifier">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='[a-zA-Z]{1}([-_a-zA-Z0-9]*)'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="100"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Integer">
+      <xsd:restriction base="xsd:integer">
+        <xsd:minInclusive value="-2147483648"/>
+        <xsd:maxInclusive value="2147483647"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_LID">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='URN:NASA:PDS:[A-Za-z][-_.A-Za-z0-9]*(:[A-Za-z][-_.A-Za-z0-9]*)*'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_LIDVID">
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_MD5_Checksum">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='[0-9a-fA-F]{32}'/>
+        <xsd:minLength value="32"/>
+        <xsd:maxLength value="32"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Mask">
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_NonNegative_Integer">
+      <xsd:restriction base="xsd:integer">
+        <xsd:minInclusive value="0"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+        <xsd:maxInclusive value="2147483647"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Numeric_Base16">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='[0-9a-fA-F]{32}'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Numeric_Base2">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='[0-1]{32}'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Real">
+      <xsd:restriction base="xsd:float">
+        <xsd:minInclusive value="-INF"/>
+        <xsd:maxInclusive value="INF"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Short_String_Collapsed">
+      <xsd:restriction base="xsd:token">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Short_String_Preserved">
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Text_Preserved">
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="2147483647"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Time">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='(([0-1][0-9])|(2[0-3])):[0-5][0-9](Z|)'/>
+        <xsd:pattern value='(([0-1][0-9])|(2[0-3])):[0-5][0-9]:(([0-5][0-9])|60)((\.[0-9]+)|)(Z|)'/>
+        <xsd:pattern value='(([0-1][0-9])|(2[0-4]))(Z|)'/>
+        <xsd:pattern value='24:00((:00((\.0+)|))|)(Z|)'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="20"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_VID">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value='0\.([1-9]|([0-9][0-9]+))'/>
+        <xsd:pattern value='[1-9][0-9]*'/>
+        <xsd:pattern value='[1-9][0-9]*\.[0-9]+'/>
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="100"/>
+        <xsd:pattern value='\p{IsBasicLatin}*'/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UTF8_Short_String_Collapsed">
+      <xsd:restriction base="xsd:token">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UTF8_Short_String_Preserved">
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="255"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UTF8_Text_Preserved">
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1"/>
+        <xsd:maxLength value="2147483647"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Date_Time">
+      <xsd:union memberTypes="pds:ASCII_Date_Time_YMD pds:ASCII_Date_Time_DOY pds:ASCII_Date_YMD pds:ASCII_Date_DOY"/>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ASCII_Date_Time_UTC">
+      <xsd:restriction base="pds:ASCII_Date_Time">
+        <xsd:pattern value="\S+Z"/>
+        <xsd:pattern value="\S+T\S+Z"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_AmountOfSubstance">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="mol"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Angle">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="arcmin"></xsd:enumeration>
+        <xsd:enumeration value="arcsec"></xsd:enumeration>
+        <xsd:enumeration value="deg"></xsd:enumeration>
+        <xsd:enumeration value="hr"></xsd:enumeration>
+        <xsd:enumeration value="mrad"></xsd:enumeration>
+        <xsd:enumeration value="rad"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Angular_Velocity">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="deg/day"></xsd:enumeration>
+        <xsd:enumeration value="deg/s"></xsd:enumeration>
+        <xsd:enumeration value="rad/s"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Area">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="m**2"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Frequency">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="hz"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Length">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="AU"></xsd:enumeration>
+        <xsd:enumeration value="Angstrom"></xsd:enumeration>
+        <xsd:enumeration value="cm"></xsd:enumeration>
+        <xsd:enumeration value="km"></xsd:enumeration>
+        <xsd:enumeration value="m"></xsd:enumeration>
+        <xsd:enumeration value="micrometer"></xsd:enumeration>
+        <xsd:enumeration value="mm"></xsd:enumeration>
+        <xsd:enumeration value="nm"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Mass">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="g"></xsd:enumeration>
+        <xsd:enumeration value="kg"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Misc">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="DN"></xsd:enumeration>
+        <xsd:enumeration value="pixel"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_None">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="none"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_OpticalPathLength">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="airmass"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Pressure">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="Pa"></xsd:enumeration>
+        <xsd:enumeration value="bar"></xsd:enumeration>
+        <xsd:enumeration value="hPa"></xsd:enumeration>
+        <xsd:enumeration value="mbar"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Radiance">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="W*m**-2*sr**-1"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Rates">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="counts/bin"></xsd:enumeration>
+        <xsd:enumeration value="kilobits/s"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Scale">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="electron/DN"></xsd:enumeration>
+        <xsd:enumeration value="km/pixel"></xsd:enumeration>
+        <xsd:enumeration value="m/pixel"></xsd:enumeration>
+        <xsd:enumeration value="mm/pixel"></xsd:enumeration>
+        <xsd:enumeration value="pixel/deg"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Solid_Angle">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="sr"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Storage">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="byte"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Temperature">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="K"></xsd:enumeration>
+        <xsd:enumeration value="degC"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Time">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="day"></xsd:enumeration>
+        <xsd:enumeration value="hr"></xsd:enumeration>
+        <xsd:enumeration value="microseconds"></xsd:enumeration>
+        <xsd:enumeration value="min"></xsd:enumeration>
+        <xsd:enumeration value="ms"></xsd:enumeration>
+        <xsd:enumeration value="s"></xsd:enumeration>
+        <xsd:enumeration value="yr"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Velocity">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="cm/s"></xsd:enumeration>
+        <xsd:enumeration value="km/s"></xsd:enumeration>
+        <xsd:enumeration value="m/s"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Voltage">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="V"></xsd:enumeration>
+        <xsd:enumeration value="mV"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="UnitOfMeasure_Volume">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="L"></xsd:enumeration>
+        <xsd:enumeration value="m**3"></xsd:enumeration>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
+

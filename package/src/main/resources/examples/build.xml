@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project name="pds4-tools-examples" default="compile">
+
+  <property name="lib" location="../lib" />
+
+  <path id="lib.classpath">
+    <fileset dir="${lib}" includes="**/*.jar" />
+  </path>
+
+  <target name="help">
+	<echo>Use "ant -projecthelp" to show available targets.</echo>
+  </target>
+	
+  <target name="compile" description="Compiles PDS4 object library samples">
+    <delete dir="classes" quiet="true" />
+    <mkdir dir="classes" />
+    <javac classpathref="lib.classpath" destdir="classes" source="1.6" target="1.6" includeantruntime="false">
+      <src path="src" />
+      <include name="**/*.java" />
+    </javac>
+  </target>
+
+   <target name="clean" description="Removes all compiled files.">
+     <delete dir="classes" quiet="true" />
+   </target>
+	
+</project>

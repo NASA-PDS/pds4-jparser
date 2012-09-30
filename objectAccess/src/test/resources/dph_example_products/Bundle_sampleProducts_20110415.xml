@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Product_Bundle xmlns="http://pds.nasa.gov/schema/pds4/pds"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://pds.nasa.gov/schema/pds4/pds http://pds.jpl.nasa.gov/repository/pds4/examples/dph_examples/dph_example_products/schemas/Product_Bundle_edited_0300e.xsd">
+    <Identification_Area_Bundle>
+        <logical_identifier>urn:nasa:pds:example.DPH.sampleProducts</logical_identifier>
+        <version_id>1.0</version_id>
+        <product_class>Product_Bundle</product_class>
+        <title>Bundle that describes the DPH example collections</title>
+        <last_modification_date_time>2011-04-15T12:12:12Z</last_modification_date_time>
+        <product_subclass>example.DPH</product_subclass>
+    </Identification_Area_Bundle>
+    <Bundle_Member_Entry>
+        <file_name>Collection_exampleProducts_20110415.xml</file_name> <!-- PTOOL-51 -->
+        <lid_reference>urn:nasa:pds:example.DPH.sampleProducts:exampleProducts</lid_reference>
+        <reference_association_type>has_miscellaneous_collection</reference_association_type>
+    </Bundle_Member_Entry>
+    <Bundle_Member_Entry>
+        <file_name>CollectionMars.xml</file_name> <!-- PTOOL-51 -->
+        <lid_reference>urn:nasa:pds:example.DPH.sampleProducts:exampleProducts</lid_reference>
+    </Bundle_Member_Entry>
+</Product_Bundle>

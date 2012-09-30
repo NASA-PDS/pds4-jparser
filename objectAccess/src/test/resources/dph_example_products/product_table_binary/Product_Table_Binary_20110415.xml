@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Product_Table_Binary xmlns="http://pds.nasa.gov/schema/pds4/pds"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://pds.nasa.gov/schema/pds4/pds http://pds.jpl.nasa.gov/repository/pds4/examples/dph_examples/dph_example_products/schemas/Product_Table_Binary_edited_0300e.xsd">
+    <Identification_Area_Product>
+        <logical_identifier>urn:nasa:pds:example.DPH.sampleProducts:exampleProducts:TableBin.PHX-M-TT-5-WIND-VEL-DIR-V1.0</logical_identifier>
+        <version_id>v1.0</version_id>
+        <product_class>Product_Table_Binary</product_class>
+        <title>PHOENIX Mars Wind Experiment</title>
+        <last_modification_date_time>2009-01-01T23:34:30</last_modification_date_time>
+        <product_subclass>example.DPH</product_subclass>
+        <Subject_Area>
+            <target_name>MARS</target_name>
+            <instrument_name>TELLTALE</instrument_name>
+            <instrument_host_name>PHOENIX</instrument_host_name>
+            <investigation_name>PHOENIX</investigation_name>
+        </Subject_Area>
+    </Identification_Area_Product>
+   <Cross_Reference_Area_Product>
+        <Observing_System>
+            <local_identifier>observing_system.PHX+TT</local_identifier>
+            <title>Observing System for PHX+TT</title>
+            <Observing_System_Component>
+                <observing_system_component_type>SENSOR</observing_system_component_type>
+                <Observing_System_Reference_Entry>
+                    <lid_reference>urn:nasa:pds:instrument.TT__PHX</lid_reference>
+                    <reference_association_type>has_instrument</reference_association_type>
+                </Observing_System_Reference_Entry>
+            </Observing_System_Component>
+        </Observing_System>
+        <Product_Reference_Entry>
+            <lid_reference>urn:nasa:pds:investigation.PHOENIX</lid_reference>
+            <reference_association_type>has_investigation</reference_association_type>
+        </Product_Reference_Entry>
+        <Product_Reference_Entry>
+            <lid_reference>urn:nasa:pds:instrument_host.PHX</lid_reference>
+            <reference_association_type>has_instrument_host</reference_association_type>
+        </Product_Reference_Entry>
+        <Product_Reference_Entry>
+            <lid_reference>urn:nasa:pds:instrument.TT__PHX</lid_reference>
+            <reference_association_type>has_instrument</reference_association_type>
+        </Product_Reference_Entry>
+        <Product_Reference_Entry>
+            <lid_reference>urn:nasa:pds:target.MARS</lid_reference>
+            <reference_association_type>has_target</reference_association_type>
+        </Product_Reference_Entry>
+        <Product_Reference_Entry>
+            <lid_reference>urn:nasa:pds:node.ATMOS</lid_reference>
+            <reference_association_type>has_node</reference_association_type>
+        </Product_Reference_Entry>
+    </Cross_Reference_Area_Product>
+    <Observation_Area>
+        <comment>Observation Intent</comment>
+        <start_date_time>2008-08-26T20:36:36.856</start_date_time>
+        <stop_date_time>2008-10-27T15:32:50.952</stop_date_time>
+        <spacecraft_clock_start_count>904250279.448</spacecraft_clock_start_count>
+        <spacecraft_clock_stop_count>909588864.598</spacecraft_clock_stop_count>
+        <Mission_Area>
+        </Mission_Area>
+        <Node_Area>
+        </Node_Area>
+    </Observation_Area>
+    <File_Area_Observational>
+        <File>
+            <local_identifier>ATM_PRODUCT_TABLE_BINARY_ID</local_identifier>
+            <creation_date_time>2009-04-30T12:12:12Z</creation_date_time>
+            <file_name>BIN_TABLE_COLLAPSED.TAB</file_name>
+            <file_size>2022</file_size>
+            <max_record_bytes>88</max_record_bytes>
+            <md5_checksum>d220dac0d1fe312f3f3b9c824f6ac294</md5_checksum>
+            <records>23</records>
+        </File>
+        <Table_Binary base_class="Table_Base">
+            <local_identifier>PHX-M-TT-5-WIND-VEL-DIR_TABLE_BINARY</local_identifier>
+            <encoding_type>BINARY</encoding_type>
+            <fields>10</fields>
+            <offset>0</offset>
+            <record_bytes>88</record_bytes>
+            <records>23</records>
+            <Table_Record_Binary>
+                <Table_Binary_Field>
+                  <field_name>SOL</field_name>
+                  <field_number>1</field_number>
+                  <field_data_type>SignedMSB4</field_data_type>
+                  <field_location>1</field_location>
+                  <field_length>3</field_length>
+                  <field_format>I3</field_format>
+                  <field_min_logical>91</field_min_logical>
+                  <field_max_logical>151</field_max_logical>
+                  <field_unit>not applicable</field_unit>
+                  <field_description>PHOENIX Sol number</field_description>
+                </Table_Binary_Field>                    
+                <Table_Binary_Field>
+                  <field_name>LTST</field_name>
+                  <field_number>2</field_number>
+                  <field_data_type>IEEE754Double</field_data_type>
+                  <field_location>5</field_location>
+                  <field_length>5</field_length>
+                  <field_format>F5.3</field_format>
+                  <field_min_logical>0.088078704</field_min_logical>
+                  <field_max_logical>0.230243056</field_max_logical>
+                  <field_unit>not applicable</field_unit>
+                  <field_description>Local True Solar Time</field_description>
+                </Table_Binary_Field>
+                <Table_Binary_Field>
+                  <field_name>LMST</field_name>
+                  <field_number>3</field_number>
+                  <field_data_type>IEEE754Double</field_data_type>
+                  <field_location>11</field_location>
+                  <field_length>9</field_length>
+                  <field_format>F9.5</field_format>
+                  <field_min_logical>91.0695122</field_min_logical>
+                  <field_max_logical>151.2052778</field_max_logical>
+                  <field_unit>not applicable</field_unit>
+                  <field_description>Local Mean Solar Time</field_description>
+                </Table_Binary_Field>
+                <Table_Binary_Field>
+                  <field_name>V</field_name>
+                  <field_number>4</field_number>
+                  <field_data_type>IEEE754Double</field_data_type>
+                  <field_location>21</field_location>
+                  <field_length>5</field_length>
+                  <field_format>F5.3</field_format>
+                  <field_min_logical>3.072451472</field_min_logical>
+                  <field_max_logical>5.15605715</field_max_logical>
+                  <field_unit>m/s</field_unit>
+                  <field_description>Wind speed in meters per second
+                  </field_description>
+                </Table_Binary_Field>
+                <Table_Binary_Field>
+                  <field_name>DV+</field_name>
+                  <field_number>5</field_number>
+                  <field_data_type>IEEE754Double</field_data_type>
+                  <field_location>27</field_location>
+                  <field_length>4</field_length>
+                  <field_format>F4.2</field_format>
+                  <field_min_logical>0.428682136</field_min_logical>
+                  <field_max_logical>0.46032408</field_max_logical>
+                  <field_unit>m/s</field_unit>
+                  <field_description>Error in wind speed (positive)
+                  </field_description>
+                </Table_Binary_Field>
+                <Table_Binary_Field>
+                  <field_name>DV-</field_name>
+                  <field_number>6</field_number>
+                  <field_data_type>IEEE754Double</field_data_type>
+                  <field_location>32</field_location>
+                  <field_length>7</field_length>
+                  <field_format>F7.5</field_format>
+                  <field_min_logical>0.415653998</field_min_logical>
+                  <field_max_logical>0.42656498</field_max_logical>
+                  <field_unit>m/s</field_unit>
+                  <field_description>Error in wind speed (negative)
+                  </field_description>
+                </Table_Binary_Field>
+                <Table_Binary_Field>
+                  <field_name>DIR</field_name>
+                  <field_number>7</field_number>
+                  <field_data_type>IEEE754Double</field_data_type>
+                  <field_location>40</field_location>
+                  <field_length>10</field_length>
+                  <field_format>F10.6</field_format>
+                  <field_min_logical>125.5471521</field_min_logical>
+                  <field_max_logical>268.8220941</field_max_logical>
+                  <field_unit>deg</field_unit>
+                  <field_description>Wind direction in degrees given in
+                                      meteorological convention (0 = from N,
+                                      90 = from E, 180 = from S, 270 = from W)
+                  </field_description>
+                </Table_Binary_Field>
+                <Table_Binary_Field>
+                  <field_name>DDIR</field_name>
+                  <field_number>8</field_number>
+                  <field_data_type>IEEE754Double</field_data_type>
+                  <field_location>51</field_location>
+                  <field_length>8</field_length>
+                  <field_format>F8.4</field_format>
+                  <field_min_logical>4.769160219</field_min_logical>
+                  <field_max_logical>8.616672754</field_max_logical>
+                  <field_unit>deg</field_unit>
+                  <field_description>Error in direction (given in degrees).
+                                      If dv+ is larger than v, then this is
+                                      set to 180</field_description>
+                </Table_Binary_Field>
+                <Table_Binary_Field>
+                  <field_name>EXPOSURE TIME</field_name>
+                  <field_number>9</field_number>
+                  <field_data_type>IEEE754Double</field_data_type>
+                  <field_location>60</field_location>
+                  <field_length>7</field_length>
+                  <field_format>F7.1</field_format>
+                  <field_min_logical>7140</field_min_logical>
+                  <field_max_logical>15300</field_max_logical>
+                  <field_unit>ms</field_unit>
+                  <field_description>Exposure time by SSI in 
+                                       milliseconds</field_description>
+                </Table_Binary_Field>
+                <Table_Binary_Field>
+                  <field_name>FILE NAME</field_name>
+                  <field_number>10</field_number>
+                  <field_data_type>ASCII_File_Name</field_data_type>
+                  <field_location>69</field_location>
+                  <field_length>17</field_length>
+                  <field_format>A17</field_format>
+                  <field_unit>not applicable</field_unit>
+                  <field_description>Image filename used 
+                                       for the analysis</field_description>
+                </Table_Binary_Field>
+            </Table_Record_Binary>
+        </Table_Binary>
+    </File_Area_Observational>
+</Product_Table_Binary>
