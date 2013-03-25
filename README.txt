@@ -9,6 +9,6 @@ The software can be compiled and installed with the following commands:
 % mvn clean install 
 
 The documentation including installation of the software should be online at 
-http://pds-cm.jpl.nasa.gov/2010/preparation/pds4-tools/. If it is not 
+http://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/. If it is not 
 accessible, you can execute the "mvn site:run" command and view the 
 documentation locally at http://localhost:8080.
