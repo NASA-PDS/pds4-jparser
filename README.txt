@@ -3,7 +3,7 @@ thats reads and writes PDS4 data products. The software is packaged in a JAR fil
 
 The software can be compiled and installed with the following commands:
 
-% cd ../pds4-tools/superpom
+% cd superpom
 % cd mvn clean install 
 % cd ../package 
 % mvn clean install 
