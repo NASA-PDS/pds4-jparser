@@ -6,7 +6,7 @@ The software can be compiled and installed with the following commands:
 % cd superpom
 % cd mvn clean install 
 % cd ../package 
-% mvn clean install 
+% mvn clean package 
 
 The documentation including installation of the software should be online at 
 http://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/. If it is not 
