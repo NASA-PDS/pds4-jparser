@@ -1,7 +1,7 @@
 <project name="PSD4 Validate Test" default="help" basedir=".">
 
-  <property name="schema.original" location="PDS4_OPS_0300a.xsd" />
-  <property name="schema.stripped" location="PDS4_OPS_0300a-stripped.xsd" />
+  <property name="schema.original" location="PDS4_PDS_1000.xsd" />
+  <property name="schema.stripped" location="PDS4_PDS_1000-stripped.xsd" />
   
   <target name="help">
     <echo>Use "ant -projecthelp" to show available targets.</echo>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-model href="http://pds.nasa.gov/pds4/schema/released/ops/v03/PDS4_OPS_0300a.sch"?>
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v03"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://pds.nasa.gov/pds4/schema/released/ops/v03/PDS4_OPS_0300a.xsd">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:MER2_RAT:data_raw:2d234493326edratf3d2537n0m1</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>MER2 RAT Raw Data</title>
+        <information_model_version>0.7.0.0.j</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Alias_List>
+            <Alias>
+                <alternate_id>MER2-M-RAT-2-EDR-OPS-V1.0</alternate_id>
+                <alternate_title>MER 2 MARS ROCK ABRASION TOOL EDR OPS VERSION 1.0</alternate_title>
+            </Alias>
+        </Alias_List>
+    </Identification_Area>
+    <Observation_Area>
+        <Time_Coordinates>
+            <start_date_time>2007-06-07T12:48:38.719</start_date_time>
+            <stop_date_time>2007-06-07T12:51:27.972</stop_date_time>
+            <local_true_solar_time>12:42:06</local_true_solar_time>
+        </Time_Coordinates>
+        <Investigation_Area>
+            <name>Mars Exploration Rover</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:mission.MARS_EXPLORATION_ROVER</lid_reference>
+                <reference_type>has_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <name>Mars Exploration Rover 2 RAT</name>
+            <Observing_System_Component>
+                <name>RAT</name>
+                <observing_system_component_type>Instrument</observing_system_component_type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:instrument.RAT__MER2</lid_reference>
+                    <reference_type>has_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>Mars Exploration Rover 2</name>
+                <observing_system_component_type>Spacecraft</observing_system_component_type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:instrument_host.MER2</lid_reference>
+                    <reference_type>has_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>Mars</name>
+            <type>planet</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:target.MARS</lid_reference>
+                <reference_type>has_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        <Mission_Area>
+            <!-- Add from PDS3 label: PRODUCT_TYPE, SOURCE_PRODUCT_ID, RELEASE_ID, 
+            ROVER_MOTION_COUNTER, ROVER_MOTION_COUNTER_NAME, COMMAND_SEQUENCE_NUMBER,
+            MISSION_PHASE_NAME, OBSERVATION_ID, PLANET_DAY_NUMBER, PRODUCER_INSTITUTION_NAME,
+            SEQUENCE_ID, SEQUENCE_VERSION_ID, SPACECRAFT_CLOCK_CNT_PARTITION, SPACECRAFT_CLOCK_START_COUNT,
+            SPACECRAFT_CLOCK_STOP_COUNT, whole section TELEMETRY DATA ELEMENTS, whole section ROVER STATE -->
+        </Mission_Area>
+        <Node_Area>
+        </Node_Area>
+    </Observation_Area>
+    <File_Area_Observational>
+        <File>
+            <file_name>Binary_Table_Writer.dat</file_name>
+        </File>
+        <Table_Binary>
+            <offset>0</offset>
+            <records>2</records>
+            <encoding_type>binary</encoding_type>
+            <Record_Binary>
+                <record_length>41</record_length>
+                <fields>7</fields>
+                <Field_Binary>
+                    <name>SCLK_SECONDS</name>
+                    <field_number>1</field_number>
+                    <field_location>1</field_location>
+                    <data_type>UnsignedMSB4</data_type>
+                    <field_length>4</field_length>
+                    <unit>second</unit>
+                    <description>The whole number of seconds recorded by the spacecraft clock at the time the 
+                        measurements were taken.</description>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>SCLK_SUBSECONDS</name>
+                    <field_number>2</field_number>
+                    <field_location>5</field_location>
+                    <data_type>UnsignedMSB2</data_type>
+                    <field_length>2</field_length>
+                    <unit>second/256</unit>
+                    <description>The number of seconds subrecorded by the spacecraft clock at the time the 
+                        measurements were taken. A subsecond is 1/256th of a second.</description>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>SPARE</name>
+                    <field_number>3</field_number>
+                    <field_location>7</field_location>
+                    <data_type>UnsignedMSB2</data_type>
+                    <field_length>2</field_length>
+                    <description>These two bytes are currently unused.</description>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>ROTATION_MOTOR_POSITION</name>
+                    <field_number>4</field_number>
+                    <field_location>9</field_location>
+                    <data_type>IEEE754MSBDouble</data_type>
+                    <field_length>8</field_length>
+                    <unit>radian</unit>
+                    <description>The position of the z-axis relative to its hardstop.</description>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>SPARE</name>
+                    <field_number>5</field_number>
+                    <field_location>17</field_location>
+                    <data_type>UnsignedByte</data_type>
+                    <field_length>1</field_length>
+                    <description>Spare field used for padding.</description>
+                </Field_Binary>                 <Field_Binary>                                     <name>SCET</name>                                        <field_number>6</field_number>                                        <field_location unit="byte">18</field_location>                                        <data_type>ASCII_String</data_type>                                        <field_length unit="byte">8</field_length>                                                       </Field_Binary>                 <Field_Binary>                                     <name>LTST</name>                                        <field_number>7</field_number>                                        <field_location unit="byte">26</field_location>                                        <data_type>UnsignedMSB8</data_type>                                        <field_length unit="byte">8</field_length>                                                       </Field_Binary>                <Group_Field_Binary>                                    <repetitions>2</repetitions>                                    <group_location unit="byte">34</group_location>                                    <fields>1</fields>                                    <group_length unit="byte">4</group_length>                                    <Field_Binary>                                        <name>TIME</name>                                        <field_location unit="byte">1</field_location>                                        <data_type>IEEE754MSBSingle</data_type>                                        <field_length unit="byte">4</field_length>                                        <unit>SECOND</unit>                                           </Field_Binary>                </Group_Field_Binary>                            </Record_Binary>
+        </Table_Binary>
+    </File_Area_Observational>
+</Product_Observational>

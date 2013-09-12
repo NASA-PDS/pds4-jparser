@@ -1,5 +1,7 @@
 package gov.nasa.pds.objectAccess.table;
 
+import java.nio.ByteBuffer;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -116,4 +118,138 @@ public class IntegerBinaryFieldAdapterTest {
 		};
 	}
 	
+	@Test
+	public void testSetString() throws Exception {
+		ByteBuffer buffer = ByteBuffer.allocate(20);
+		int len = 5;
+		String s = "12345";
+		byte[] bytes = new byte[len];
+		FieldAdapter adapter = new IntegerBinaryFieldAdapter(len, true, true);
+		adapter.setString(s, 0, len, buffer, true);
+		buffer.position(0);
+		buffer.get(bytes, 0, len);			
+		assertEquals(bytes, s.getBytes("US-ASCII"));
+		
+		adapter = new IntegerBinaryFieldAdapter(len, true, false);
+		adapter.setString(s, 10, len, buffer, true);
+		buffer.position(10);
+		buffer.get(bytes, 0, len);			
+		assertEquals(bytes, s.getBytes("US-ASCII"));		
+	}
+	
+	@Test(dataProvider="longTests")	
+	public void testSetLong(boolean isBigEndian, long value, int offset, int length, byte[] b) {
+		byte[] bytes = new byte[length];
+		ByteBuffer buf = ByteBuffer.allocate(20);				
+		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);		
+		adapter.setLong(value, offset, length, buf, true);		
+		buf.position(offset);
+		buf.get(bytes, 0, length);		
+		assertEquals(bytes, b);					
+	}
+	
+	@Test(dataProvider="longTests")	
+	public void testSetDouble(boolean isBigEndian, long value, int offset, int length, byte[] b) {
+		ByteBuffer buf = ByteBuffer.allocate(20);				
+		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);					
+		adapter.setDouble((double) value, offset, length, buf, true);
+		assertEquals(buf.getDouble(offset), (double) value);
+	}
+	
+	@Test(dataProvider="intTests")	
+	public void testSetInt(boolean isBigEndian, long value, int offset, int length, byte[] b) {
+		byte[] bytes = new byte[length];
+		ByteBuffer buf = ByteBuffer.allocate(20);				
+		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);
+		adapter.setInt((int) value, offset, length, buf, true);					
+		buf.position(offset);
+		buf.get(bytes, 0, length);		
+		assertEquals(bytes, b);
+	}
+	
+	@Test(dataProvider="intTests")	
+	public void testSetFloat(boolean isBigEndian, long value, int offset, int length, byte[] b) {		
+		ByteBuffer buf = ByteBuffer.allocate(20);				
+		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);
+		adapter.setFloat((float) value, offset, length, buf, true);		
+		assertEquals(buf.getFloat(offset), (float) value);
+	}
+
+	@Test(dataProvider="shortTests")	
+	public void testSetShort(boolean isBigEndian, long value, int offset, int length, byte[] b) {
+		byte[] bytes = new byte[length];
+		ByteBuffer buf = ByteBuffer.allocate(20);				
+		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);
+		adapter.setShort((short) value, offset, length, buf, true);					
+		buf.position(offset);
+		buf.get(bytes, 0, length);		
+		assertEquals(bytes, b);
+	}
+	
+	@Test(dataProvider="byteTests")	
+	public void testSetByte(boolean isBigEndian, long value, int offset, int length, byte[] b) {
+		byte[] bytes = new byte[length];
+		ByteBuffer buf = ByteBuffer.allocate(20);				
+		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);
+		adapter.setByte((byte) value, offset, length, buf, true);					
+		buf.position(offset);
+		buf.get(bytes, 0, length);		
+		assertEquals(bytes, b);
+	}
+	
+	@Test(expectedExceptions=IllegalArgumentException.class)
+	public void testBadFieldLength() {		
+		ByteBuffer buffer = ByteBuffer.allocate(10);		
+		int length = Float.SIZE / Byte.SIZE;
+		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, true);
+		adapter.setString("1.2345", 0, length, buffer, true);
+	}
+	
+	@SuppressWarnings("unused")
+	@DataProvider(name="longTests")
+	private Object[][] getLongTests() {
+		return new Object[][] {
+				// isBigEndian, long value, offset, length, byte[] expectedBytes				
+				{ true,  0x123456781A1B1C1DL, 0, 8, new byte[] { 0x12, 0x34, 0x56, 0x78, 0x1A, 0x1B, 0x1C, 0x1D } },
+				{ true,  0x3456781A1B1C1D1EL, 1, 8, new byte[] { 0x34, 0x56, 0x78, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E } },
+				{ false, 0x123456781A1B1C1DL, 2, 8, new byte[] { 0x1D, 0x1C, 0x1B, 0x1A, 0x78, 0x56, 0x34, 0x12 } },
+				{ false, 0x3456781A1B1C1D1EL, 3, 8, new byte[] { 0x1E, 0x1D, 0x1C, 0x1B, 0x1A, 0x78, 0x56, 0x34 } }
+		};
+	}
+	
+	@SuppressWarnings("unused")
+	@DataProvider(name="intTests")
+	private Object[][] getIntTests() {
+		return new Object[][] {
+				// isBigEndian, long value, offset, length, byte[] expectedBytes
+				{ true,  0x12345678, 0, 4, new byte[] { 0x12, 0x34, 0x56, 0x78 } },
+				{ true,  0x3456781A, 1, 4, new byte[] { 0x34, 0x56, 0x78, 0x1A } },
+				{ false, 0x12345678, 2, 4, new byte[] { 0x78, 0x56, 0x34, 0x12 } },
+				{ false, 0x3456781A, 3, 4, new byte[] { 0x1A, 0x78, 0x56, 0x34 } }
+		};
+	}
+	
+	@SuppressWarnings("unused")
+	@DataProvider(name="shortTests")
+	private Object[][] getShortTests() {
+		return new Object[][] {
+				// isBigEndian, long value, offset, length, byte[] expectedBytes
+				{ true,  0x1234, 0, 2, new byte[] { 0x12, 0x34 } },
+				{ true,  0x3456, 1, 2, new byte[] { 0x34, 0x56 } },
+				{ false, 0x5678, 2, 2, new byte[] { 0x78, 0x56 } },
+				{ false, 0x781A, 3, 2, new byte[] { 0x1A, 0x78 } }
+		};
+	}
+	
+	@SuppressWarnings("unused")
+	@DataProvider(name="byteTests")
+	private Object[][] getByteTests() {
+		return new Object[][] {
+				// isBigEndian, long value, offset, length, byte[] expectedBytes
+				{ true,  0x12, 0, 1, new byte[] { 0x12 } },
+				{ true,  0x34, 1, 1, new byte[] { 0x34 } },
+				{ false, 0x12, 2, 1, new byte[] { 0x12 } },
+				{ false, 0x34, 3, 1, new byte[] { 0x34 } }
+		};
+	}
 }

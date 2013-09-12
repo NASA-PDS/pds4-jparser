@@ -7,7 +7,7 @@
     xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
     jxb:extensionBindingPrefixes="xjc">
     
-	<jxb:bindings schemaLocation="PDS4_OPS_0300a-stripped.xsd" node="/xs:schema">
+	<jxb:bindings schemaLocation="PDS4_PDS_1000-stripped.xsd" node="/xs:schema">
         
         <jxb:globalBindings generateValueClass="true">
             <xjc:simple />

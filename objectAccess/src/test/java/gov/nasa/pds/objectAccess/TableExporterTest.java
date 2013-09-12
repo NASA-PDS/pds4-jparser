@@ -7,6 +7,7 @@ import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
+import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 
 import org.testng.annotations.Test;
@@ -21,9 +23,11 @@ import org.testng.annotations.Test;
 import au.com.bytecode.opencsv.CSVReader;
 
 public class TableExporterTest {
-	
+	private static final String DELIMITED_LABEL_NAME = "Product_Table_Delimited.xml";		
+	private static final String DELIMITED_LABEL_PATH= "./src/test/resources/1000/";
+			
 	private final String[][] dataObject= new String [][] {
-			{"SOL" , "LTST"  , "LMST"      , "V"     , "DV+"  , "DV-"     , "DIR"        , "DDIR"     , "EXPOSURE TIME" , "FILE NAME"        },
+			{"SOL" , "LTST"  , "LMST"      , "V"     , "DV+"  , "DV-"     , "DIR"        , "DDIR"     , "EXPOSURE_TIME" , "FILE_NAME"        },
 			{" 91" , "0.088" , " 91.06951" , "5.156" , "0.42" , "0.42656" , "125.547152" , "  4.7691" , "15300.0"       , "SS091A990R6M1.IMG"},
 			{" 91" , "0.088" , " 91.06951" , "5.156" , "0.42" , "0.42656" , "125.547152" , "  4.7691" , "15300.0"       , "SS091A990R6M1.IMG"},
 			{" 91" , "0.088" , " 91.07029" , "5.155" , "0.42",  "0.42652" , "125.550546" , "  4.7692" , "15300.0"       , "SS091A990R6M1.IMG"},
@@ -54,7 +58,7 @@ public class TableExporterTest {
 	@Test
 	public void testExportCharacterTableToCSV() throws Exception {
 		String fileName = "Product_Table_Character.xml";
-		ObjectProvider objectAccess = new ObjectAccess(new File("./src/test/resources/dph_example_products/product_table_character/"));
+		ObjectProvider objectAccess = new ObjectAccess(new File("./src/test/resources/1000/"));
 		ProductObservational product = objectAccess.getObservationalProduct(fileName);
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		List<TableCharacter> list = objectAccess.getTableCharacters(fileArea);
@@ -66,7 +70,7 @@ public class TableExporterTest {
 	@Test
 	public void testExportGoupedFieldCharacterTableToCSV() throws Exception {
 		String fileName = "Product_Table_Character_Grouped.xml";
-		ObjectProvider objectAccess = new ObjectAccess(new File("./src/test/resources/dph_example_products/product_table_character_grouped/"));
+		ObjectProvider objectAccess = new ObjectAccess(new File("./src/test/resources/1000/"));
 		ProductObservational product = objectAccess.getObservationalProduct(fileName);
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		List<TableCharacter> list = objectAccess.getTableCharacters(fileArea);				
@@ -77,9 +81,9 @@ public class TableExporterTest {
 	
 	@Test
 	public void testExportBinaryTableToCSV() throws Exception {
-		//createBinaryFile();		
+		createBinaryFile();		
 		String fileName = "Binary_Table_Test.xml";
-		ObjectProvider objectAccess = new ObjectAccess(new File("./src/test/resources/dph_example_products/product_table_binary/"));
+		ObjectProvider objectAccess = new ObjectAccess(new File("./src/test/resources/1000/"));
 		ProductObservational product = objectAccess.getObservationalProduct(fileName);
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		List<TableBinary> list = objectAccess.getTableBinaries(fileArea);									
@@ -90,16 +94,62 @@ public class TableExporterTest {
 	
 	@Test
 	public void testExportDelimitedTableToCSV() throws Exception {					
-		String fileName = "Product_Table_Delimited.xml";
-		ObjectProvider objectAccess = new ObjectAccess(new File("./src/test/resources/dph_example_products/product_table_delimited/"));
-		ProductObservational product = objectAccess.getObservationalProduct(fileName);
+		ObjectProvider objectAccess = new ObjectAccess(new File(DELIMITED_LABEL_PATH));
+		ProductObservational product = objectAccess.getObservationalProduct(DELIMITED_LABEL_NAME);
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
-		List<TableDelimited> list = objectAccess.getTableDelimited(fileArea);
+		List<TableDelimited> list = objectAccess.getTableDelimiteds(fileArea);
 		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "delimited_table.csv");
-		File label = new File(objectAccess.getRoot().getAbsolutePath(), fileName);		
+		File label = new File(objectAccess.getRoot().getAbsolutePath(), DELIMITED_LABEL_NAME);		
 		exportToCSV(label, outputFile, list.get(0), 3, 13, delimitedDataObject, true);		
 	}
 		
+	@Test
+	public void testConvert() throws Exception {
+		ObjectProvider provider = new ObjectAccess(new File(DELIMITED_LABEL_PATH));				
+		ProductObservational product = provider.getObservationalProduct(DELIMITED_LABEL_NAME);
+		File outputFile = new File(provider.getRoot().getAbsolutePath(), "convert_test.csv");
+		FileOutputStream os = new FileOutputStream(outputFile);		
+		TableExporter exporter = ExporterFactory.getTableExporter(product.getFileAreaObservationals().get(0), provider);
+		exporter.setExportType("CSV");		
+		assertEquals(exporter.getExportType(), "CSV");		
+		exporter.convert(os, 0);
+		assertTrue(outputFile.exists());
+		
+		BufferedReader buffer = new BufferedReader(new FileReader(outputFile));
+		CSVReader reader = new CSVReader(buffer);				
+		assertEquals(reader.readAll().size()-1, delimitedDataObject.length);
+		outputFile.deleteOnExit();
+		buffer.close();
+		reader.close();
+	}
+	
+	@Test
+	public void testGetTableFields() throws Exception {
+		ObjectProvider provider = new ObjectAccess(new File(DELIMITED_LABEL_PATH));			
+		ProductObservational product = provider.getObservationalProduct(DELIMITED_LABEL_NAME);
+		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
+		TableDelimited table = provider.getTableDelimiteds(fileArea).get(0);
+		TableDelimitedAdapter adapter = new TableDelimitedAdapter(table);		
+		TableExporter exporter = ExporterFactory.getTableExporter(fileArea, provider);
+		assertEquals(exporter.getTableFields(table).length, adapter.getFields().length);		
+	}
+	
+	@Test(expectedExceptions=UnsupportedCharsetException.class)
+	public void testSetDecoder() throws Exception {
+		ObjectProvider provider = new ObjectAccess(new File(DELIMITED_LABEL_PATH));
+		File label = new File(provider.getRoot().getAbsolutePath(), DELIMITED_LABEL_NAME);
+		TableExporter exporter = ExporterFactory.getTableExporter(label, 0);		
+		exporter.setDecoder("BAD-CHARSET-NAME");
+	}
+	
+	@Test(expectedExceptions=UnsupportedCharsetException.class)
+	public void testSetEncoder() throws Exception {
+		ObjectProvider provider = new ObjectAccess(new File(DELIMITED_LABEL_PATH));
+		File label = new File(provider.getRoot().getAbsolutePath(), DELIMITED_LABEL_NAME);
+		TableExporter exporter = ExporterFactory.getTableExporter(label, 0);		
+		exporter.setEncoder("BAD-CHARSET-NAME");
+	}
+	
 	private void exportToCSV(File label, File outputFile, Object table,	int rows, int cols, Object[][] dataObject, boolean isSkip) throws Exception {	
 		FileOutputStream os = new FileOutputStream(outputFile);
 		TableExporter exporter = ExporterFactory.getTableExporter(label, 0);		
@@ -128,10 +178,11 @@ public class TableExporterTest {
 		reader.close();	
 	}
 	
-	// Creates a binary file with 2 records each 34 bytes long
+	/*
+	 *  Creates a binary file with 2 records each 34 bytes long
+	 */
 	private void createBinaryFile() throws IOException {
-		FileOutputStream os = new FileOutputStream(new File("./src/test/resources/dph_example_products/product_table_binary/binary-table-test.dat"));		
-		
+		FileOutputStream os = new FileOutputStream(new File("./src/test/resources/1000/binary-table-test.dat"));				
 		ByteBuffer buf =  ByteBuffer.allocate(68); 
 		buf.putInt(234493158);
 		buf.putShort((short) 34004);
@@ -150,8 +201,7 @@ public class TableExporterTest {
 		buf.put((byte) 0x25);
 		buf.put(new byte[] {0x43, 0x4F, 0x52, 0x50, 0x57, 0x53, 0x30, 0x31});
 		buf.putFloat(7.197063E-17f);
-		buf.putFloat(1.04f);
-		
+		buf.putFloat(1.04f);		
 		os.write(buf.array());
 		os.close();
  	}

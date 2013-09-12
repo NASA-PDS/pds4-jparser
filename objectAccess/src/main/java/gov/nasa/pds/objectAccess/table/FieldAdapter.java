@@ -1,5 +1,6 @@
 package gov.nasa.pds.objectAccess.table;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 
@@ -112,4 +113,92 @@ public interface FieldAdapter {
 	 */
 	String getString(byte[] buf, int offset, int length, int startBit, int stopBit, Charset charset);
 
+	/**
+	 * Sets the field value as a Java string. 
+	 * 
+	 * @param value the field value
+	 * @param offset the field offset
+	 * @param buf
+	 * @param isRightJustified
+	 */
+	void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
+	
+	/**
+	 * Sets the field value as a Java string, using a specified 
+	 * character set to convert from characters to bytes.
+	 * 
+	 * @param value the field value
+	 * @param offset the field offset
+	 * @param length the length of the field data
+	 * @param buffer
+	 * @param isRightJustified
+	 */
+	void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified, Charset charset);
+	
+	/**
+	 * Sets the field value as a Java int.
+	 * 
+	 * @param value the field value
+	 * @param offset the field offset
+	 * @param length the length of the field data
+	 * @param buffer
+	 * @param isRightJustified
+	 * 
+	 */
+	void setInt(int value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
+	
+	/**
+	 * Sets the field value as a Java double.
+	 * 
+	 * @param value the field value
+	 * @param offset the field offset
+	 * @param length the length of the field data
+	 * @param buffer
+	 * @param isRightJustified
+	 */
+	void setDouble(double value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
+	
+	/**
+	 * Sets the field value as a Java float.
+	 * 
+	 * @param value the field value
+	 * @param offset the field offset
+	 * @param length the length of the field data
+	 * @param buffer
+	 * @param isRightJustified
+	 */
+	void setFloat(float value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
+	
+	/**
+	 * Sets the field value as a Java short.
+	 * 
+	 * @param value the field value
+	 * @param offset the field offset
+	 * @param length the length of the field data
+	 * @param buffer
+	 * @param isRightJustified
+	 */
+	void setShort(short value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
+	
+	/**
+	 * Sets the field value as a Java byte.
+	 * 
+	 * @param value the field value
+	 * @param offset the field offset
+	 * @param length the length of the field data
+	 * @param buffer
+	 * @param isRightJustified
+	 */
+	void setByte(byte value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
+	
+	/**
+	 * Sets the field value as a Java long.
+	 * 
+	 * @param value the field value
+	 * @param offset the field offset
+	 * @param length the length of the field data
+	 * @param buffer
+	 * @param isRightJustified
+	 */
+	void setLong(long value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 }

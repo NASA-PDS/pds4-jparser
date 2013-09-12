@@ -2,13 +2,17 @@ package gov.nasa.pds.objectAccess.table;
 
 import static org.testng.Assert.assertEquals;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class NumericTextFieldAdapterTest {
-
+	
+	private static final Charset US_ASCII = Charset.forName("US-ASCII");	
+	
+	private ByteBuffer buffer = ByteBuffer.allocate(50);
 	private FieldAdapter adapter = new NumericTextFieldAdapter();
 
 	@Test
@@ -96,4 +100,72 @@ public class NumericTextFieldAdapterTest {
 		assertEquals(adapter.getDouble(b, 0, b.length, 0, 0), Double.parseDouble(s), 0.000000000000001);
 	}
 	
+	@Test
+	public void testSetGoodInt() {				
+		int value = 123;
+		byte[] b = Integer.toString(value).getBytes(US_ASCII);
+		int length = b.length;
+		byte[] bytes = new byte[length];		
+		buffer.clear();
+		
+		adapter.setInt(value, 0, length, buffer, false);		
+		buffer.position(0);
+		buffer.get(bytes, 0, length);
+		assertEquals(bytes, b);
+				
+		adapter.setShort((short) value, 5, length, buffer, false);		
+		buffer.position(5);
+		buffer.get(bytes, 0, length);
+		assertEquals(bytes, b);
+				
+		adapter.setByte((byte) value, 10, length, buffer, false);		
+		buffer.position(10);
+		buffer.get(bytes, 0, length);
+		assertEquals(bytes, b);		
+	}
+	
+	@Test
+	public void testSetLong() {				
+		long value = 123;
+		byte[] b = Long.toString(value).getBytes(US_ASCII);
+		int length = b.length;
+		byte[] bytes = new byte[length];		
+		buffer.clear();		
+		adapter.setLong(value, 0, length, buffer, false);		
+		buffer.position(0);
+		buffer.get(bytes, 0, length);
+		assertEquals(bytes, b);
+	}
+	
+	@Test
+	public void testSetFloat() {				
+		float value = 0.12345678901234567890f;
+		byte[] b = Float.toString(value).getBytes(US_ASCII);
+		int length = b.length;
+		byte[] bytes = new byte[length];
+		buffer.clear();		
+		adapter.setFloat(value, 0, length, buffer, false);		
+		buffer.position(0);
+		buffer.get(bytes, 0, length);			
+		assertEquals(bytes, b);
+	}
+	
+	@Test
+	public void testSetDouble() {				
+		double value = 0.12345678901234567890;					   
+		byte[] b = Double.toString(value).getBytes(US_ASCII);		
+		int length = b.length;
+		byte[] bytes = new byte[length];
+		buffer.clear();
+		adapter.setDouble(value, 0, length, buffer, false);		
+		buffer.position(0);
+		buffer.get(bytes, 0, length);		
+		assertEquals(bytes, b);	
+	}
+	
+	@Test(expectedExceptions=IllegalArgumentException.class)
+	public void testBadFieldLength() {		
+		ByteBuffer buffer = ByteBuffer.allocate(10);
+		adapter.setFloat(Float.MAX_VALUE, 0, Float.SIZE / Byte.SIZE, buffer, false);
+	}
 }

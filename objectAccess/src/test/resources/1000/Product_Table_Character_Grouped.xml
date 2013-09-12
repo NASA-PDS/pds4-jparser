@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="./PDS4_PDS_1000.nvdl" ?>
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1"
+ xmlns:dph="http://pds.nasa.gov/pds4/dph/v01"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:example.DPH.sampleProducts:exampleProducts:TableCharGrouped.PHX-M-MECA-4-NIRDR-1.0</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Phoenix Project MECA ATOMIC FORCE MICROSCOPE Experiment</title>
+        <information_model_version>1.0.0.0</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>2012-01-10</modification_date>
+                <version_id>1.0</version_id>
+                <description>
+                    extracted metadata from PDS3 catalog and
+                    modified to comply with PDS4 Information Model
+                </description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+
+    <Observation_Area>
+        <comment>Observational Intent</comment>
+        <Time_Coordinates>
+            <start_date_time>2008-05-29T22:35:04.536Z</start_date_time>
+            <stop_date_time>2008-05-29T22:35:04.536Z</stop_date_time>
+            <local_mean_solar_time>not applicable</local_mean_solar_time>
+            <local_true_solar_time>not applicable</local_true_solar_time>
+        </Time_Coordinates>
+      
+        <Primary_Result_Summary>
+          <purpose>Science</purpose>
+          <data_regime>Visible</data_regime>
+          <processing_level_id>Calibrated</processing_level_id>
+        </Primary_Result_Summary>
+      
+      <Investigation_Area>
+            <name>PHOENIX</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lidvid_reference>urn:nasa:pds:investigation.PHOENIX::1.0</lidvid_reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <name>Observing System for PHX+MECA_AFM</name>
+            <Observing_System_Component>
+                <name>PHX</name>
+                <type>Spacecraft</type>
+                <description>instrument_host PHX</description>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:instrument_host.PHX</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>MECA_AFM__PHX</name>
+                <type>Instrument</type>
+                <description>instrument MECA_AFM__PHX</description>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:instrument.MECA_AFM__PHX</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>       
+        <Target_Identification>
+            <name>MARS</name>
+            <type>planet</type>
+            <description>description of MARS goes here</description>
+            <Internal_Reference>
+                <lidvid_reference>urn:nasa:pds:target.MARS::1.0</lidvid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        
+        <!-- ============================================================ -->
+        <!-- Reference the attributes that were imported from the         -->
+        <!-- local dictionary (using the local namespace (dph)            -->
+        <!-- ============================================================ -->                   
+        <Mission_Area>
+            <dph:spacecraft_clock_start_count>896567771.215</dph:spacecraft_clock_start_count>
+            <dph:spacecraft_clock_stop_count>896567771.215</dph:spacecraft_clock_stop_count>
+        </Mission_Area>
+        <Discipline_Area>
+        </Discipline_Area>
+    </Observation_Area>
+    
+    <Reference_List>
+        <Internal_Reference>
+            <lidvid_reference>urn:nasa:pds:investigation.PHOENIX::1.0</lidvid_reference>
+            <reference_type>data_to_document</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:instrument_host.PHX</lid_reference>
+            <reference_type>data_to_document</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:instrument.MECA_AFM__PHX</lid_reference>
+            <reference_type>data_to_document</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:target.MARS</lid_reference>
+            <reference_type>data_to_document</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:node.GEO</lid_reference>
+            <reference_type>data_to_document</reference_type>
+        </Internal_Reference>
+    </Reference_List>
+    
+    <File_Area_Observational>
+        <File>
+            <file_name>fs004sdd_001_4e0111040000a0_1.tab</file_name>
+            <local_identifier>MECA_TABLE_CHAR_GROUPED_FILE_ID</local_identifier>
+            <creation_date_time>2010-10-28T12:12:12Z</creation_date_time>
+            <file_size unit="byte">40976388</file_size>
+            <records>2052</records>
+            <md5_checksum>d220dac0d1fe312f3f3b9c824f6ac294</md5_checksum>
+        </File>
+       
+        <!--
+           *** (2) AFM_F_ERROR_TABLE    = ("PDS4_MECA_TABLE_CHAR.TAB",79877)    ***/
+        -->
+        <Table_Character>
+            <local_identifier>PHX_M_MECA_TABLE_CHAR_GROUPED-2</local_identifier>
+            <offset unit="byte">79876</offset>
+            <records>5</records>
+            <record_delimiter>carriage-return line-feed</record_delimiter>
+            
+            <Record_Character>
+                <fields>6</fields>
+                <groups>1</groups>
+                <record_length unit="byte">19969</record_length>
+              
+                <Group_Field_Character>
+                    <repetitions>2</repetitions>
+                    <fields>3</fields>
+                    <groups>1</groups>
+                    <group_location unit="byte">1</group_location>
+                    <group_length unit="byte">39</group_length>
+                    
+                    <Field_Character>
+                        <name>X COORDINATE</name>
+                        <field_number>1</field_number>
+                        <field_location unit="byte">1</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">12</field_length>
+                        <field_format>N/A</field_format>
+                        <description>N/A</description>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>Y COORDINATE</name>
+                        <field_number>2</field_number>
+                        <field_location unit="byte">14</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">12</field_length>
+                        <field_format>N/A</field_format>
+                        <description>N/A</description>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>Value</name>
+                        <field_number>3</field_number>
+                        <field_location unit="byte">27</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">12</field_length>
+                        <field_format>N/A</field_format>
+                        <description>N/A</description>
+                    </Field_Character>
+                            
+                </Group_Field_Character>
+            </Record_Character>
+        </Table_Character>
+    </File_Area_Observational>
+</Product_Observational>

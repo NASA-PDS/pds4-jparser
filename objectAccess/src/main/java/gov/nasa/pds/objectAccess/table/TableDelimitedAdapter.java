@@ -3,6 +3,8 @@ package gov.nasa.pds.objectAccess.table;
 import gov.nasa.arc.pds.xml.generated.FieldDelimited;
 import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
+import gov.nasa.pds.label.object.FieldDescription;
+import gov.nasa.pds.label.object.FieldType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +48,7 @@ public class TableDelimitedAdapter implements TableAdapter {
 		for (int i=0; i < group.getRepetitions(); ++i) {
 			// Have to copy the fields to a new array, because of element type.
 			List<Object> fields = new ArrayList<Object>();
-			for (FieldDelimited field : group.getFieldDelimiteds()) {
+			for (Object field : group.getFieldDelimitedsAndGroupFieldDelimiteds()) {
 				fields.add(field);
 			}
 			expandFields(fields);
@@ -83,4 +85,7 @@ public class TableDelimitedAdapter implements TableAdapter {
 		return 0;
 	}
 
+	public char getFieldDelimiter() {
+		return DelimiterType.getDelimiterType(table.getFieldDelimiter()).getFieldDelimiter();
+	}
 }

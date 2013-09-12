@@ -15,11 +15,14 @@ import org.slf4j.LoggerFactory;
 
 /**  Utility class for converting 2D images. */
 
-public class ImageConverter {
-	Logger logger = LoggerFactory.getLogger(ImageConverter.class);
+class ImageConverter {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImageConverter.class);
 
 	// BufferedImage.TYPE_USHORT_GRAY; //NOTE the only rasters that work are byte.
-	private static ImageConverter INSTANCE = new ImageConverter();
+	private static final ImageConverter INSTANCE = new ImageConverter();
+	private static final int SCALE_12_TO_8_BITS = 4096 / 256;
+
 	private ImageConverter() {
 	}
 
@@ -28,9 +31,9 @@ public class ImageConverter {
 	}
 
 	/**
-	 * Converts a 2D array file to a viewable image file. The newly created image file 
-	 * is written to the same directory and the input file. 
-	 * 
+	 * Converts a 2D array file to a viewable image file. The newly created image file
+	 * is written to the same directory and the input file.
+	 *
 	 * @param inputFilename
 	 * @param outputFilename
 	 * @param rows
@@ -39,14 +42,14 @@ public class ImageConverter {
 	 * @throws IOException
 	 */
 	public String convert(String inputFilename, String outputFilename, final int rows, final int cols) throws IOException {
-		
+
 		File inputFile = new File(inputFilename);
-		
+
 		// read 2D array
 		BufferedImage bi = readToRaster(inputFile, rows, cols);
 
 		// ImageIO write
-		writeRasterImage(outputFilename, bi);		
+		writeRasterImage(outputFilename, bi);
 
 		return outputFilename;
 	}
@@ -56,30 +59,29 @@ public class ImageConverter {
 		WritableRaster raster= rv.getRaster();
 		int countBytes = -1;
 		DataInputStream di = null;
-		final int SCALE_12_TO_8_BITS = 4096 / 256;
-		
+
 		try {
 			di = new DataInputStream(new FileInputStream(inputFilename));
 
 			for (int y = 0; y < cols; y++){
 				for(int x = 0; x<rows; x++){
-					int firstByte =  (0x000000FF & ((int)  di.readByte()));
-					int secondByte = (0x000000FF & ((int)  di.readByte()));
+					int firstByte =  (0x000000FF & (di.readByte()));
+					int secondByte = (0x000000FF & (di.readByte()));
 
 					short anUnsignedShort  = (short) (firstByte << 8 | secondByte);
 					countBytes += 2;
-					
+
 					int value = anUnsignedShort;
 
                     //	int value = 127+(int)(128*Math.sin(x/32.)*Math.sin(y/32.)); //  sin pattern, for testing.
                     //	if (countBytes < 32) System.err.println("----scaled "+anUnsignedShort / SCALE_12_TO_8_BITS);
-					
-					raster.setSample(x, y, 0, value / SCALE_12_TO_8_BITS ); 
+
+					raster.setSample(x, y, 0, value / SCALE_12_TO_8_BITS );
 				}
 			}
 		} catch (Exception e) {
 			String m = "EOF at byte number: "+countBytes+ "inputFile: " + inputFilename;
-			logger.error(m, e);
+			LOGGER.error(m, e);
 		} finally {
 			if (di != null) {
 				try {di.close();} catch (IOException e) {}

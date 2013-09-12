@@ -1,5 +1,7 @@
 package gov.nasa.pds.objectAccess.table;
 
+import java.nio.ByteBuffer;
+
 /**
  * Implements a field adapter for numeric fields stored in
  * textual format, as in a character table.
@@ -45,5 +47,38 @@ public class NumericTextFieldAdapter extends DefaultFieldAdapter {
 	public double getDouble(byte[] buf, int offset, int length, int startBit, int stopBit) {
 		return Double.parseDouble(getString(buf, offset, length, startBit, stopBit).trim());
 	}
+	
+	//
+	// TODO: need to pass in charset to setString() in all setter?
+	//
+	
+	@Override
+	public void setByte(byte value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		setString(Byte.toString(value), offset, length, buffer, isRightJustified);
+	}
 
+	@Override
+	public void setShort(short value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		setString(Short.toString(value), offset, length, buffer, isRightJustified);		
+	}
+	
+	@Override
+	public void setInt(int value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		setString(Integer.toString(value), offset, length, buffer, isRightJustified);
+	}
+	
+	@Override
+	public void setLong(long value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		setString(Long.toString(value), offset, length, buffer, isRightJustified);
+	}
+	
+	@Override
+	public void setFloat(float value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		setString(Float.toString(value), offset, length, buffer, isRightJustified);		
+	}
+
+	@Override
+	public void setDouble(double value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {		
+		setString(Double.toString(value), offset, length, buffer, isRightJustified);		
+	}
 }

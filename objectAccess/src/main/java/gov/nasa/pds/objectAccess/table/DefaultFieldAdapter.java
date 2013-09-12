@@ -1,5 +1,6 @@
 package gov.nasa.pds.objectAccess.table;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
@@ -59,4 +60,71 @@ public class DefaultFieldAdapter implements FieldAdapter {
 		return new String(buf, offset, length, charset);
 	}
 
+	@Override
+	public void setByte(byte value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
+	}
+
+	@Override
+	public void setShort(short value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);		
+	}
+	
+	@Override
+	public void setInt(int value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);		
+	}
+	
+	@Override
+	public void setLong(long value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);		
+	}
+	
+	@Override
+	public void setFloat(float value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);		
+	}
+
+	@Override
+	public void setDouble(double value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);		
+	}
+
+	@Override
+	public void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified, Charset charset) {
+		if (value.length() > length) {			
+			throw new IllegalArgumentException("The size of the value is greater than the field length.");
+		}		
+		buffer.position(offset);
+		buffer.put(getJustifiedValue(value, length, isRightJustified, charset), 0, length);
+	}
+	
+	@Override
+	public void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		this.setString(value, offset, length, buffer, isRightJustified, Charset.forName("US-ASCII"));
+	}
+		
+	public void setString(String value, ByteBuffer buffer, Charset charset) {
+		buffer.put(value.getBytes(charset));	
+	}
+	
+	private byte[] getJustifiedValue(String value, int fieldLen, boolean isRightJustified, Charset charset) {
+		// Add padding for left/right justification
+		StringBuffer sb = new StringBuffer();
+		int padding = fieldLen - value.length();
+		
+		if (isRightJustified) {
+			for (int i = 0; i < padding; i++) {
+				sb.append(' ');
+			}
+		}	
+		sb.append(value);
+		if (!isRightJustified) {				
+			for (int i = 0; i < padding; i++) {
+				sb.append(' ');
+			}
+		}		
+		
+		return sb.toString().getBytes(charset);
+	}
 }

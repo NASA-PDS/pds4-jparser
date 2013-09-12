@@ -1,5 +1,6 @@
 package gov.nasa.pds.objectAccess.table;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
@@ -54,4 +55,43 @@ public class DoubleBinaryFieldAdapter implements FieldAdapter {
 		return Double.longBitsToDouble(bits);
 	}
 
+	@Override
+	public void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		setDouble(Double.parseDouble(value), offset, length, buffer, isRightJustified);		
+	}
+
+	@Override
+	public void setString(String value, int offset, int length, ByteBuffer buffer,	boolean isRightJustified, Charset charset) {
+		setDouble(Double.parseDouble(value), offset, length, buffer, isRightJustified);		
+	}	
+	
+	@Override
+	public void setByte(byte value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException("Cannot set a binary double as an integer.");
+	}
+
+	@Override
+	public void setShort(short value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException("Cannot set a binary double as an integer.");		
+	}
+	
+	@Override
+	public void setInt(int value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException("Cannot set a binary double as an integer.");
+	}
+	
+	@Override
+	public void setLong(long value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		throw new UnsupportedOperationException("Cannot set a binary double as an integer.");
+	}
+	
+	@Override
+	public void setFloat(float value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		setDouble(value, offset, length, buffer, isRightJustified);
+	}
+
+	@Override
+	public void setDouble(double value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		longAdapter.setDouble(value, offset, length, buffer, isRightJustified);
+	}
 }

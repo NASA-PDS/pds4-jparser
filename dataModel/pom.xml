@@ -3,7 +3,7 @@
   <parent>
 	   	<groupId>gov.nasa.pds</groupId>
 	   	<artifactId>superpom</artifactId>
-	   	<version>0.1.0</version>
+	   	<version>0.2.0</version>
 	   	<relativePath>../superpom/pom.xml</relativePath>
   </parent>  
   <artifactId>dataModel</artifactId>

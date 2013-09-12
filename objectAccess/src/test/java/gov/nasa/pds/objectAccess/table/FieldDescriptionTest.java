@@ -2,6 +2,8 @@ package gov.nasa.pds.objectAccess.table;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
+import gov.nasa.pds.label.object.FieldDescription;
+import gov.nasa.pds.label.object.FieldType;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

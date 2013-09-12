@@ -11,6 +11,8 @@ import gov.nasa.arc.pds.xml.generated.GroupLocation;
 import gov.nasa.arc.pds.xml.generated.PackedDataFields;
 import gov.nasa.arc.pds.xml.generated.RecordBinary;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
+import gov.nasa.pds.label.object.FieldDescription;
+import gov.nasa.pds.label.object.FieldType;
 
 import java.util.List;
 

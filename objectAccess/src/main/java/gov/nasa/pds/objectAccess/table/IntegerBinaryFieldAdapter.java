@@ -1,5 +1,7 @@
 package gov.nasa.pds.objectAccess.table;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
 /**
@@ -72,6 +74,57 @@ public class IntegerBinaryFieldAdapter implements FieldAdapter {
 		return getFieldValue(buf, offset, length);
 	}
 
+	@Override
+	public void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		this.setString(value, offset, length, buffer, isRightJustified, Charset.forName("US-ASCII"));		
+	}
+	
+	@Override
+	public void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified, Charset charset) {		
+		if (value.length() > length) {
+			throw new IllegalArgumentException("The size of the value is greater than the field length.");
+		}		
+		buffer.order(isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+		buffer.position(offset);
+		buffer.put(value.getBytes(charset), 0, length);
+	}
+
+	@Override
+	public void setByte(byte value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		buffer.order(isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);				
+		buffer.put(offset, value);		
+	}
+
+	@Override
+	public void setShort(short value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		buffer.order(isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);		
+		buffer.putShort(offset, value);		
+	}
+	
+	@Override
+	public void setInt(int value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		buffer.order(isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);		
+		buffer.putInt(offset, value);
+	}
+	
+	@Override
+	public void setLong(long value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		buffer.order(isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);		
+		buffer.putLong(offset, value);
+	}
+	
+	@Override
+	public void setFloat(float value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		buffer.order(isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);		
+		buffer.putFloat(offset, value);
+	}
+
+	@Override
+	public void setDouble(double value, int offset, int length, ByteBuffer buffer, boolean isRightJustified) {
+		buffer.order(isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);		
+		buffer.putDouble(offset, value);
+	}
+	
 	private long getFieldValue(byte[] b, int offset, int length) {
 		if (dataLength != length) {
 			throw new IllegalArgumentException("Declared field length does not match data type length "
@@ -114,5 +167,4 @@ public class IntegerBinaryFieldAdapter implements FieldAdapter {
 		
 		return result;
 	}
-
 }

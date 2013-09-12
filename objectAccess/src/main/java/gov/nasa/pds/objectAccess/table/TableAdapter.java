@@ -1,5 +1,7 @@
 package gov.nasa.pds.objectAccess.table;
 
+import gov.nasa.pds.label.object.FieldDescription;
+
 /**
  * Defines a facade object that gives access to a table,
  * either binary fixed, character fixed, or delimited.

@@ -1,5 +1,6 @@
 package gov.nasa.pds.objectAccess.table;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
@@ -11,7 +12,8 @@ import org.slf4j.LoggerFactory;
 public class BitFieldAdapter implements FieldAdapter {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(BitFieldAdapter.class);
-
+	private static final String NOT_SUPPORTED = "Operation not supported yet.";
+	
 	/** A long constant that has all bits on. */
 	private static final long LONG_ALL_BITS_ONE = 0xFFFFFFFFFFFFFFFFL;
 	
@@ -41,8 +43,9 @@ public class BitFieldAdapter implements FieldAdapter {
 	public byte getByte(byte[] buf, int offset, int length, int startBit, int stopBit) {
 		long value = getFieldValue(buf, offset, length, startBit, stopBit);
 		if (value < Byte.MIN_VALUE || value > Byte.MAX_VALUE) {
-			// TODO: log with logger
-			throw new NumberFormatException("Binary integer value out of range for byte (" + value + ")");
+			String msg = "Binary integer value out of range for byte (" + value + ")";
+			LOGGER.error(msg);
+			throw new NumberFormatException();
 		}
 		
 		return (byte) value;
@@ -52,7 +55,9 @@ public class BitFieldAdapter implements FieldAdapter {
 	public short getShort(byte[] buf, int offset, int length, int startBit, int stopBit) {
 		long value = getFieldValue(buf, offset, length, startBit, stopBit);
 		if (value < Short.MIN_VALUE || value > Short.MAX_VALUE) {
-			throw new NumberFormatException("Binary integer value out of range for short (" + value + ")");
+			String msg = "Binary integer value out of range for short (" + value + ")";
+			LOGGER.error(msg);
+			throw new NumberFormatException(msg);
 		}
 		
 		return (short) value;
@@ -62,7 +67,9 @@ public class BitFieldAdapter implements FieldAdapter {
 	public int getInt(byte[] buf, int offset, int length, int startBit, int stopBit) {
 		long value = getFieldValue(buf, offset, length, startBit, stopBit);
 		if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
-			throw new NumberFormatException("Binary integer value out of range for int (" + value + ")");
+			String msg = "Binary integer value out of range for int (" + value + ")";
+			LOGGER.error(msg);
+			throw new NumberFormatException(msg);
 		}
 		
 		return (int) value;
@@ -83,6 +90,46 @@ public class BitFieldAdapter implements FieldAdapter {
 		return getFieldValue(buf, offset, length, startBit, stopBit);
 	}
 
+	@Override
+	public void setString(String value, int offset, int length, ByteBuffer buf, boolean isRightJustifed) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+	}
+
+	@Override
+	public void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed, Charset charset) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);	
+	}
+	
+	@Override
+	public void setInt(int value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+	}
+
+	@Override
+	public void setDouble(double value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+	}
+
+	@Override
+	public void setFloat(float value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+	}
+
+	@Override
+	public void setShort(short value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+	}
+	
+	@Override
+	public void setByte(byte value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+	}
+
+	@Override
+	public void setLong(long value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
+		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+	}
+	
 	private long getFieldValue(byte[] b, int offset, int length, int startBit, int stopBit) {
 		if (startBit < 0) {
 			String msg = "Start bit is negative (" + startBit + ")";
@@ -147,5 +194,4 @@ public class BitFieldAdapter implements FieldAdapter {
 		
 		return value;
 	}
-
 }

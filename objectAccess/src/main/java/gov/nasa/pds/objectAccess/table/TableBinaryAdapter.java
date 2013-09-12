@@ -4,6 +4,8 @@ import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldBit;
 import gov.nasa.arc.pds.xml.generated.GroupFieldBinary;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
+import gov.nasa.pds.label.object.FieldDescription;
+import gov.nasa.pds.label.object.FieldType;
 
 import java.util.ArrayList;
 import java.util.List;

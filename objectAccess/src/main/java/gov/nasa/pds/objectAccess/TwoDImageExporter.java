@@ -29,6 +29,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.ImageHDU;
 import nom.tam.util.BufferedDataOutputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +40,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2DImage> {
-	
+
 	Logger logger = LoggerFactory.getLogger(TwoDImageExporter.class);
-	
+
 	private NumericDataType rawDataType;
-	
+
 	/**
 	 * Default target settings are 8-bit gray scale
 	 */
@@ -61,17 +62,17 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	private boolean sampleDirectionRight = true;
 	private boolean firstIndexFastest = true;
 	private int numberOfBands = 1;
-	
-	
+
+
 	TwoDImageExporter(FileAreaObservational fileArea, ObjectProvider provider) throws IOException {
 		super(fileArea, provider);
-		
+
 	}
-	
+
 	TwoDImageExporter(File label, int fileAreaIndex) throws Exception {
 		super(label, fileAreaIndex);
 	}
-	
+
 
 	private void setImageType() {
 		switch (targetPixelBitDepth) {
@@ -81,9 +82,10 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			case 16:
 				imageType = BufferedImage.TYPE_USHORT_GRAY;
 		}
-		
+
 	}
-	
+
+	@Override
 	public void convert(OutputStream outputStream, int objectIndex)
 			throws IOException {
 		List<Array2DImage> imageList = getObjectProvider().getArray2DImages(getObservationalFileArea());
@@ -92,16 +94,18 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	}
 
 	/**
-	 * Converts a 2D array file to a viewable image file. 
-	 * 
+	 * Converts a 2D array file to a viewable image file.
+	 *
 	 * @param outputFile (the output file)
 	 * @param array2DImage the array2DImage object to convert
-	 * @return outputFile 
+	 * @return outputFile
 	 * @throws IOException
 	 */
+	@Override
 	public void convert(Array2DImage array2DImage, OutputStream outputStream) throws IOException {
 		setArray2DImage(array2DImage);
-		int rows = 0, cols = 0;
+		int rows = 0;
+		int cols = 0;
 		if (array2DImage.getAxes() == 2) {
 			for (AxisArray axis : array2DImage.getAxisArraies()) {
 				//TODO axis ordering -- how does axis order related to index order?
@@ -113,12 +117,12 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			}
 		}
 
-		FileInputStream inputFileStream = new FileInputStream(new File(getObjectProvider().getRoot().getAbsolutePath(), 
+		FileInputStream inputFileStream = new FileInputStream(new File(getObjectProvider().getRoot().getAbsolutePath(),
 				getObservationalFileArea().getFile().getFileName()));
 		inputFileStream.skip(Integer.valueOf(array2DImage.getOffset().getValue()));
 		byte[] levels = new byte[targetLevels];
 		for(int c=0;c<targetLevels;c++)
-			levels[c] = (byte)(c); 
+			levels[c] = (byte)(c);
 		setColorModel(new IndexColorModel(getTargetPixelDepth(),targetLevels,levels,levels,levels)
 				);
 		switch (targetPixelBitDepth) {
@@ -129,7 +133,7 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 				bufferedImage =  new BufferedImage(cols,rows,imageType);
 				break;
 		}
-		
+
 		flexReadToRaster(inputFileStream, bufferedImage, cols, rows);
 		if (exportType.equals("VICAR") || exportType.equalsIgnoreCase("PDS3")) {
 			try {
@@ -139,10 +143,10 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			}
 		}
 		// ImageIO write
-		writeRasterImage(outputStream, bufferedImage);	
+		writeRasterImage(outputStream, bufferedImage);
 		outputStream.close();
 	}
-	
+
 	private void setImageElementsDataType(Array2DImage array2dImage) {
 		try {
 			rawDataType = Enum.valueOf(NumericDataType.class, array2dImage.getElementArray().getDataType());
@@ -153,13 +157,13 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	}
 
 
-	/** Read in the data maximum and minimum values.  
+	/** Read in the data maximum and minimum values.
 	 * TODO
 	 * There's various types of range scaling/levels adjustment that we could do:
 	 * 1) Scale all values according to difference between maximum input value and
 	 *  the  target pixel bit depth using a linear transformation
-	 * 2) Scale all values according to the difference between the maximum 
-	 * space of input values and the target pixel bit depth...ie not based on 
+	 * 2) Scale all values according to the difference between the maximum
+	 * space of input values and the target pixel bit depth...ie not based on
 	 * actual input values
 	 * The default (maximizeDynamicRange true) effects 1) and maximizeDynamicRange false does #2.
 	 * @param array2dImage
@@ -167,7 +171,7 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	private void setImageStatistics(Array2DImage array2dImage) {
 		double dataMin = array2dImage.getObjectStatistics().getMinimum();
 		double dataMax = array2dImage.getObjectStatistics().getMaximum();
-		
+
 		if (array2dImage.getDisplay2DImage().getLineDisplayDirection().equals("UP")) {
 			lineDirectionDown = false;
 		}
@@ -177,9 +181,10 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 		if (array2dImage.getAxisIndexOrder().equals("LAST_INDEX_FASTEST")) {
 			setFirstIndexFastest(false);
 		}
-		
+
 		if (dataMin == 0 && dataMax == 0) {
-			int rows = 0, cols = 0;
+			int rows = 0;
+			int cols = 0;
 			dataMin = Double.POSITIVE_INFINITY;
 			dataMax = Double.NEGATIVE_INFINITY;
 			if (array2dImage.getAxes() == 2) {
@@ -196,26 +201,26 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			File inputFile = new File(getObjectProvider().getRoot().getAbsolutePath(), getObservationalFileArea().getFile().getFileName());
 			int countBytes = -1;
 			DataInputStream di = null;
-			
+
 			try {
 				di = new DataInputStream(new FileInputStream(inputFile));
 
 				for (int y = 0; y < cols; y++){
-					for(int x = 0; x<rows; x++){				
+					for(int x = 0; x<rows; x++){
 						countBytes += 2;
 						double value = 0;
 						switch (rawDataType) {
-						case UnsignedByte: 
-							value = (int) di.readByte();
+						case UnsignedByte:
+							value = di.readByte();
 							break;
-						case UnsignedMSB2: 
-							value = (int) di.readShort();
+						case UnsignedMSB2:
+							value = di.readShort();
 							break;
 						case UnsignedMSB4:
-							value = (int) di.readInt();
+							value = di.readInt();
 							break;
 						case IEEE754MSBSingle:
-							value = (float) di.readFloat();
+							value = di.readFloat();
 							break;
 						}
 						if (value < dataMin) {
@@ -233,7 +238,7 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 				if (di != null) {
 					try {di.close();} catch (IOException e) {}
 				}
-			}	
+			}
 		}
 		if (this.maximizeDynamicRange) {
 			rangeScaleSlope = targetLevels / (dataMax - dataMin + 1) ;
@@ -243,19 +248,20 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			rangeScaleIntercept = 0;
 		}
 		//TODO Handle adjusting dynamic range more completely?
-		
+
 	}
 
 
 	private void flexReadToRaster(FileInputStream inputFileStream, BufferedImage bufferedImage, int rows, int cols) {
-	 
+
 		WritableRaster raster= bufferedImage.getRaster();
 		int countBytes = -1;
 		DataInputStream di = null;
-		
+
 		try {
 			di = new DataInputStream(inputFileStream);
-			int xWrite = 0, yWrite = 0;
+			int xWrite = 0;
+			int yWrite = 0;
 			if (firstIndexFastest) {
 				for (int y = 0; y < cols; y++){
 					if (lineDirectionDown) {
@@ -263,32 +269,32 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 					} else {
 						yWrite = cols-y-1;
 					}
-					for(int x = 0; x<rows; x++){				
+					for(int x = 0; x<rows; x++){
 						countBytes += 2;
 						double value = 0;
 						switch (rawDataType) {
-						case UnsignedByte: 
-							value = (int) di.readByte();
+						case UnsignedByte:
+							value = di.readByte();
 							break;
-						case UnsignedMSB2: 
-							value = (int) di.readShort();
+						case UnsignedMSB2:
+							value = di.readShort();
 							break;
 						case UnsignedMSB4:
-							value = (int) di.readInt();
+							value = di.readInt();
 							break;
 						case IEEE754MSBSingle:
-							value = (float) di.readFloat();
+							value = di.readFloat();
 							break;
 						}
 						//TODO test other input data types
-	
+
 						if (sampleDirectionRight) {
 							xWrite = x;
 						} else {
 							xWrite = rows-x-1;
 						}
-						raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept ); 
-	
+						raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
+
 					}
 				}
 			} else {  //TODO WHat has to change for last index fastest? is this correct?
@@ -298,21 +304,21 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 					} else {
 						xWrite = rows-x-1;
 					}
-					for (int y = 0; y < cols; y++){				
+					for (int y = 0; y < cols; y++){
 						countBytes += 2;
 						double value = 0;
 						switch (rawDataType) {
-						case UnsignedByte: 
-							value = (int) di.readByte();
+						case UnsignedByte:
+							value = di.readByte();
 							break;
-						case UnsignedMSB2: 
-							value = (int) di.readShort();
+						case UnsignedMSB2:
+							value = di.readShort();
 							break;
 						case UnsignedMSB4:
-							value = (int) di.readInt();
+							value = di.readInt();
 							break;
 						case IEEE754MSBSingle:
-							value = (float) di.readFloat();
+							value = di.readFloat();
 							break;
 						}
 						//TODO test other input data types
@@ -322,8 +328,8 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 							yWrite = cols-y-1;
 						}
 
-						raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept ); 
-	
+						raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
+
 					}
 				}
 			}
@@ -336,8 +342,8 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			}
 		}
 	}
-	
-	
+
+
 
 	private void writeRasterImage(OutputStream outputStream, BufferedImage bi) {
 		// Store the image using the export format.
@@ -354,7 +360,7 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			logger.error(message, e);
 		}
 	}
-	
+
 	private void writeFitsFile(OutputStream outputStream, BufferedImage bi) {
 		Fits f = new Fits();
 		try {
@@ -385,7 +391,7 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 		}
 
 	}
-	
+
 	private void writeLabel(OutputStream outputStream, String type) throws AlreadyOpenException, IOException, Exception {
 		if (type.equalsIgnoreCase("VICAR")) {
 			VicarSystemLabelGenerator labelGenerator = new VicarSystemLabelGenerator();
@@ -472,9 +478,9 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	}
 
 
-	/** Get whether or not input data elements are scaled up to the  
+	/** Get whether or not input data elements are scaled up to the
 	 * target pixel bit depth
-	 * @return boolean 
+	 * @return boolean
 	 */
 	public boolean maximizeDynamicRange() {
 		return maximizeDynamicRange;
@@ -498,16 +504,17 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	}
 
 
-	/** Set the export image format.  The format is limited to those 
+	/** Set the export image format.  The format is limited to those
 	 * supported by Java.
 	 * @param exportType the export image format
 	 */
+	@Override
 	public void setExportType(String exportType) {
 		Iterator<ImageWriter> imageWriters= ImageIO.getImageWritersByFormatName(exportType);
-		if (imageWriters.hasNext() || 
-				exportType.equalsIgnoreCase("VICAR") || 
-				exportType.equalsIgnoreCase("PDS3") ||
-				exportType.equalsIgnoreCase("fits")) {
+		if (imageWriters.hasNext()
+				|| exportType.equalsIgnoreCase("VICAR")
+				|| exportType.equalsIgnoreCase("PDS3")
+				|| exportType.equalsIgnoreCase("fits")) {
 			this.exportType = exportType;
 		} else {
 			String message = "The export image type " +exportType + " is not currently supported.";
@@ -547,7 +554,7 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	public void setFirstIndexFastest(boolean firstIndexFastest) {
 		this.firstIndexFastest = firstIndexFastest;
 	}
-	
+
 	/** Get the Array 2D Image
 	 * @return pdsImage
 	 */

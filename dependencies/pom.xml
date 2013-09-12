@@ -3,7 +3,7 @@
   <parent>
     <artifactId>superpom</artifactId>
     <groupId>gov.nasa.pds</groupId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <relativePath>../superpom/pom.xml</relativePath>
   </parent>
   <artifactId>dependencies</artifactId>
@@ -57,10 +57,10 @@
 							<goal>install-file</goal>
 						</goals>
 						<configuration>
-							<file>src/lib/vicarPDSIO-0.0.1.jar</file>
+							<file>src/lib/vicario-1.0-msl.jar</file>
 							<groupId>gov.nasa.pds</groupId>
 							<artifactId>vicar</artifactId>
-							<version>0.0.1</version>
+							<version>1.0</version>
 							<packaging>jar</packaging>
 						</configuration>
 					</execution>

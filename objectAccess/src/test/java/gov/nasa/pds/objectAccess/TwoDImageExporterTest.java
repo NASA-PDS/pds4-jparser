@@ -31,21 +31,19 @@ import gov.nasa.pds.tools.label.parser.DefaultLabelParser;
 import gov.nasa.pds.tools.label.validate.Validator;
 
 public class TwoDImageExporterTest {
-	
-	final String pdsXMLfilename = "src/test/resources/dph_example_products/Bundle_sampleProducts_20110415.xml";	
-	final String filenameArray = "src/test/resources/dph_example_products/product_array_2d_image/Product_Array_2D_Image_20110415.xml";
-	final String filenameTable = "src/test/resources/dph_example_products/product_table_character/Product_Table_Character_20110415.xml";
-	final String filenameDoc = "src/test/resources/dph_example_products/product_document/Product_Document_20110415.xml";
 
+	private final static File productDir = new File("src/test/resources/1000/image");
+	private final static File productFile = new File(productDir, "glpattern1.xml");
+	
 	private final ObjectProvider objectAccess = new ObjectAccess(new File("src/test/resources/" +
-			"dph_example_products/product_array_2d_image"));
+			"1000/image"));
 	
 	public int[][] sineImageValues() throws IOException {
 		int width = 512; // Dimensions of the image
 		int height = 512; 
 		
 		int[][] values = new int[width][height];
-		FileOutputStream rawFile = new FileOutputStream(new File(objectAccess.getArchiveRoot()+"glpattern1.raw"));
+		FileOutputStream rawFile = new FileOutputStream(new File(productDir, "glpattern1.raw"));
 		BufferedOutputStream bos = new BufferedOutputStream(rawFile);
 		for(int h=0;h<height;h++) {
 			for(int w=0;w<width;w++) { 
@@ -57,8 +55,8 @@ public class TwoDImageExporterTest {
 	}
 	
 	@Test
-	public void testImageExport() throws IOException {
-		ProductObservational p = objectAccess.getObservationalProduct("glpattern1.xml");
+	public void testImageExport() throws IOException, ParseException {
+		ProductObservational p = objectAccess.getProduct(productFile, ProductObservational.class);
 		FileAreaObservational fileArea = p.getFileAreaObservationals().get(0);
 		List<Array2DImage> imageList = objectAccess.getArray2DImages(fileArea);
 		for (Array2DImage img : imageList) {
@@ -68,10 +66,10 @@ public class TwoDImageExporterTest {
 			ic.setExportType("PNG");
 			ic.setArray2DImage(img);
 			//TODO Handle case where image is set first, then other settings are set
-			FileOutputStream fos = new FileOutputStream(new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.png"));
+			FileOutputStream fos = new FileOutputStream(new File(productDir, "glpattern1MDRFalse-8.png"));
 			ic.convert(img, fos);
 		}
-		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.png");
+		File outputFile = new File(productDir, "glpattern1MDRFalse-8.png");
 		Assert.assertTrue(outputFile.exists());
 		BufferedImage testImage = ImageIO.read(outputFile);
 		Raster raster = testImage.getData();
@@ -91,14 +89,13 @@ public class TwoDImageExporterTest {
 	
 	@Test
 	public void testImageExport2() throws Exception {
-		TwoDImageExporter ic = ExporterFactory.get2DImageExporter(new File(
-				"src/test/resources/dph_example_products/product_array_2d_image/glpattern1.xml"), 0);
+		TwoDImageExporter ic = ExporterFactory.get2DImageExporter(productFile, 0);
 		ic.setTargetPixelDepth(8);
 		ic.maximizeDynamicRange(false);
 		ic.setExportType("PNG");
-		FileOutputStream fos = new FileOutputStream(new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.png"));
+		FileOutputStream fos = new FileOutputStream(new File(productDir, "glpattern1MDRFalse-8.png"));
 		ic.convert(fos, 0);
-		File outputFile2 = new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.png");
+		File outputFile2 = new File(productDir, "glpattern1MDRFalse-8.png");
 		Assert.assertTrue(outputFile2.exists());
 		BufferedImage testImage = ImageIO.read(outputFile2);
 		Raster raster = testImage.getData();
@@ -117,9 +114,8 @@ public class TwoDImageExporterTest {
 	
 	@Test
 	public void testVicarImageExport() throws Exception {
-		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.vic");
-		File inputFile = new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1.xml");
-		TwoDImageExporter ic = ExporterFactory.get2DImageExporter(inputFile, 0);
+		File outputFile = new File(productDir, "glpattern1MDRFalse-8.vic");
+		TwoDImageExporter ic = ExporterFactory.get2DImageExporter(productFile, 0);
 		ic.setTargetPixelDepth(8);
 		ic.maximizeDynamicRange(false);
 		ic.setExportType("VICAR");
@@ -140,9 +136,8 @@ public class TwoDImageExporterTest {
 	
 	@Test
 	public void testPDS3ImageExport() throws Exception {
-		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.pds3");
-		File inputFile = new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1.xml");
-		TwoDImageExporter ic = ExporterFactory.get2DImageExporter(inputFile, 0);
+		File outputFile = new File(productDir, "glpattern1MDRFalse-8.pds3");
+		TwoDImageExporter ic = ExporterFactory.get2DImageExporter(productFile, 0);
 		ic.setTargetPixelDepth(8);
 		ic.maximizeDynamicRange(false);
 		ic.setExportType("PDS3");
@@ -167,8 +162,8 @@ public class TwoDImageExporterTest {
 	
 	@Test
 	public void testFitsImageExport() throws Exception {
-		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "0030598439.fits");
-		File inputFile = new File(objectAccess.getRoot().getAbsolutePath(), "0030598439.xml");
+		File outputFile = new File(productDir, "0030598439.fits");
+		File inputFile = new File(productDir, "0030598439.xml");
 		TwoDImageExporter ic = ExporterFactory.get2DImageExporter(inputFile, 0);
 		ic.setTargetPixelDepth(8);
 		ic.maximizeDynamicRange(true);

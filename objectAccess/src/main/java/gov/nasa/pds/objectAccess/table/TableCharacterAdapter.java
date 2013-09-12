@@ -3,6 +3,8 @@ package gov.nasa.pds.objectAccess.table;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.GroupFieldCharacter;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
+import gov.nasa.pds.label.object.FieldDescription;
+import gov.nasa.pds.label.object.FieldType;
 
 import java.util.ArrayList;
 import java.util.List;

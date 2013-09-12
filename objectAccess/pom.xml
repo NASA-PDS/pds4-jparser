@@ -4,7 +4,7 @@
 	<parent>
 	   	<groupId>gov.nasa.pds</groupId>
 	   	<artifactId>superpom</artifactId>
-	   	<version>0.1.0</version>
+	   	<version>0.2.0</version>
 	   	<relativePath>../superpom/pom.xml</relativePath>
    	</parent>
 	<artifactId>objectAccess</artifactId>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>dataModel</artifactId>
-			<version>0.1.0</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>vicar</artifactId>
-			<version>0.0.1</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -150,9 +150,21 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+	        <groupId>xerces</groupId>
+	        <artifactId>xerces</artifactId>
+	        <version>1.2.3</version>
+      	</dependency>
+		<dependency>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-reflect</artifactId>
+			<version>1.4.1</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
-	    <resources>
+		<resources>
 			<resource>
 				<directory>src/main/resources/dph_example_products</directory>
 			</resource>
@@ -202,6 +214,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${checkstyle.version}</version>
+			</plugin>
 		</plugins>
 	</build>
 	<reporting>
@@ -213,6 +230,18 @@
 					<excludePackageNames>gov.nasa.pds.domain</excludePackageNames>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${checkstyle.version}</version>
+                <configuration>
+                    <configLocation>src/build/resources/checkstyle-config.xml</configLocation>
+                </configuration>
+			</plugin>
 		</plugins>
-	</reporting>	
+	</reporting>
+	<properties>
+		<checkstyle.version>2.10</checkstyle.version>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+	</properties>	
 </project>
