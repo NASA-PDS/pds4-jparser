@@ -23,6 +23,9 @@
   </properties>
 
   <body>
+    <release version="0.3.0" date="TBD" description="TBD">
+    </release>
+
     <release version="0.2.0" date="2013-09-13" description="This release of the PDS4 Tools software is a component of the integrated releases 3.1.1 and 4.0.0 of the PDS4 System. This is an operational release of the system components to date.">
       <action dev="mrose, psarram" type="update">
         Second release of the software that supports reading and transformation of PDS4 table and image data. This version supports v1.0.0.0 of the data model.
