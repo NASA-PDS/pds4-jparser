@@ -32,7 +32,7 @@
   <description>
     This is the tools library for the PDS4 planetary data standard.
   </description>
-  <url>http://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/</url>
+  <url>https://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/</url>
 
   <licenses>
     <license>
@@ -89,7 +89,7 @@
     <repository>
       <id>pds-repo</id>
       <name>PDS Maven Repository</name>
-      <url>http://pds-cm.jpl.nasa.gov/maven2</url>
+      <url>https://pds-cm.jpl.nasa.gov/maven2</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>always</updatePolicy>
