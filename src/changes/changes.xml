@@ -23,10 +23,7 @@
   </properties>
 
   <body>
-    <release version="0.4.0" date="TBD" description="TBD">
-    </release>
-
-    <release version="0.3.0" date="2014-03-31" description="This release of the PDS4 Tools software is a component of the integrated release 4.1.0 of the PDS4 System. This is an operational release of the system components to date.">
+    <release version="0.3.0" date="2014-03-31" description="This release of the PDS4 Tools software is a component of the integrated release 4.1.0 and 5.0.0 of the PDS4 System. This is an operational release of the system components to date.">
     </release>
 
     <release version="0.2.0" date="2013-09-13" description="This release of the PDS4 Tools software is a component of the integrated releases 3.1.1 and 4.0.0 of the PDS4 System. This is an operational release of the system components to date.">
