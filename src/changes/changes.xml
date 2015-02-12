@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  Copyright 2012-2014, by the California Institute of Technology.
+  Copyright 2012-2015, by the California Institute of Technology.
   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
   Any commercial use must be negotiated with the Office of Technology Transfer
   at the California Institute of Technology.
@@ -23,12 +23,24 @@
   </properties>
 
   <body>
-    <release version="0.3.0" date="2014-03-31" description="This release of the PDS4 Tools software is a component of the integrated release 4.1.0 and 5.0.0 of the PDS4 System. This is an operational release of the system components to date.">
+    <release version="0.4.1" date="2014-11-18" description="This release of the PDS4 Tools software is a component of the integrated release 5.0.0 of the PDS4 System. This is an operational release of the system components to date.">
+      <action dev="mrose" type="fix" issue="PDS-295">
+        Resolved an issue where commas found in field names result in additional column headings during transformation.
+      </action>
+      <action dev="mrose" type="fix" issue="PDS-296">
+        Resolved an issue where the field type of ASCII_Date_Time causes an error.
+      </action>
+    </release>
+
+    <release version="0.3.0" date="2014-03-31" description="This release of the PDS4 Tools software is a component of the integrated releases 4.1.0 and 5.0.0 of the PDS4 System. This is an operational release of the system components to date.">
+      <action dev="mrose, psarram" type="update">
+        An incremental release of the software that supports reading and transformation of PDS4 table and image data. This version supports v1.0.0.0 of the data model.
+      </action>
     </release>
 
     <release version="0.2.0" date="2013-09-13" description="This release of the PDS4 Tools software is a component of the integrated releases 3.1.1 and 4.0.0 of the PDS4 System. This is an operational release of the system components to date.">
       <action dev="mrose, psarram" type="update">
-        Second release of the software that supports reading and transformation of PDS4 table and image data. This version supports v1.0.0.0 of the data model.
+        An incremental release of the software that supports reading and transformation of PDS4 table and image data. This version supports v1.0.0.0 of the data model.
       </action>
     </release>
 
