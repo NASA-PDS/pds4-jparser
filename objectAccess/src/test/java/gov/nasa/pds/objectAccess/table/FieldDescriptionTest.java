@@ -11,12 +11,12 @@ import org.testng.annotations.Test;
 public class FieldDescriptionTest {
 
 	private FieldDescription desc;
-	
+
 	@BeforeMethod
 	public void init() {
 		desc = new FieldDescription();
 	}
-	
+
 	@Test
 	public void testFieldName() {
 		desc.setName("target");
@@ -24,7 +24,7 @@ public class FieldDescriptionTest {
 		desc.setName("size");
 		assertEquals(desc.getName(), "size");
 	}
-	
+
 	@Test
 	public void testFieldLength() {
 		desc.setLength(5);
@@ -32,7 +32,7 @@ public class FieldDescriptionTest {
 		desc.setLength(10);
 		assertEquals(desc.getLength(), 10);
 	}
-	
+
 	@Test
 	public void testFieldOffset() {
 		desc.setOffset(5);
@@ -40,16 +40,16 @@ public class FieldDescriptionTest {
 		desc.setOffset(10);
 		assertEquals(desc.getOffset(), 10);
 	}
-	
+
 	@Test
 	public void testFieldType() {
-		FieldType type = FieldType.ASCII_SHORT_STRING_COLLAPSED;
+		FieldType type = FieldType.ASCII_STRING;
 		desc.setType(type);
 		assertSame(desc.getType(), type);
-		
+
 		type = FieldType.SIGNEDMSB4;
 		desc.setType(type);
 		assertSame(desc.getType(), type);
 	}
-	
+
 }

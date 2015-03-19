@@ -31,7 +31,7 @@ public class ArrayObjectTest {
 		File tempFile = createDoubleArray(expectedDimensions);
 		gov.nasa.arc.pds.xml.generated.File fileObj = createFileObject(tempFile);
 		Array arrayObj = createArrayObject(Array2D.class, expectedDimensions, "IEEE754MSBDouble");
-		
+
 		ArrayObject array = new ArrayObject(tempFile.getParentFile(), fileObj, arrayObj, 0);
 		checkDimensions(array, expectedDimensions);
 
@@ -39,22 +39,22 @@ public class ArrayObjectTest {
 		assertEquals(array.getOffset(), 0);
 		assertEquals(array.getSize(), tempFile.length());
 		assertFalse(array.isImage());
-		
+
 		// Access the array element by element.
 		int expected = 1;
 		for (int i=0; i < 2; ++i) {
 			for (int j=0; j < 3; ++j) {
 				assertEquals(array.getDouble(i, j), (double) expected);
 				assertEquals(array.getInt(i, j), expected);
-				assertEquals(array.getLong(i, j), (long) expected);
+				assertEquals(array.getLong(i, j), expected);
 				++expected;
 			}
 		}
-		
+
 		// Get the entire array.
 		double[][] actual = array.getElements2D();
 		assertEquals(actual.length, 2);
-		
+
 		expected = 1;
 		for (int i=0; i < 2; ++i) {
 			assertEquals(actual[i].length, 3);
@@ -71,7 +71,7 @@ public class ArrayObjectTest {
 		File tempFile = createDoubleArray(expectedDimensions);
 		gov.nasa.arc.pds.xml.generated.File fileObj = createFileObject(tempFile);
 		Array arrayObj = createArrayObject(Array2D.class, expectedDimensions, "IEEE754MSBDouble");
-		
+
 		ArrayObject array = new ArrayObject(tempFile.getParentFile(), fileObj, arrayObj, 0);
 		checkDimensions(array, expectedDimensions);
 
@@ -79,7 +79,7 @@ public class ArrayObjectTest {
 		assertEquals(array.getOffset(), 0);
 		assertEquals(array.getSize(), tempFile.length());
 		assertFalse(array.isImage());
-		
+
 		// Access the array element by element.
 		int expected = 1;
 		for (int i=0; i < 2; ++i) {
@@ -87,22 +87,22 @@ public class ArrayObjectTest {
 				for (int k=0; k < 4; ++k) {
 					assertEquals(array.getDouble(i, j, k), (double) expected);
 					assertEquals(array.getInt(i, j, k), expected);
-					assertEquals(array.getLong(i, j, k), (long) expected);
-					
+					assertEquals(array.getLong(i, j, k), expected);
+
 					int[] position = {i, j, k};
 					assertEquals(array.getDouble(position), (double) expected);
 					assertEquals(array.getInt(position), expected);
-					assertEquals(array.getLong(position), (long) expected);
-					
+					assertEquals(array.getLong(position), expected);
+
 					++expected;
 				}
 			}
 		}
-		
+
 		// Get the entire array.
 		double[][][] actual = array.getElements3D();
 		assertEquals(actual.length, 2);
-		
+
 		expected = 1;
 		for (int i=0; i < 2; ++i) {
 			assertEquals(actual[i].length, 3);
@@ -115,7 +115,7 @@ public class ArrayObjectTest {
 			}
 		}
 	}
-	
+
 	@Test(dataProvider="BadIndicesTests", expectedExceptions={ArrayIndexOutOfBoundsException.class, IllegalArgumentException.class})
 	public void testBadIndices(
 			int[] position
@@ -125,11 +125,11 @@ public class ArrayObjectTest {
 		gov.nasa.arc.pds.xml.generated.File fileObj = createFileObject(tempFile);
 		Array arrayObj = createArrayObject(Array2D.class, expectedDimensions, "IEEE754MSBDouble");
 		ArrayObject array = new ArrayObject(tempFile.getParentFile(), fileObj, arrayObj, 0);
-		
+
 		@SuppressWarnings("unused")
 		double value = array.getDouble(position);
 	}
-	
+
 	@SuppressWarnings("unused")
 	@DataProvider(name="BadIndicesTests")
 	private Object[][] getBadIndicesTests() {
@@ -147,15 +147,15 @@ public class ArrayObjectTest {
 		MappedByteBuffer byteBuf = f.getChannel().map(MapMode.READ_WRITE, 0, countElements(dimensions) * Double.SIZE/Byte.SIZE);
 		byteBuf.order(ByteOrder.BIG_ENDIAN);
 		DoubleBuffer buf = byteBuf.asDoubleBuffer();
-		
+
 		writeData(buf, dimensions, 0, new SequenceGenerator());
 
 		byteBuf.force();
 		f.close();
-		
+
 		return tempFile;
 	}
-	
+
 	private int countElements(int[] dimensions) {
 		int count = 1;
 		for (int i=0; i < dimensions.length; ++i) {
@@ -163,7 +163,7 @@ public class ArrayObjectTest {
 		}
 		return count;
 	}
-	
+
 	private void writeData(DoubleBuffer buf, int[] dimensions, int curIndex, DataGenerator generator) {
 		for (int i=0; i < dimensions[curIndex]; ++i) {
 			if (curIndex == dimensions.length-1) {
@@ -173,16 +173,16 @@ public class ArrayObjectTest {
 			}
 		}
 	}
-	
+
 	private gov.nasa.arc.pds.xml.generated.File createFileObject(File f) {
 		gov.nasa.arc.pds.xml.generated.File fileObj = new gov.nasa.arc.pds.xml.generated.File();
 		fileObj.setFileName(f.getName());
 		FileSize size = new FileSize();
-		size.setValue(f.length());
+		size.setValue((int) f.length());
 		fileObj.setFileSize(size);
 		return fileObj;
 	}
-	
+
 	private Array createArrayObject(Class<? extends Array> clazz, int[] dimensions, String elementType) throws InstantiationException, IllegalAccessException {
 		Array arrayObj = clazz.newInstance();
 		arrayObj.setAxes(dimensions.length);
@@ -197,18 +197,18 @@ public class ArrayObjectTest {
 			axis.setElements(dimensions[i]);
 			axes.add(axis);
 		}
-		
+
 		field("axisArraies").ofType(List.class).in(arrayObj).set(axes);
-		
+
 		ElementArray elArray = new ElementArray();
 		elArray.setDataType(elementType);
 		elArray.setScalingFactor(1.0);
 		elArray.setValueOffset(0.0);
 		arrayObj.setElementArray(elArray);
-		
+
 		return arrayObj;
 	}
-	
+
 	private void checkDimensions(ArrayObject array, int[] expectedDimensions) {
 		assertEquals(array.getAxes(), expectedDimensions.length);
 		int[] actualDimensions = array.getDimensions();
@@ -218,21 +218,21 @@ public class ArrayObjectTest {
 					"Dimension " + i + " does not match: " + actualDimensions[i] + "!=" + expectedDimensions[i]);
 		}
 	}
-	
+
 	private interface DataGenerator {
-		
+
 		double next();
-		
+
 	}
-	
+
 	private static class SequenceGenerator implements DataGenerator {
 
 		private int curValue = 0;
-		
+
 		@Override
 		public double next() {
 			return ++curValue;
 		}
-		
+
 	}
 }

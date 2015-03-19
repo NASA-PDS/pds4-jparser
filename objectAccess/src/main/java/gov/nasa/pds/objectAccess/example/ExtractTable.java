@@ -16,6 +16,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -31,6 +33,30 @@ import org.apache.commons.cli.ParseException;
  */
 public class ExtractTable {
 
+	private static final String HELP_OPTION = "help";
+
+	private static final String LIST_TABLES_OPTION = "list-tables";
+
+	private static final String FIELDS_OPTION = "fields";
+
+	private static final String INDEX_OPTION = "index";
+
+	private static final String OUTPUT_FILE_OPTION = "output-file";
+
+	private static final String CSV_OPTION = "csv";
+
+	private static final String FIXED_WIDTH_OPTION = "fixed-width";
+
+	private static final String FIELD_SEPARATOR_OPTION = "field-separator";
+
+	private static final String QUOTE_CHARACTER_OPTION = "quote-character";
+
+	private static final String PLATFORM_OPTION = "platform";
+
+	private static final String UNIX_OPTION = "unix";
+
+	private static final String WINDOWS_OPTION = "windows";
+
 	/** A system property name for setting the program name in the
 	 * usage message.
 	 */
@@ -45,6 +71,8 @@ public class ExtractTable {
 	private OutputFormat format;
 	private String fieldSeparator;
 	private String lineSeparator;
+	private String quoteCharacter;
+	private Pattern quoteCharacterPattern;
 	private int tableIndex;
 	private String[] requestedFields;
 
@@ -64,37 +92,37 @@ public class ExtractTable {
 	public ExtractTable() {
 		options = new Options();
 
-		options.addOption("h", "help", false, "show help text");
+		options.addOption("h", HELP_OPTION, false, "show help text");
 
-		options.addOption("l", "list-tables", false, "list tables present in the product (overrides all but output file options)");
+		options.addOption("l", LIST_TABLES_OPTION, false, "list tables present in the product (overrides all but output file options)");
 
-		Option tableIndex = new Option("n", "index", true, "table index, if more than one table is present (1..N) (default is 1)");
+		Option tableIndex = new Option("n", INDEX_OPTION, true, "table index, if more than one table is present (1..N) (default is 1)");
 		tableIndex.setArgName("NUMBER");
 		options.addOption(tableIndex);
 
-		Option fields = new Option("f", "fields", true, "comma-separated list of field names or numbers (default is all fields)");
+		Option fields = new Option("f", FIELDS_OPTION, true, "comma-separated list of field names or numbers (default is all fields)");
 		fields.setArgName("FIELD_LIST");
 		fields.setValueSeparator(',');
 		options.addOption(fields);
 
-		Option outputFile = new Option("o", "output-file", true, "output file name (default is stdout)");
+		Option outputFile = new Option("o", OUTPUT_FILE_OPTION, true, "output file name (default is stdout)");
 		outputFile.setArgName("FILE");
 		options.addOption(outputFile);
 
-		Option fieldSep = new Option("t", "field-separator", true, "output field separator (default is 1 space for fixed-width, or comma for CSV)");
+		Option fieldSep = new Option("t", FIELD_SEPARATOR_OPTION, true, "output field separator (default is 1 space for fixed-width, or comma for CSV)");
 		fieldSep.setArgName("SEP");
 		options.addOption(fieldSep);
 
-		options.addOption("c", "csv", false, "output in CSV format");
-		options.addOption("w", "fixed-width", false, "output in fixed-width format (default)");
+		options.addOption("c", CSV_OPTION, false, "output in CSV format");
+		options.addOption("w", FIXED_WIDTH_OPTION, false, "output in fixed-width format (default)");
 
-		Option quoteChar = new Option("q", "quote-character", true, "quote character (for CSV output)");
+		Option quoteChar = new Option("q", QUOTE_CHARACTER_OPTION, true, "quote character (for CSV output)");
 		quoteChar.setArgName("CHAR");
 		options.addOption(quoteChar);
 
-		options.addOption("W", "windows", false, "output using Windows line separator (CRLF)");
-		options.addOption("U", "unix", false, "output using Unix line separator (LF)");
-		options.addOption("P", "platform", false, "output using current platform line separator (default)");
+		options.addOption("W", WINDOWS_OPTION, false, "output using Windows line separator (CRLF)");
+		options.addOption("U", UNIX_OPTION, false, "output using Unix line separator (LF)");
+		options.addOption("P", PLATFORM_OPTION, false, "output using current platform line separator (default)");
 	}
 
 	/**
@@ -150,6 +178,8 @@ public class ExtractTable {
 			} catch (Exception ex) {
 				System.err.println("Cannot create a table reader for the table: " + ex.getMessage());
 				ex.printStackTrace();
+				out.close();
+				return;
 			}
 
 			if (listTables) {
@@ -313,7 +343,6 @@ public class ExtractTable {
 
 					int index = displayFields[i];
 					FieldDescription field = fields[index];
-					System.out.println("DEBUG: " + record.getString(index+1).trim());
 					displayJustified(record.getString(index+1).trim(), fieldLengths[i], field.getType().isRightJustified());
 				}
 
@@ -333,6 +362,19 @@ public class ExtractTable {
 	 * @param isRightJustified true, if the value should be right-justified, else left-justified
 	 */
 	private void displayJustified(String s, int length, boolean isRightJustified) {
+		if (format == OutputFormat.CSV) {
+			// Double any quote characters.
+			if (s.contains(quoteCharacter)) {
+				Matcher matcher = quoteCharacterPattern.matcher(s);
+				s = matcher.replaceAll(quoteCharacter + quoteCharacter);
+			}
+
+			// If the value is all whitespace or contains the field separator, quote the value.
+			if (s.trim().isEmpty() || s.contains(fieldSeparator)) {
+				s = quoteCharacter + s + quoteCharacter;
+			}
+		}
+
 		int padding = length - s.length();
 
 		if (isRightJustified) {
@@ -369,14 +411,14 @@ public class ExtractTable {
 			showHelp("Error parsing command-line options: " + e.getMessage(), 1);
 		}
 
-		if (cmdLine.hasOption("help")) {
+		if (cmdLine.hasOption(HELP_OPTION)) {
 			showHelp(null, 0);
 		}
 
-		listTables = (cmdLine.hasOption("list-tables"));
+		listTables = (cmdLine.hasOption(LIST_TABLES_OPTION));
 
-		if (cmdLine.hasOption("index")) {
-			tableIndex = Integer.parseInt(cmdLine.getOptionValue("index"));
+		if (cmdLine.hasOption(INDEX_OPTION)) {
+			tableIndex = Integer.parseInt(cmdLine.getOptionValue(INDEX_OPTION));
 		} else {
 			tableIndex = 1;
 		}
@@ -387,36 +429,43 @@ public class ExtractTable {
 		}
 		labelFile = new File(files[0]);
 
-		if (cmdLine.hasOption("csv")) {
+		if (cmdLine.hasOption(CSV_OPTION)) {
 			format = OutputFormat.CSV;
 		} else {
 			format = OutputFormat.FIXED_WIDTH;
 		}
 
-		if (cmdLine.hasOption("field-separator")) {
-			fieldSeparator = cmdLine.getOptionValue("field-separator");
+		if (cmdLine.hasOption(FIELD_SEPARATOR_OPTION)) {
+			fieldSeparator = cmdLine.getOptionValue(FIELD_SEPARATOR_OPTION);
 		} else if (format == OutputFormat.FIXED_WIDTH) {
 			fieldSeparator = " ";
 		} else {
 			fieldSeparator = ",";
 		}
 
-		if (cmdLine.hasOption("windows")) {
+		if (cmdLine.hasOption(QUOTE_CHARACTER_OPTION)) {
+			quoteCharacter = cmdLine.getOptionValue(QUOTE_CHARACTER_OPTION);
+		} else {
+			quoteCharacter = "\"";
+		}
+		quoteCharacterPattern = Pattern.compile("\\Q" + quoteCharacter + "\\E");
+
+		if (cmdLine.hasOption(WINDOWS_OPTION)) {
 			lineSeparator = "\r\n";
-		} else if (cmdLine.hasOption("unix")) {
+		} else if (cmdLine.hasOption(UNIX_OPTION)) {
 			lineSeparator = "\n";
 		} else {
 			lineSeparator = System.getProperty("line.separator");
 		}
 
-		if (!cmdLine.hasOption("fields")) {
+		if (!cmdLine.hasOption(FIELDS_OPTION)) {
 			requestedFields = null;
 		} else {
-			requestedFields = cmdLine.getOptionValue("fields").split(" *, *");
+			requestedFields = cmdLine.getOptionValue(FIELDS_OPTION).split(" *, *");
 		}
 
-		if (cmdLine.hasOption("output-file")) {
-			outputFile = new File(cmdLine.getOptionValue("output-file"));
+		if (cmdLine.hasOption(OUTPUT_FILE_OPTION)) {
+			outputFile = new File(cmdLine.getOptionValue(OUTPUT_FILE_OPTION));
 		} else {
 			outputFile = null;
 		}

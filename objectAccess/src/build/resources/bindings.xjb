@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jxb:bindings version="2.1" 
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://pds.nasa.gov/pds4/pds/v03"
+  	xmlns:pds="http://pds.nasa.gov/pds4/pds/v03"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    jxb:extensionBindingPrefixes="xjc">
+    
+	<jxb:bindings schemaLocation="../../../target/generated-sources/temp/schema-stripped.xsd" node="/xs:schema">
+        
+        <jxb:globalBindings generateValueClass="true">
+            <xjc:simple />
+        </jxb:globalBindings>
+        
+  		<!--jxb:bindings node="//xs:complexType[@name='Array_2D_Image']">
+            <jxb:class name="TwoDImageArray"/>
+        </jxb:bindings>
+         
+        <jxb:bindings node="//xs:complexType[@name='File_Area_Observational']">
+            <jxb:class name="ObservationalFileArea"/>
+        </jxb:bindings>
+         
+        <jxb:bindings node="//xs:complexType[@name='Product_Observational']">
+            <jxb:class name="ObservationalProduct"/>
+        </jxb:bindings>
+   		
+   		<jxb:bindings node="//xs:complexType[@name='Product_Observational']/xs:sequence/xs:element[@name='File_Area_Observational']">
+  			<jxb:property name="ObservationalFileArea"/>
+   		</jxb:bindings-->
+        
+        <jxb:bindings node="//xs:complexType[@name='Vector']/xs:sequence/xs:element[@name='vector_components']">
+            <jxb:property name="componentCount" />
+        </jxb:bindings>
+
+        <!-- Restructuring of Product_Document causes name conflict on document_editions. -->
+        <jxb:bindings node="//xs:complexType[@name='Document']/xs:sequence/xs:element[@name='document_editions']">
+            <jxb:property name="editionCount" />
+        </jxb:bindings>
+        
+        <!-- A 1.3 property has a non-ASCII character in it, which JAXB doesn't like. -->
+        <jxb:bindings node="//xs:simpleType[@name='Units_of_Spectral_Radiance']">
+            <jxb:typesafeEnumClass>
+                <jxb:typesafeEnumMember value="W/m**2/sr/&#x03bc;m" name="W_M_2_SR_UM" />
+                <jxb:typesafeEnumMember value="&#x03bc;W/cm**2/sr/&#x03bc;m" name="UW_CM_W_SR_UM" />
+            </jxb:typesafeEnumClass>
+        </jxb:bindings>
+        
+	</jxb:bindings>
+	
+</jxb:bindings>

@@ -1,0 +1,70 @@
+<project name="PSD4 Validate Test" default="help" basedir=".">
+
+  <property name="project.build.directory" location="../../../target" />
+  <property name="generated.directory" location="${project.build.directory}/generated-sources" />
+	
+  <property name="generated.src.directory" location="${generated.directory}/main/java" />
+  <property name="temp.directory" location="${generated.directory}/temp" />
+  <property name="javadoc.directory" location="${generated.directory}/apidocs" />
+	
+  <property name="generated.package" value="gov.nasa.arc.pds.xml.generated" />
+	
+  <property name="schema.dir" location="schema/1301" />
+  <property name="schema.original" location="${schema.dir}/PDS4_PDS_1301.xsd" />
+  <property name="schema.stripped" location="${temp.directory}/schema-stripped.xsd" />
+  
+  <target name="help">
+    <echo>Use "ant -projecthelp" to show available targets.</echo>
+  </target>
+	
+  <target name="check-generated">
+    <condition property="generated.exists">
+    	<and>
+    		<available type="dir" file="${generated.src.directory}" />
+            <resourcecount when="gt" count="0">
+            	<fileset dir="${generated.src.directory}" includes="**/*.java" />
+    		</resourcecount>
+    	</and>
+  	</condition>
+  </target>
+
+  <target name="generate-if-necessary" depends="check-generated,do-generate" description="Generates objects from the schema classes." />
+  
+  <target name="do-generate" unless="generated.exists">
+  	<antcall target="generate" />
+  </target>
+	
+  <target name="generate" depends="strip">
+    <delete dir="${generated.src.directory}" quiet="true" />
+    <mkdir dir="${generated.src.directory}" />
+    <exec executable="xjc">
+      <arg value="-extension" />
+      <arg value="-d" />
+      <arg value="${generated.src.directory}" />
+      <arg value="-p" />
+      <arg value="${generated.package}" />
+      <arg value="-b" />
+      <arg value="bindings.xjb" />
+      <arg value="${schema.stripped}" />
+    </exec>
+    <echo>Generated Java source files are in the generated/ directory.</echo>
+  </target>
+  
+  <target name="strip">
+  	<mkdir dir="${temp.directory}" />
+    <xslt in="${schema.original}" out="${schema.stripped}" style="xsd2to1.xsl" />
+  </target>
+
+  <target name="javadoc" description="Generates Javadocs. Run 'compile' first.">
+  	<delete dir="${javadoc.directory}" quiet="true" />
+    <javadoc destdir="${javadoc.directory}">
+      <fileset dir="${generated.src.directory}" />
+    </javadoc>
+    <echo>Javadoc main page is in docs/api/index.html.</echo>
+  </target>
+
+  <target name="clean" description="Removes all generated files and documentation.">
+    <delete dir="${generated.directory}" quiet="true" />
+  </target>
+
+</project>

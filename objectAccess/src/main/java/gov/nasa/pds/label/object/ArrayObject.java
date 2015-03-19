@@ -6,6 +6,7 @@ import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.pds.objectAccess.array.ArrayAdapter;
 import gov.nasa.pds.objectAccess.array.ElementType;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -259,6 +260,15 @@ public class ArrayObject extends DataObject {
 	 */
 	public boolean isImage() {
 		return (array instanceof Array2DImage) || (array instanceof Array3DImage);
+	}
+
+	public BufferedImage as2DImage() {
+		if (!(array instanceof Array2DImage)) {
+			throw new UnsupportedOperationException("Data object is not a 2-D image.");
+		}
+
+		BufferedImage image = new BufferedImage(dimensions[0], dimensions[1], BufferedImage.TYPE_BYTE_GRAY);
+		return image;
 	}
 
 }

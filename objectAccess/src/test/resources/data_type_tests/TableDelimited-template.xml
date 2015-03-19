@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:unknown:unknown:table</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Test table</title>
+        <information_model_version>1.2.0.1</information_model_version>
+        <product_class>Product_Observational</product_class>
+    </Identification_Area>
+    <Observation_Area>
+        <Time_Coordinates>
+            <start_date_time>2014-01-01Z</start_date_time>
+            <stop_date_time>2014-12-31Z</stop_date_time>
+        </Time_Coordinates>
+        <Investigation_Area>
+            <name>Unit testing</name>
+            <type>Individual Investigation</type>
+            <Internal_Reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <Observing_System_Component>
+                <name>PDS UCD team</name>
+                <type>Laboratory</type>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>dummy object</name>
+            <type>Terrestrial Sample</type>
+        </Target_Identification>
+    </Observation_Area>
+    <File_Area_Observational>
+        <File>
+            <file_name>${fileName}</file_name>
+        </File>
+        <Table_Delimited>
+            <offset unit="byte">0</offset>
+            <parsing_standard_id>PDS DSV 1</parsing_standard_id>
+            <records>${recordCount}</records>
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+            <field_delimiter>Comma</field_delimiter>
+            <Record_Delimited>
+                <fields>1</fields>
+                <groups>0</groups>
+                <Field_Delimited>
+                    <name>${fieldName}</name>
+                    <data_type>${fieldType}</data_type>
+                </Field_Delimited>
+            </Record_Delimited>
+        </Table_Delimited>
+    </File_Area_Observational>
+</Product_Observational>

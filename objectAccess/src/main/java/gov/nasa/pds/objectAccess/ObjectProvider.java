@@ -3,7 +3,10 @@ package gov.nasa.pds.objectAccess;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
+import gov.nasa.arc.pds.xml.generated.FieldDelimited;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
+import gov.nasa.arc.pds.xml.generated.FileAreaObservationalSupplemental;
+import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
@@ -14,6 +17,7 @@ import java.util.List;
 
 /**
  * Provides access to PDS4 objects.
+ * 
  */
 public interface ObjectProvider {
 
@@ -83,10 +87,61 @@ public interface ObjectProvider {
 	 * Returns a list of FieldBinary objects given a table binary object.
 	 *
 	 * @param table TableBinary object
-	 * @return
+	 * @return list of FieldBinary objects
 	 */
 	List<FieldBinary> getFieldBinaries(TableBinary table);
 
+	/**
+	 * Returns a list of FieldDelimited objects given a table delimited object.
+	 *
+	 * @param table TableDelimited object
+	 * @return list of FieldDelimited objects
+	 */
+	List<FieldDelimited> getFieldDelimiteds(TableDelimited table);
+	
+	/**
+	 * Returns a list of GroupFieldDelimited objects given a table delimited object.
+	 *
+	 * @param table TableDelimited object
+	 * @return list of GroupFieldDelimited objects
+	 */
+	List<GroupFieldDelimited> getGroupFieldDelimiteds(TableDelimited table);
+	
+	/**
+	 * Returns a list of FieldDelimited and GroupFieldDelimited objects given a
+	 * table delimited object.
+	 *
+	 * @param table TableDelimited object
+	 * @return list of FieldDelimited and GroupFieldDelimited objects
+	 */
+	List<Object> getFieldDelimitedAndGroupFieldDelimiteds(TableDelimited table);
+	
+	/**
+	 * Returns a list of FieldCharacter and GroupFieldCharacter objects given a
+	 * table character object.
+	 *
+	 * @param table TableCharacter object
+	 * @return list of FieldCharacter and GroupFieldCharacter objects
+	 */
+	List<Object> getFieldCharacterAndGroupFieldCharacters(TableCharacter table);
+	
+	/**
+	 * Returns a list of FieldBinary and GroupFieldBinary objects given a
+	 * table binary object.
+	 *
+	 * @param table TableBinary object
+	 * @return list of FieldBinary and GroupFieldBinary objects
+	 */
+	List<Object> getFieldBinaryAndGroupFieldBinaries(TableBinary table);
+	
+	/**
+	 * Returns a list of table objects.
+	 *
+	 * @param observationalFileAreaSupplemental
+	 * @return list of observationalFileAreaSupplemental objects
+	 */
+	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental);
+	
 	/**
 	 * Gets an instance of ProductObservational.
 	 *

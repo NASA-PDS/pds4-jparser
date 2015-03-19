@@ -1,5 +1,7 @@
 package gov.nasa.pds.label.object;
 
+import java.math.BigInteger;
+
 /**
  * Defines an object for table records that can read the field values
  * or write values to the fields given a field name or field index.
@@ -13,6 +15,24 @@ public interface TableRecord {
 	 * @return the integer index of a field (1-relative)
 	 */
 	int findColumn(String name);
+
+	/**
+	 * Gets the boolean value of a field given the index.
+	 *
+	 * @param name the field name
+	 * @return the boolean value
+	 * @throws IllegalArgumentException if the value in the field is not a valid boolean value
+	 */
+	boolean getBoolean(String name);
+
+	/**
+	 * Gets the boolean value of a field given the index.
+	 *
+	 * @param index the field index
+	 * @return the boolean value
+	 * @throws IllegalArgumentException if the value in the field is not a valid boolean value
+	 */
+	boolean getBoolean(int index);
 
 	/**
 	 * Gets the short value of a field given the index.
@@ -68,6 +88,22 @@ public interface TableRecord {
 	 * @return a long value
 	 */
 	long getLong(String name);
+
+	/**
+	 * Gets the field value as a Java BigInteger.
+	 *
+	 * @param name the name of the field
+	 * @return the field value, as a {@link BigInteger}
+	 */
+	BigInteger getBigInteger(String name);
+
+	/**
+	 * Gets the field value as a Java BigInteger.
+	 *
+	 * @param index the field index
+	 * @return the field value, as a {@link BigInteger}
+	 */
+	BigInteger getBigInteger(int index);
 
 	/**
 	 * Gets the integer value of a field given the name.

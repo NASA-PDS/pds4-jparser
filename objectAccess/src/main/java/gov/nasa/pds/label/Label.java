@@ -159,12 +159,12 @@ public class Label {
 		List<DataObject> objects = new ArrayList<DataObject>();
 
 		for (FileAreaObservational fileArea : product.getFileAreaObservationals()) {
-			for (ByteStream stream : fileArea.getArray2DsAndArray2DImagesAndArray2DMaps()) {
+			for (ByteStream stream : fileArea.getArray1DsAndArray2DsAndArray2DImages()) {
 				addObject(objects, fileArea.getFile(), stream);
 			}
 		}
 		for (FileAreaObservationalSupplemental supplementalArea : product.getFileAreaObservationalSupplementals()) {
-			for (ByteStream stream : supplementalArea.getArray2DsAndArray2DImagesAndArray2DMaps()) {
+			for (ByteStream stream : supplementalArea.getArray1DsAndArray2DsAndArray2DImages()) {
 				addObject(objects, supplementalArea.getFile(), stream);
 			}
 		}

@@ -1,5 +1,6 @@
 package gov.nasa.pds.objectAccess.table;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -10,18 +11,18 @@ import org.slf4j.LoggerFactory;
  * Implements a field adapter for binary bit fields.
  */
 public class BitFieldAdapter implements FieldAdapter {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(BitFieldAdapter.class);
 	private static final String NOT_SUPPORTED = "Operation not supported yet.";
-	
+
 	/** A long constant that has all bits on. */
 	private static final long LONG_ALL_BITS_ONE = 0xFFFFFFFFFFFFFFFFL;
-	
+
 	private boolean isSigned;
 
 	/**
 	 * Creates a new bit field adapter with given signed-ness.
-	 * 
+	 *
 	 * @param isSigned true, if the bit field is signed
 	 */
 	public BitFieldAdapter(boolean isSigned) {
@@ -47,7 +48,7 @@ public class BitFieldAdapter implements FieldAdapter {
 			LOGGER.error(msg);
 			throw new NumberFormatException();
 		}
-		
+
 		return (byte) value;
 	}
 
@@ -59,7 +60,7 @@ public class BitFieldAdapter implements FieldAdapter {
 			LOGGER.error(msg);
 			throw new NumberFormatException(msg);
 		}
-		
+
 		return (short) value;
 	}
 
@@ -71,7 +72,7 @@ public class BitFieldAdapter implements FieldAdapter {
 			LOGGER.error(msg);
 			throw new NumberFormatException(msg);
 		}
-		
+
 		return (int) value;
 	}
 
@@ -92,44 +93,44 @@ public class BitFieldAdapter implements FieldAdapter {
 
 	@Override
 	public void setString(String value, int offset, int length, ByteBuffer buf, boolean isRightJustifed) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
 	@Override
 	public void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed, Charset charset) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);	
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
-	
+
 	@Override
 	public void setInt(int value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
 	@Override
 	public void setDouble(double value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
 	@Override
 	public void setFloat(float value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
 	@Override
 	public void setShort(short value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
-	
+
 	@Override
 	public void setByte(byte value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
 	@Override
 	public void setLong(long value, int offset, int length, ByteBuffer buffer, boolean isRightJustifed) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);				
+		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
-	
+
 	private long getFieldValue(byte[] b, int offset, int length, int startBit, int stopBit) {
 		if (startBit < 0) {
 			String msg = "Start bit is negative (" + startBit + ")";
@@ -139,33 +140,33 @@ public class BitFieldAdapter implements FieldAdapter {
 		if (stopBit >= length * Byte.SIZE) {
 			String msg = "Stop bit past end of packed field (" + stopBit + " > " + (length * Byte.SIZE - 1) + ")";
 			LOGGER.error(msg);
-			throw new ArrayIndexOutOfBoundsException(msg);							
+			throw new ArrayIndexOutOfBoundsException(msg);
 		}
 		if (stopBit - startBit + 1 > Long.SIZE) {
 			String msg = "Bit field is wider than long (" + (stopBit-startBit+1) + " > " + Long.SIZE + ")";
 			LOGGER.error(msg);
-			throw new IllegalArgumentException(msg);			
+			throw new IllegalArgumentException(msg);
 		}
-		
+
 		int startByte = startBit / Byte.SIZE;
 		int stopByte = stopBit / Byte.SIZE;
-		
+
 		if (stopByte-startByte+1 > Long.SIZE / Byte.SIZE) {
 			String msg = "Bit field spans bytes that are wider than a long "
 				+ "(" + (stopByte-startByte+1) + " > " + (Long.SIZE / Byte.SIZE) + ")";
 			LOGGER.error(msg);
 			throw new NumberFormatException(msg);
 		}
-		
+
 		long bytesValue = getBytesAsLong(b, offset, startByte, stopByte);
-		
+
 		// Now shift right to get rid of the extra bits.
 		int extraRightBits = (stopByte + 1)*Byte.SIZE - stopBit - 1;
 		long shiftedValue = bytesValue >> extraRightBits;
-		
+
 		return rightmostBits(shiftedValue, stopBit-startBit+1, isSigned);
 	}
-	
+
 	// Default scope, for unit testing.
 	static long rightmostBits(long value, int nBits, boolean isSigned) {
 		long mask = 0;
@@ -173,7 +174,7 @@ public class BitFieldAdapter implements FieldAdapter {
 			mask = LONG_ALL_BITS_ONE >>> (Long.SIZE - nBits);
 		}
 		long maskedValue = value & mask;
-		
+
 		// Now sign-extend, if signed.
 		if (isSigned && nBits < Long.SIZE) {
 			long signBit = 1L << (nBits - 1);
@@ -181,17 +182,32 @@ public class BitFieldAdapter implements FieldAdapter {
 				maskedValue |= (LONG_ALL_BITS_ONE << nBits);
 			}
 		}
-		
+
 		return maskedValue;
 	}
-	
+
 	static long getBytesAsLong(byte[] source, int off, int startByte, int stopByte) {
 		long value = 0;
-		
+
 		for (int i=off+startByte; i <= off+stopByte; ++i) {
 			value = (value << Byte.SIZE) | (source[i] & 0xFF);
 		}
-		
+
 		return value;
 	}
+
+	@Override
+	public BigInteger getBigInteger(byte[] buf, int offset, int length,
+			int startBit, int stopBit) {
+		String stringValue = Long.toString(getLong(buf, offset, length, startBit, stopBit));
+		return new BigInteger(stringValue);
+	}
+
+	@Override
+	public void setBigInteger(BigInteger value, int offset, int length,
+			ByteBuffer buffer, boolean isRightJustified) {
+		String stringValue = value.toString();
+		setLong(Long.parseLong(stringValue), offset, length, buffer, isRightJustified);
+	}
+
 }

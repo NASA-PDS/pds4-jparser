@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:unknown:unknown:table</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Table label</title>
+        <information_model_version>1.2.0.1</information_model_version>
+        <product_class>Product_Observational</product_class>
+    </Identification_Area>
+    <Observation_Area>
+        <Time_Coordinates>
+            <start_date_time>2014-01-01Z</start_date_time>
+            <stop_date_time>2014-12-31Z</stop_date_time>
+        </Time_Coordinates>
+        <Investigation_Area>
+            <name>test data</name>
+            <type>Other Investigation</type>
+            <Internal_Reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <Observing_System_Component>
+                <name>PDS UCD team</name>
+                <type>Laboratory</type>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>dummy object</name>
+            <type>Terrestrial Sample</type>
+        </Target_Identification>
+    </Observation_Area>
+    <File_Area_Observational>
+        <File>
+            <file_name>${fileName}</file_name>
+        </File>
+        <Table_Character>
+            <offset unit="byte">0</offset>
+            <records>${recordCount}</records>
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+            <Record_Character>
+                <fields>1</fields>
+                <groups>0</groups>
+                <record_length unit="byte">${recordLength}</record_length>
+                <Field_Character>
+                    <name>${fieldName}</name>
+                    <field_location unit="byte">1</field_location>
+                    <data_type>${fieldType}</data_type>
+                    <field_length unit="byte">${fieldLength}</field_length>
+                </Field_Character>
+            </Record_Character>
+        </Table_Character>
+    </File_Area_Observational>
+</Product_Observational>

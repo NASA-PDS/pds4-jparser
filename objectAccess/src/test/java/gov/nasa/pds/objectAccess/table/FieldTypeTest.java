@@ -9,18 +9,18 @@ import gov.nasa.pds.label.object.FieldType;
 import org.testng.annotations.Test;
 
 public class FieldTypeTest {
-	
-	private static final String SHORT_STRING = "ASCII_Short_String_Collapsed";
+
+	private static final String ASCII_STRING = "ASCII_String";
 
 	@Test
 	public void testGetFieldType() {
-		FieldType type = FieldType.getFieldType(SHORT_STRING);
+		FieldType type = FieldType.getFieldType(ASCII_STRING);
 		assertNotNull(type);
-		assertEquals(type.getXMLType(), SHORT_STRING);
+		assertEquals(type.getXMLType(), ASCII_STRING);
 		assertNotNull(type.getAdapter());
 		assertFalse(type.isRightJustified());
 	}
-	
+
 	@Test(expectedExceptions={IllegalArgumentException.class})
 	public void testBadXMLType() {
 		FieldType.getFieldType("no-such-xml-type");
@@ -28,7 +28,7 @@ public class FieldTypeTest {
 
 	@Test
 	public void testIsRightJustified() {
-		assertFalse(FieldType.ASCII_SHORT_STRING_COLLAPSED.isRightJustified());
+		assertFalse(FieldType.ASCII_STRING.isRightJustified());
 		assertTrue(FieldType.SIGNEDMSB4.isRightJustified());
 	}
 

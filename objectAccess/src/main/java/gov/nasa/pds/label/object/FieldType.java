@@ -24,13 +24,19 @@ public enum FieldType {
 	ASCII_ANYURI("ASCII_AnyURI"),
 
 	/** Boolean true or false. */
-	ASCII_BOOLEAN("ASCII_Boolean"),
+	ASCII_BOOLEAN("ASCII_Boolean", new DefaultFieldAdapter(), true),
 
 	/** Digital object identifier. */
 	ASCII_DOI("ASCII_DOI"),
 
 	/** A date using day-of-year. */
+	ASCII_DATE("ASCII_Date"),
+
+	/** A date using day-of-year. */
 	ASCII_DATE_DOY("ASCII_Date_DOY"),
+
+	/** A date using day-of-year. */
+	ASCII_DATE_TIME("ASCII_Date_Time"),
 
 	/** A date-time using day-of-year. */
 	ASCII_DATE_TIME_DOY("ASCII_Date_Time_DOY"),
@@ -43,6 +49,9 @@ public enum FieldType {
 
 	/** A date using year-month-day. */
 	ASCII_DATE_YMD("ASCII_Date_YMD"),
+
+	/** A directory path. */
+	ASCII_DIRECTORY_PATH_NAME("ASCII_Directory_Path_Name"),
 
 	/** A file name. */
 	ASCII_FILE_NAME("ASCII_File_Name"),
@@ -59,6 +68,9 @@ public enum FieldType {
 	/** A logical identifier with version ID. */
 	ASCII_LIDVID("ASCII_LIDVID"),
 
+	/** A logical identifier with version ID (???). */
+	ASCII_LIDVID_LID("ASCII_LIDVID_LID"),
+
 	/** An MD5 hash. */
 	ASCII_MD5_CHECKSUM("ASCII_MD5_Checksum"),
 
@@ -71,20 +83,14 @@ public enum FieldType {
 	/** A base 2 integer. */
 	ASCII_NUMERIC_BASE2("ASCII_Numeric_Base2"),
 
+	/** A base 8 integer. */
+	ASCII_NUMERIC_BASE8("ASCII_Numeric_Base8"),
+
 	/** A floating-point value. */
 	ASCII_REAL("ASCII_Real", new NumericTextFieldAdapter(), true),
 
-	/** A short string where whitespace is not significant. */
-	ASCII_SHORT_STRING_COLLAPSED("ASCII_Short_String_Collapsed"),
-
-	/** A short string where whitespace is significant. */
-	ASCII_SHORT_STRING_PRESERVED("ASCII_Short_String_Preserved"),
-
-	/** A string. */
+	/** An ASCII string. */
 	ASCII_STRING("ASCII_String"),
-
-	/** A string where whitespace is significant. */
-	ASCII_TEXT_PRESERVED("ASCII_Text_Preserved"),
 
 	/** A time. */
 	ASCII_TIME("ASCII_Time"),
@@ -160,38 +166,38 @@ public enum FieldType {
 
 	/** An unsigned, 8-byte, big-endian integer. */
 	UNSIGNEDMSB8("UnsignedMSB8", new IntegerBinaryFieldAdapter(8, false, true), true),
-	
+
 	/** A signed bit string in a packed field. */
 	SIGNEDBITSTRING("SignedBitString", new BitFieldAdapter(true), true),
-	
+
 	/** An unsigned bit string in a packed field. */
 	UNSIGNEDBITSTRING("UnsignedBitString", new BitFieldAdapter(false), true);
-	
+
 	private static Map<String, FieldType> xmlTypeMap = new HashMap<String, FieldType>();
 	static {
 		for (FieldType fieldType : FieldType.values()) {
 			xmlTypeMap.put(fieldType.getXMLType(), fieldType);
 		}
 	}
-	
+
 	private String xmlType;
 	private FieldAdapter adapter;
 	private boolean isRightJustified;
-	
+
 	private FieldType(String xmlType) {
 		this(xmlType, new DefaultFieldAdapter(), false);
 	}
-	
+
 	private FieldType(String xmlType, FieldAdapter adapter, boolean isRightJustified) {
 		this.xmlType = xmlType;
 		this.adapter = adapter;
 		this.isRightJustified = isRightJustified;
 	}
-	
+
 	/**
 	 * Gets the proper field type for an XML type string in a
 	 * label instance.
-	 * 
+	 *
 	 * @param xmlType the XML type string
 	 * @return the field type corresponding to the XML type
 	 */
@@ -200,35 +206,35 @@ public enum FieldType {
 		if (type == null) {
 			throw new IllegalArgumentException("No field type definition found for XML type (" + xmlType + ")");
 		}
-		
+
 		return type;
 	}
-	
+
 	/**
 	 * Gets the type string that will occur in XML labels.
-	 * 
+	 *
 	 * @return the XML type string
 	 */
 	public String getXMLType() {
 		return xmlType;
 	}
-	
+
 	/**
 	 * Gets a field adapter for this field type.
-	 * 
+	 *
 	 * @return the field adapter
 	 */
 	public FieldAdapter getAdapter() {
 		return adapter;
 	}
-	
+
 	/**
 	 * Tests whether the field should be right justified on output.
-	 * 
+	 *
 	 * @return true, if the field should be right justified, false otherwise
 	 */
 	public boolean isRightJustified() {
 		return isRightJustified;
 	}
-	
+
 }

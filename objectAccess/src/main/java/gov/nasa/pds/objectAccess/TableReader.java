@@ -114,6 +114,12 @@ public class TableReader {
 	private TableRecord getTableRecord() throws IOException {
 		if (adapter instanceof TableDelimitedAdapter) {
 			String[] recordValue = delimitedRecordList.get(currentRow-1);
+			if (recordValue.length != adapter.getFieldCount()) {
+				throw new IOException("Record " + currentRow + " has wrong number of fields "
+						+ "(expected " + adapter.getFieldCount() + ", got " + recordValue.length + ")"
+				);
+			}
+
 			if (record != null) {
 				((DelimitedTableRecord) record).setRecordValue(recordValue);
 			} else {

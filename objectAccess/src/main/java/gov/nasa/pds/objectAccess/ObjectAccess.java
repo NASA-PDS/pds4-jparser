@@ -3,7 +3,10 @@ package gov.nasa.pds.objectAccess;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
+import gov.nasa.arc.pds.xml.generated.FieldDelimited;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
+import gov.nasa.arc.pds.xml.generated.FileAreaObservationalSupplemental;
+import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
@@ -17,6 +20,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +70,7 @@ public class ObjectAccess implements ObjectProvider {
 		try {
 			JAXBContext context = JAXBContext.newInstance( "gov.nasa.arc.pds.xml.generated");
 			Unmarshaller u = context.createUnmarshaller();
+			u.setEventHandler(new LenientEventHandler());
 			return productClass.cast(u.unmarshal(labelFile));
 		} catch (JAXBException e) {
 			LOGGER.error("Failed to load the product from the label.", e);
@@ -77,6 +83,7 @@ public class ObjectAccess implements ObjectProvider {
 		try {
 			JAXBContext context = JAXBContext.newInstance( "gov.nasa.arc.pds.xml.generated");
 			Unmarshaller u = context.createUnmarshaller();
+			u.setEventHandler(new LenientEventHandler());
 			File f = new File(getRoot().getAbsolutePath() + File.separator + relativeXmlFilePath);
 			return (ProductObservational) u.unmarshal(f);
 		} catch (JAXBException e) {
@@ -103,7 +110,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
     public List<Array2DImage> getArray2DImages(FileAreaObservational observationalFileArea) {
     	ArrayList<Array2DImage> list = new ArrayList<Array2DImage>();
-    	for (Object obj : observationalFileArea.getArray2DsAndArray2DImagesAndArray2DMaps()) {
+    	for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
     		if (obj.getClass().equals(Array2DImage.class)) {
     			list.add(Array2DImage.class.cast(obj));
     		}
@@ -113,9 +120,9 @@ public class ObjectAccess implements ObjectProvider {
 
 	@Override
 	public List<Object> getTableObjects(FileAreaObservational observationalFileArea) {
-		Class clazz;
+		Class<?> clazz;
 		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : observationalFileArea.getArray2DsAndArray2DImagesAndArray2DMaps()) {
+		for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
 			clazz = obj.getClass();
 			if (clazz.equals(TableCharacter.class)
 					|| clazz.equals(TableBinary.class)
@@ -129,7 +136,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public List<TableCharacter> getTableCharacters(FileAreaObservational observationalFileArea) {
 		ArrayList<TableCharacter> list = new ArrayList<TableCharacter>();
-		for (Object obj : observationalFileArea.getArray2DsAndArray2DImagesAndArray2DMaps()) {
+		for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
 			if (obj.getClass().equals(TableCharacter.class)) {
 				list.add(TableCharacter.class.cast(obj));
 			}
@@ -140,7 +147,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public List<TableBinary> getTableBinaries(FileAreaObservational observationalFileArea) {
 		ArrayList<TableBinary> list = new ArrayList<TableBinary>();
-		for (Object obj : observationalFileArea.getArray2DsAndArray2DImagesAndArray2DMaps()) {
+		for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
 			if (obj.getClass().equals(TableBinary.class)) {
 				list.add(TableBinary.class.cast(obj));
 			}
@@ -151,7 +158,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public List<TableDelimited> getTableDelimiteds(FileAreaObservational observationalFileArea) {
 		ArrayList<TableDelimited> list = new ArrayList<TableDelimited>();
-		for (Object obj : observationalFileArea.getArray2DsAndArray2DImagesAndArray2DMaps()) {
+		for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
 			if (obj.getClass().equals(TableDelimited.class)) {
 				list.add(TableDelimited.class.cast(obj));
 			}
@@ -165,6 +172,70 @@ public class ObjectAccess implements ObjectProvider {
 		for (Object obj : table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters()) {
 			if (obj.getClass().equals(FieldCharacter.class)) {
 				list.add(FieldCharacter.class.cast(obj));
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public List<FieldDelimited> getFieldDelimiteds(TableDelimited table) {
+		ArrayList<FieldDelimited> list = new ArrayList<FieldDelimited>();
+		for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
+			if (obj.getClass().equals(FieldDelimited.class)) {
+				list.add(FieldDelimited.class.cast(obj));
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public List<GroupFieldDelimited> getGroupFieldDelimiteds(TableDelimited table) {
+		ArrayList<GroupFieldDelimited> list = new ArrayList<GroupFieldDelimited>();
+		for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
+			if (obj.getClass().equals(GroupFieldDelimited.class)) {
+				list.add(GroupFieldDelimited.class.cast(obj));
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public List<Object> getFieldDelimitedAndGroupFieldDelimiteds(TableDelimited table) {
+		ArrayList<Object> list = new ArrayList<Object>();
+		for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
+				list.add(obj);
+		}
+		return list;
+	}
+
+	@Override
+	public List<Object> getFieldCharacterAndGroupFieldCharacters(TableCharacter table) {
+		ArrayList<Object> list = new ArrayList<Object>();
+		for (Object obj : table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters()) {
+				list.add(obj);
+		}
+		return list;
+	}
+
+	@Override
+	public List<Object> getFieldBinaryAndGroupFieldBinaries(TableBinary table) {
+		ArrayList<Object> list = new ArrayList<Object>();
+		for (Object obj : table.getRecordBinary().getFieldBinariesAndGroupFieldBinaries()) {
+				list.add(obj);
+		}
+		return list;
+	}
+
+	@Override
+	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental) {
+		Class<?> clazz;
+		ArrayList<Object> list = new ArrayList<Object>();
+		for (Object obj : observationalFileAreaSupplemental.getArray1DsAndArray2DsAndArray2DImages()) {
+			clazz = obj.getClass();
+			if (clazz.equals(TableCharacter.class)
+					|| clazz.equals(TableBinary.class)
+					|| clazz.equals(TableDelimited.class)) {
+				list.add(obj);
 			}
 		}
 		return list;
@@ -199,6 +270,24 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public File getRoot() {
 		return this.root;
+	}
+
+	/**
+	 * Implements a validation event handler that attempts to continue the unmarshalling
+	 * even if errors are present. Only fatal errors will halt the unmarshalling.
+	 */
+	private static class LenientEventHandler implements ValidationEventHandler {
+
+		@Override
+		public boolean handleEvent(ValidationEvent event) {
+			if (event.getSeverity() == ValidationEvent.FATAL_ERROR) {
+				System.err.println("Fatal error: " + event.getLocator().toString() + ": " + event.getMessage());
+				return false;
+			}
+
+			return true;
+		}
+
 	}
 
 }

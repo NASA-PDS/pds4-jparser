@@ -3,16 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nasa.pds</groupId>
 	<artifactId>superpom</artifactId>
-	<version>0.2.0</version>
+	<version>0.4.0</version>
 	<packaging>pom</packaging>
 	<name>Superpom for PDS Object Access Library</name>
 	<description>This superpom project builds the PDS object access library.</description>
 	<modules>
-		<module>../dependencies</module>
-		<module>../dataModel</module>
 		<module>../objectAccess</module>
-		<!--module>../visualizer</module-->
-		<module>../site</module>
 	</modules>
 	<build>
 		<plugins>

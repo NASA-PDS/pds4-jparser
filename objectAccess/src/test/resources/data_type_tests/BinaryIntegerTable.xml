@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:test:data:binary-table</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Test of a binary table, for PDS4 tools library unit tests</title>
+        <information_model_version>1.2.0.1</information_model_version>
+        <product_class>Product_Observational</product_class>
+    </Identification_Area>
+    <Observation_Area>
+        <Time_Coordinates>
+            <start_date_time>2014-10-15T00:00:00Z</start_date_time>
+            <stop_date_time>2014-10-15T00:00:00Z</stop_date_time>
+        </Time_Coordinates>
+        <Investigation_Area>
+            <name>PDS4 tools library unit tests</name>
+            <type>Individual Investigation</type>
+            <Internal_Reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <Observing_System_Component>
+                <name>Hand-created</name>
+                <type>Laboratory</type>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>dummy</name>
+            <type>Terrestrial Sample</type>
+        </Target_Identification>
+    </Observation_Area>
+    <File_Area_Observational>
+        <File>
+            <file_name>BinaryIntegerTable.dat</file_name>
+        </File>
+        <Table_Binary>
+            <offset unit="byte">0</offset>
+            <records>4</records>
+            <Record_Binary>
+                <fields>4</fields>
+                <groups>0</groups>
+                <record_length unit="byte">58</record_length>
+                <Field_Binary>
+                    <name>uint8</name>
+                    <field_location unit="byte">1</field_location>
+                    <data_type>UnsignedByte</data_type>
+                    <field_length unit="byte">1</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>uint16MSB</name>
+                    <field_location unit="byte">2</field_location>
+                    <data_type>UnsignedMSB2</data_type>
+                    <field_length unit="byte">2</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>uint32MSB</name>
+                    <field_location unit="byte">4</field_location>
+                    <data_type>UnsignedMSB4</data_type>
+                    <field_length unit="byte">4</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>uint64MSB</name>
+                    <field_location unit="byte">8</field_location>
+                    <data_type>UnsignedMSB8</data_type>
+                    <field_length unit="byte">8</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>uint16LSB</name>
+                    <field_location unit="byte">16</field_location>
+                    <data_type>UnsignedLSB2</data_type>
+                    <field_length unit="byte">2</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>uint32LSB</name>
+                    <field_location unit="byte">18</field_location>
+                    <data_type>UnsignedLSB4</data_type>
+                    <field_length unit="byte">4</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>uint64LSB</name>
+                    <field_location unit="byte">22</field_location>
+                    <data_type>UnsignedLSB8</data_type>
+                    <field_length unit="byte">8</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>int8</name>
+                    <field_location unit="byte">30</field_location>
+                    <data_type>SignedByte</data_type>
+                    <field_length unit="byte">1</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>int16MSB</name>
+                    <field_location unit="byte">31</field_location>
+                    <data_type>SignedMSB2</data_type>
+                    <field_length unit="byte">2</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>int32MSB</name>
+                    <field_location unit="byte">33</field_location>
+                    <data_type>SignedMSB4</data_type>
+                    <field_length unit="byte">4</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>int64MSB</name>
+                    <field_location unit="byte">37</field_location>
+                    <data_type>SignedMSB8</data_type>
+                    <field_length unit="byte">8</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>int16LSB</name>
+                    <field_location unit="byte">45</field_location>
+                    <data_type>SignedLSB2</data_type>
+                    <field_length unit="byte">2</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>int32LSB</name>
+                    <field_location unit="byte">47</field_location>
+                    <data_type>SignedLSB4</data_type>
+                    <field_length unit="byte">4</field_length>
+                </Field_Binary>
+                <Field_Binary>
+                    <name>int64LSB</name>
+                    <field_location unit="byte">51</field_location>
+                    <data_type>SignedLSB8</data_type>
+                    <field_length unit="byte">8</field_length>
+                </Field_Binary>
+            </Record_Binary>
+        </Table_Binary>
+    </File_Area_Observational>
+</Product_Observational>
