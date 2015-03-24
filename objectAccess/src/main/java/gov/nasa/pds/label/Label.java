@@ -57,8 +57,8 @@ public class Label {
 	private LabelStandard standard;
 
 	private Label(File labelFile) throws ParseException {
-		oa = new ObjectAccess();
 		parentDir = labelFile.getParentFile();
+		oa = new ObjectAccess(parentDir);
 		genericProduct = oa.getProduct(labelFile, Product.class);
 		standard = LabelStandard.PDS4;
 	}
@@ -213,6 +213,10 @@ public class Label {
 	}
 
 	private DataObject makeGenericObject(gov.nasa.arc.pds.xml.generated.File file, ByteStream stream) {
-		return new GenericObject(parentDir, file, 0L, file.getFileSize().getValue().longValue());
+		long fileSize = -1;
+		if (file.getFileSize() != null) {
+			fileSize = file.getFileSize().getValue().longValue();
+		}
+		return new GenericObject(parentDir, file, 0L, fileSize);
 	}
 }

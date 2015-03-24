@@ -25,6 +25,13 @@ public abstract class DataObject {
 		this.fileObject = fileObject;
 		this.offset = offset;
 		this.size = size;
+
+		if (size < 0) {
+			File f = getDataFile();
+			if (f.exists()) {
+				size = f.length();
+			}
+		}
 	}
 
 	/**
@@ -92,6 +99,12 @@ public abstract class DataObject {
 	 */
 	public ByteBuffer getBuffer() throws FileNotFoundException, IOException {
 		File f = getDataFile();
+		if (!f.exists()) {
+			throw new FileNotFoundException("Referenced data file does not exist: " + f.getAbsolutePath());
+		}
+		if (!f.canRead()) {
+			throw new IOException("Referenced data file is not readable: " + f.getAbsolutePath());
+		}
 		return (new FileInputStream(f)).getChannel().map(FileChannel.MapMode.READ_ONLY, offset, getDataSize(f));
 	}
 
