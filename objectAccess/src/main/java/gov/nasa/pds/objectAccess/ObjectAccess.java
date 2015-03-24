@@ -110,7 +110,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
     public List<Array2DImage> getArray2DImages(FileAreaObservational observationalFileArea) {
     	ArrayList<Array2DImage> list = new ArrayList<Array2DImage>();
-    	for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
+    	for (Object obj : observationalFileArea.getDataObjects()) {
     		if (obj.getClass().equals(Array2DImage.class)) {
     			list.add(Array2DImage.class.cast(obj));
     		}
@@ -122,7 +122,7 @@ public class ObjectAccess implements ObjectProvider {
 	public List<Object> getTableObjects(FileAreaObservational observationalFileArea) {
 		Class<?> clazz;
 		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
+		for (Object obj : observationalFileArea.getDataObjects()) {
 			clazz = obj.getClass();
 			if (clazz.equals(TableCharacter.class)
 					|| clazz.equals(TableBinary.class)
@@ -136,7 +136,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public List<TableCharacter> getTableCharacters(FileAreaObservational observationalFileArea) {
 		ArrayList<TableCharacter> list = new ArrayList<TableCharacter>();
-		for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
+		for (Object obj : observationalFileArea.getDataObjects()) {
 			if (obj.getClass().equals(TableCharacter.class)) {
 				list.add(TableCharacter.class.cast(obj));
 			}
@@ -147,7 +147,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public List<TableBinary> getTableBinaries(FileAreaObservational observationalFileArea) {
 		ArrayList<TableBinary> list = new ArrayList<TableBinary>();
-		for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
+		for (Object obj : observationalFileArea.getDataObjects()) {
 			if (obj.getClass().equals(TableBinary.class)) {
 				list.add(TableBinary.class.cast(obj));
 			}
@@ -158,7 +158,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public List<TableDelimited> getTableDelimiteds(FileAreaObservational observationalFileArea) {
 		ArrayList<TableDelimited> list = new ArrayList<TableDelimited>();
-		for (Object obj : observationalFileArea.getArray1DsAndArray2DsAndArray2DImages()) {
+		for (Object obj : observationalFileArea.getDataObjects()) {
 			if (obj.getClass().equals(TableDelimited.class)) {
 				list.add(TableDelimited.class.cast(obj));
 			}
@@ -230,7 +230,7 @@ public class ObjectAccess implements ObjectProvider {
 	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental) {
 		Class<?> clazz;
 		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : observationalFileAreaSupplemental.getArray1DsAndArray2DsAndArray2DImages()) {
+		for (Object obj : observationalFileAreaSupplemental.getDataObjects()) {
 			clazz = obj.getClass();
 			if (clazz.equals(TableCharacter.class)
 					|| clazz.equals(TableBinary.class)

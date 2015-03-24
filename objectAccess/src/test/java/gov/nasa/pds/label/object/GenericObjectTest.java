@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
@@ -79,7 +80,7 @@ public class GenericObjectTest {
 		fileObject.setFileName(f.getName());
 		FileSize size = new FileSize();
 		size.setUnit(UnitsOfStorage.BYTE);
-		size.setValue((int) f.length());
+		size.setValue(BigInteger.valueOf(f.length()));
 		fileObject.setFileSize(size);
 
 		return fileObject;

@@ -38,12 +38,51 @@
             <jxb:property name="editionCount" />
         </jxb:bindings>
         
-        <!-- A 1.3 property has a non-ASCII character in it, which JAXB doesn't like. -->
+        <!-- Use good Java enumeration names for enumeration constants, and avoid using
+             the "mu" Unicode character (&#x03bc;), which JAXB doesn't like. -->
+        <jxb:bindings node="//xs:simpleType[@name='Units_of_Radiance']">
+            <jxb:typesafeEnumClass>
+                <jxb:typesafeEnumMember value="W*m**-2*sr**-1" name="W_PER_M2_PER_SR" />
+                <jxb:typesafeEnumMember value="W/(m**2*sr)" name="W_PER_M2_SR" />
+            </jxb:typesafeEnumClass>
+        </jxb:bindings>
+        
+        <jxb:bindings node="//xs:simpleType[@name='Units_of_Spectral_Irradiance']">
+            <jxb:typesafeEnumClass>
+                <jxb:typesafeEnumMember value="SFU" name="SFU" />
+                <jxb:typesafeEnumMember value="W*m**-2*Hz**-1" name="W_M_2_HZ_1" />
+                <jxb:typesafeEnumMember value="W*m**-2*nm**-1" name="W_M_2_NM_1" />
+                <jxb:typesafeEnumMember value="W*m**-3" name="W_M_3" />
+                <jxb:typesafeEnumMember value="W/m**2/Hz" name="W_PER_M2_PER_HZ" />
+                <jxb:typesafeEnumMember value="W/m**2/nm" name="W_PER_M2_PER_NM" />
+                <jxb:typesafeEnumMember value="W/m**3" name="W_PER_M3" />
+                <jxb:typesafeEnumMember value="uW*cm**-2*um**-1" name="UW_CM_2_UM_1" />
+                <jxb:typesafeEnumMember value="&#x03bc;W/cm**2/&#x03bc;m" name="UW_PER_CM2_PER_UM" />
+            </jxb:typesafeEnumClass>
+        </jxb:bindings>
+        
         <jxb:bindings node="//xs:simpleType[@name='Units_of_Spectral_Radiance']">
             <jxb:typesafeEnumClass>
-                <jxb:typesafeEnumMember value="W/m**2/sr/&#x03bc;m" name="W_M_2_SR_UM" />
-                <jxb:typesafeEnumMember value="&#x03bc;W/cm**2/sr/&#x03bc;m" name="UW_CM_W_SR_UM" />
+                <jxb:typesafeEnumMember value="W*m**-2*sr**-1*Hz**-1" name="W_M_2_SR_1_HZ_1" />
+                <jxb:typesafeEnumMember value="W*m**-2*sr**-1*nm**-1" name="W_M_2_SR_1_NM_1" />
+                <jxb:typesafeEnumMember value="W*m**-2*sr**-1*um**-1" name="W_M_2_SR_1_UM_1" />
+                <jxb:typesafeEnumMember value="W*m**-3*sr**-1" name="W_M_3_SR_1" />
+                <jxb:typesafeEnumMember value="W/m**2/sr/Hz" name="W_PER_M2_PER_SR_PER_HZ" />
+                <jxb:typesafeEnumMember value="W/m**2/sr/nm" name="W_PER_M2_PER_SR_PER_NM" />
+                <jxb:typesafeEnumMember value="W/m**2/sr/&#x03bc;m" name="W_PER_M2_PER_SR_PER_UM" />
+                <jxb:typesafeEnumMember value="W/m**3/sr" name="W_PER_M3_PER_SR" />
+                <jxb:typesafeEnumMember value="uW*cm**-2*sr**-1*um**-1" name="UW_CM_2_SR_1_UM_1" />
+                <jxb:typesafeEnumMember value="&#x03bc;W/cm**2/sr/&#x03bc;m" name="UW_PER_CM2_PER_SR_PER_UM" />
             </jxb:typesafeEnumClass>
+        </jxb:bindings>
+        
+        <!-- Renaming the xs:choice elements so their names aren't dependent on the
+             options in the choice. -->
+        <jxb:bindings node="//xs:complexType[@name='File_Area_Observational']//xs:choice/xs:element[1]">
+            <jxb:property name="dataObjects" />
+        </jxb:bindings>
+        <jxb:bindings node="//xs:complexType[@name='File_Area_Observational_Supplemental']//xs:choice/xs:element[1]">
+            <jxb:property name="dataObjects" />
         </jxb:bindings>
         
 	</jxb:bindings>

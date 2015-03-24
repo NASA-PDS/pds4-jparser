@@ -246,7 +246,7 @@ public class TableReaderTest {
 		table.setOffset(offset);
 
 		FileAreaObservational fileArea = new FileAreaObservational();
-		fileArea.getArray1DsAndArray2DsAndArray2DImages().add(table);
+		fileArea.getDataObjects().add(table);
 		fileArea.setFile(file);
 
 		ProductObservational product = new ProductObservational();
@@ -295,7 +295,7 @@ public class TableReaderTest {
 		table.setOffset(offset);
 
 		FileAreaObservational fileArea = new FileAreaObservational();
-		fileArea.getArray1DsAndArray2DsAndArray2DImages().add(table);
+		fileArea.getDataObjects().add(table);
 		fileArea.setFile(file);
 
 		ProductObservational product = new ProductObservational();
@@ -347,7 +347,7 @@ public class TableReaderTest {
 		table.setOffset(offset);
 
 		FileAreaObservational fileArea = new FileAreaObservational();
-		fileArea.getArray1DsAndArray2DsAndArray2DImages().add(table);
+		fileArea.getDataObjects().add(table);
 		fileArea.setFile(file);
 
 		ProductObservational product = new ProductObservational();

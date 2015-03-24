@@ -13,6 +13,7 @@ import gov.nasa.arc.pds.xml.generated.Offset;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.nio.MappedByteBuffer;
@@ -158,8 +159,8 @@ public class ArrayObjectTest {
 
 	private int countElements(int[] dimensions) {
 		int count = 1;
-		for (int i=0; i < dimensions.length; ++i) {
-			count *= dimensions[i];
+		for (int dimension : dimensions) {
+			count *= dimension;
 		}
 		return count;
 	}
@@ -178,7 +179,7 @@ public class ArrayObjectTest {
 		gov.nasa.arc.pds.xml.generated.File fileObj = new gov.nasa.arc.pds.xml.generated.File();
 		fileObj.setFileName(f.getName());
 		FileSize size = new FileSize();
-		size.setValue((int) f.length());
+		size.setValue(BigInteger.valueOf(f.length()));
 		fileObj.setFileSize(size);
 		return fileObj;
 	}

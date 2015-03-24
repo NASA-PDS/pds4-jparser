@@ -159,12 +159,12 @@ public class Label {
 		List<DataObject> objects = new ArrayList<DataObject>();
 
 		for (FileAreaObservational fileArea : product.getFileAreaObservationals()) {
-			for (ByteStream stream : fileArea.getArray1DsAndArray2DsAndArray2DImages()) {
+			for (ByteStream stream : fileArea.getDataObjects()) {
 				addObject(objects, fileArea.getFile(), stream);
 			}
 		}
 		for (FileAreaObservationalSupplemental supplementalArea : product.getFileAreaObservationalSupplementals()) {
-			for (ByteStream stream : supplementalArea.getArray1DsAndArray2DsAndArray2DImages()) {
+			for (ByteStream stream : supplementalArea.getDataObjects()) {
 				addObject(objects, supplementalArea.getFile(), stream);
 			}
 		}
@@ -203,7 +203,7 @@ public class Label {
 		}
 		long size = -1;
 		if (file.getFileSize() != null) {
-			size = file.getFileSize().getValue() - offset;
+			size = file.getFileSize().getValue().longValue() - offset;
 		}
 		return new TableObject(parentDir, file, table, offset, size);
 	}
@@ -213,6 +213,6 @@ public class Label {
 	}
 
 	private DataObject makeGenericObject(gov.nasa.arc.pds.xml.generated.File file, ByteStream stream) {
-		return new GenericObject(parentDir, file, 0L, file.getFileSize().getValue());
+		return new GenericObject(parentDir, file, 0L, file.getFileSize().getValue().longValue());
 	}
 }
