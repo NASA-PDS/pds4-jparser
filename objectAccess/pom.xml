@@ -67,15 +67,13 @@
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>fits</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/lib/fits-1.0.jar</systemPath>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>vicar</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/lib/vicario-1.0-msl.jar</systemPath>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -139,15 +137,13 @@
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>tools</artifactId>
 			<version>3.2.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/lib/product-tools-3.2.0.jar</systemPath>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>utils</artifactId>
 			<version>1.0.1</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/lib/pds-utils-1.0.1.jar</systemPath>
+			<scope>compile</scope>
 		</dependency>		
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -214,6 +210,73 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.2</version>
+				<executions>
+					<execution>
+						<id>install-product-tools</id>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<file>${basedir}/src/main/lib/product-tools-3.2.0.jar</file>
+							<groupId>gov.nasa.pds</groupId>
+							<artifactId>tools</artifactId>
+							<version>3.2.0</version>
+							<generatePom>true</generatePom>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-pds-utils</id>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<file>${basedir}/src/main/lib/pds-utils-1.0.1.jar</file>
+							<groupId>gov.nasa.pds</groupId>
+							<artifactId>utils</artifactId>
+							<version>1.0.1</version>
+							<generatePom>true</generatePom>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-fits</id>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<file>${basedir}/src/main/lib/fits-1.0.jar</file>
+							<groupId>gov.nasa.pds</groupId>
+							<artifactId>fits</artifactId>
+							<version>1.0</version>
+							<generatePom>true</generatePom>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-vicario</id>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<file>${basedir}/src/main/lib/vicario-1.0-msl.jar</file>
+							<groupId>gov.nasa.pds</groupId>
+							<artifactId>vicar</artifactId>
+							<version>1.0</version>
+							<generatePom>true</generatePom>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
@@ -357,6 +420,25 @@
 										</versionRange>
 										<goals>
 											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-install-plugin
+										</artifactId>
+										<versionRange>
+											[2.5.2,)
+										</versionRange>
+										<goals>
+											<goal>install-file</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
