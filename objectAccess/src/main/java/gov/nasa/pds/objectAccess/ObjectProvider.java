@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Provides access to PDS4 objects.
- * 
+ *
  */
 public interface ObjectProvider {
 
@@ -39,7 +39,7 @@ public interface ObjectProvider {
 	 *  Returns a list of Array2DImage objects given an observation file area object.
 	 *
 	 * @param observationalFileArea
-	 * @return
+	 * @return a list of image objects
 	 */
 	List<Array2DImage> getArray2DImages(FileAreaObservational observationalFileArea);
 
@@ -47,7 +47,7 @@ public interface ObjectProvider {
 	 * Returns a list of table objects.
 	 *
 	 * @param observationalFileArea
-	 * @return
+	 * @return a list of table objects
 	 */
 	public List<Object> getTableObjects(FileAreaObservational observationalFileArea);
 
@@ -98,7 +98,7 @@ public interface ObjectProvider {
 	 * @return list of FieldDelimited objects
 	 */
 	List<FieldDelimited> getFieldDelimiteds(TableDelimited table);
-	
+
 	/**
 	 * Returns a list of GroupFieldDelimited objects given a table delimited object.
 	 *
@@ -106,7 +106,7 @@ public interface ObjectProvider {
 	 * @return list of GroupFieldDelimited objects
 	 */
 	List<GroupFieldDelimited> getGroupFieldDelimiteds(TableDelimited table);
-	
+
 	/**
 	 * Returns a list of FieldDelimited and GroupFieldDelimited objects given a
 	 * table delimited object.
@@ -115,7 +115,7 @@ public interface ObjectProvider {
 	 * @return list of FieldDelimited and GroupFieldDelimited objects
 	 */
 	List<Object> getFieldDelimitedAndGroupFieldDelimiteds(TableDelimited table);
-	
+
 	/**
 	 * Returns a list of FieldCharacter and GroupFieldCharacter objects given a
 	 * table character object.
@@ -124,7 +124,7 @@ public interface ObjectProvider {
 	 * @return list of FieldCharacter and GroupFieldCharacter objects
 	 */
 	List<Object> getFieldCharacterAndGroupFieldCharacters(TableCharacter table);
-	
+
 	/**
 	 * Returns a list of FieldBinary and GroupFieldBinary objects given a
 	 * table binary object.
@@ -133,7 +133,7 @@ public interface ObjectProvider {
 	 * @return list of FieldBinary and GroupFieldBinary objects
 	 */
 	List<Object> getFieldBinaryAndGroupFieldBinaries(TableBinary table);
-	
+
 	/**
 	 * Returns a list of table objects.
 	 *
@@ -141,7 +141,7 @@ public interface ObjectProvider {
 	 * @return list of observationalFileAreaSupplemental objects
 	 */
 	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental);
-	
+
 	/**
 	 * Gets an instance of ProductObservational.
 	 *

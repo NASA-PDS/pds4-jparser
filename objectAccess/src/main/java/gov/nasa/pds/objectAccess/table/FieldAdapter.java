@@ -131,8 +131,9 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param buf
-	 * @param isRightJustified
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
 	 */
 	void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 
@@ -142,9 +143,10 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param length the length of the field data
-	 * @param buffer
-	 * @param isRightJustified
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
+	 * @param charset the character set to use when converting the string to bytes
 	 */
 	void setString(String value, int offset, int length, ByteBuffer buffer, boolean isRightJustified, Charset charset);
 
@@ -153,10 +155,9 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param length the length of the field data
-	 * @param buffer
-	 * @param isRightJustified
-	 *
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
 	 */
 	void setInt(int value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 
@@ -165,9 +166,9 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param length the length of the field data
-	 * @param buffer
-	 * @param isRightJustified
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
 	 */
 	void setDouble(double value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 
@@ -176,9 +177,9 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param length the length of the field data
-	 * @param buffer
-	 * @param isRightJustified
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
 	 */
 	void setFloat(float value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 
@@ -187,9 +188,9 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param length the length of the field data
-	 * @param buffer
-	 * @param isRightJustified
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
 	 */
 	void setShort(short value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 
@@ -198,9 +199,9 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param length the length of the field data
-	 * @param buffer
-	 * @param isRightJustified
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
 	 */
 	void setByte(byte value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 
@@ -209,9 +210,9 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param length the length of the field data
-	 * @param buffer
-	 * @param isRightJustified
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
 	 */
 	void setLong(long value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 
@@ -220,9 +221,9 @@ public interface FieldAdapter {
 	 *
 	 * @param value the field value
 	 * @param offset the field offset
-	 * @param length the length of the field data
-	 * @param buffer
-	 * @param isRightJustified
+	 * @param length the length of the value
+	 * @param buffer the byte buffer into which to set the value
+	 * @param isRightJustified true, if the string value should be right-justified
 	 */
 	void setBigInteger(BigInteger value, int offset, int length, ByteBuffer buffer, boolean isRightJustified);
 

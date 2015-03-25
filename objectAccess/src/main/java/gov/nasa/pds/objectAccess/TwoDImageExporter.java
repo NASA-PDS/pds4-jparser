@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 /** Class for converting 2D PDS images.
  * @author dcberrio
- * @param <T>
  *
  */
 public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2DImage> {
@@ -96,10 +95,9 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	/**
 	 * Converts a 2D array file to a viewable image file.
 	 *
-	 * @param outputFile (the output file)
+	 * @param outputStream the output stream
 	 * @param array2DImage the array2DImage object to convert
-	 * @return outputFile
-	 * @throws IOException
+	 * @throws IOException if there is an exception writing to the stream or reading the image
 	 */
 	@Override
 	public void convert(Array2DImage array2DImage, OutputStream outputStream) throws IOException {
@@ -121,8 +119,9 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 				getObservationalFileArea().getFile().getFileName()));
 		inputFileStream.skip(Integer.valueOf(array2DImage.getOffset().getValue()));
 		byte[] levels = new byte[targetLevels];
-		for(int c=0;c<targetLevels;c++)
+		for(int c=0;c<targetLevels;c++) {
 			levels[c] = (byte)(c);
+		}
 		setColorModel(new IndexColorModel(getTargetPixelDepth(),targetLevels,levels,levels,levels)
 				);
 		switch (targetPixelBitDepth) {
