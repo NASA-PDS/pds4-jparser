@@ -403,11 +403,11 @@
                     <repetitions>2</repetitions>
                   
                     <fields>1</fields>
-                    <groups>1</groups>
+                    <groups>0</groups>
                 
                     <group_location unit="byte">27</group_location>
                 
-                    <group_length unit="byte">4</group_length>
+                    <group_length unit="byte">8</group_length>
                 
                     <Field_Binary>
                 

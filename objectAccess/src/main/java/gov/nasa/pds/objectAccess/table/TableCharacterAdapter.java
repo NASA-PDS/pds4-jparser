@@ -13,10 +13,10 @@ public class TableCharacterAdapter implements TableAdapter {
 
 	TableCharacter table;
 	List<FieldDescription> fields;
-	
+
 	/**
 	 * Creates a new instance for a particular table.
-	 * 
+	 *
 	 * @param table the table
 	 */
 	public TableCharacterAdapter(TableCharacter table) {
@@ -25,7 +25,7 @@ public class TableCharacterAdapter implements TableAdapter {
 		fields = new ArrayList<FieldDescription>();
 		expandFields(table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters(), 0);
 	}
-	
+
 	private void expandFields(List<Object> fields, int baseOffset) {
 		for (Object field : fields) {
 			if (field instanceof FieldCharacter) {
@@ -36,7 +36,7 @@ public class TableCharacterAdapter implements TableAdapter {
 			}
 		}
 	}
-	
+
 	private void expandField(FieldCharacter field, int baseOffset) {
 		FieldDescription desc = new FieldDescription();
 		desc.setName(field.getName());
@@ -45,15 +45,46 @@ public class TableCharacterAdapter implements TableAdapter {
 		desc.setLength(field.getFieldLength().getValue());
 		fields.add(desc);
 	}
-	
+
 	private void expandGroupField(GroupFieldCharacter group, int outerOffset) {
 		int baseOffset = outerOffset + group.getGroupLocation().getValue() - 1;
-		int groupLength = group.getGroupLength().getValue();
-		
+
+		int groupLength = group.getGroupLength().getValue() / group.getRepetitions();
+
+		// Check that the group length is large enough for the contained fields.
+		int actualGroupLength = getGroupExtent(group);
+
+		if (groupLength < actualGroupLength) {
+			System.err.println("WARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
+					+ (groupLength * group.getRepetitions())
+					+ "<"
+					+ (actualGroupLength * group.getRepetitions()));
+			groupLength = actualGroupLength;
+		}
+
 		for (int i=0; i < group.getRepetitions(); ++i) {
 			expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset);
 			baseOffset += groupLength;
 		}
+	}
+
+	private int getGroupExtent(GroupFieldCharacter group) {
+		int groupExtent = 0;
+
+		for (Object o : group.getFieldCharactersAndGroupFieldCharacters()) {
+			if (o instanceof GroupFieldCharacter) {
+				GroupFieldCharacter field = (GroupFieldCharacter) o;
+				int fieldEnd = field.getGroupLocation().getValue() + getGroupExtent(field) - 1;
+				groupExtent = Math.max(groupExtent, fieldEnd);
+			} else {
+				// Must be FieldCharacter
+				FieldCharacter field = (FieldCharacter) o;
+				int fieldEnd = field.getFieldLocation().getValue() + field.getFieldLength().getValue() - 1;
+				groupExtent = Math.max(groupExtent,  fieldEnd);
+			}
+		}
+
+		return groupExtent;
 	}
 
 	@Override

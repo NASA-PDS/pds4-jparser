@@ -75,18 +75,16 @@ public class TableBinaryAdapter implements TableAdapter {
 	private void expandGroupField(GroupFieldBinary group, int outerOffset) {
 		int baseOffset = outerOffset + group.getGroupLocation().getValue() - 1;
 
-		// Unfortunately, group_length is not used consistently by current labels,
-		// so we cannot rely on it. Instead, find the size of each repetition
-		// by adding up the field lengths in the group, and warn the user if
-		// the values differ. PDS-339.
-		int definedGroupLength = group.getGroupLength().getValue();
+		int groupLength = group.getGroupLength().getValue() / group.getRepetitions();
 
+		// Check that the group length is large enough for the contained fields.
 		int actualGroupLength = getGroupExtent(group);
 
-		int groupLength = definedGroupLength;
-		if (definedGroupLength != actualGroupLength) {
-			System.err.println("WARNING: GroupFieldBinary attribute group_length does not match extent of contained fields: "
-					+ definedGroupLength + "!=" + actualGroupLength);
+		if (groupLength < actualGroupLength) {
+			System.err.println("WARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
+					+ (groupLength * group.getRepetitions())
+					+ "<"
+					+ (actualGroupLength * group.getRepetitions()));
 			groupLength = actualGroupLength;
 		}
 

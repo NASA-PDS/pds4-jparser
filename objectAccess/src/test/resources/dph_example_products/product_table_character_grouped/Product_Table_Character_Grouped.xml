@@ -135,7 +135,8 @@
                     <repetitions>2</repetitions>
                     <group_location unit="byte">1</group_location>
                     <fields>3</fields>
-                    <group_length unit="byte">39</group_length>
+                    <groups>0</groups>
+                    <group_length unit="byte">79</group_length>
                     
                     <Field_Character>
                         <name>X COORDINATE</name>

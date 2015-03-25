@@ -140,7 +140,7 @@
                     <fields>3</fields>
                     <groups>1</groups>
                     <group_location unit="byte">1</group_location>
-                    <group_length unit="byte">39</group_length>
+                    <group_length unit="byte">78</group_length>
                     
                     <Field_Character>
                         <name>X COORDINATE</name>
