@@ -34,9 +34,11 @@
   </description>
   <url>https://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/</url>
 
+  <!-- Still need to straighten out the site stuff.
   <modules>
     <module>objectAccess</module>
   </modules>
+  -->
 
   <licenses>
     <license>
