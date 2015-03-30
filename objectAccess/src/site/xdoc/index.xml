@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2010-2011, by the California Institute of Technology.
+  Copyright 2010-2015, by the California Institute of Technology.
   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
   Any commercial use must be negotiated with the Office of Technology 
   Transfer at the California Institute of Technology.
@@ -17,14 +17,14 @@
 
 <document>
   <properties>
-    <title>About PDS4 Access</title>
+    <title>About PDS4 Tools Library</title>
     <author email="mark.rose@nasa.gov">Mark Rose</author>
     <author email="irene.s.smith@nasa.gov">Irene Skupniewicz Smith</author>
   </properties>
 
   <body>
-    <section name="About PDS4 Access">
-      <p>Provides programmatic access to PDS4 objects. This is a Java API library with Java domain objects.
+    <section name="About PDS4 Tools Library">
+      <p>Provides programmatic access to PDS4 data objects. This is a Java API library with Java domain objects.
       </p>
 
       <p>Please send comments, change requests and bug reports to the <a href="mailto:pds_operator@jpl.nasa.gov">PDS Operator</a> at pds_operator@jpl.nasa.gov.

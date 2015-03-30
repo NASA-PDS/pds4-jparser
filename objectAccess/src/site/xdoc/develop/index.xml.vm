@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  Copyright 2010-2011, by the California Institute of Technology.
+  Copyright 2015, by the California Institute of Technology.
   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
   Any commercial use must be negotiated with the Office of Technology Transfer
   at the California Institute of Technology.
@@ -13,37 +13,28 @@
   may be required before exporting such information to foreign countries or
   providing access to foreign nationals.
 
-  $Id: index.xml.vm 9473 2011-09-02 00:12:28Z shardman $
+  $Id$
 -->
 
 <document>
   <properties>
-    <title>Operation</title>
-    <author email="Michael.Cayanan@jpl.nasa.gov">Michael Cayanan</author>
+    <title>Development</title>
     <author email="Sean.Hardman@jpl.nasa.gov">Sean Hardman</author>
   </properties>
 
   <body>
-    <section name="Operation">
-      <p>The following topics can be found in this section:
+    <section name="Development">
+       <p>This document describes how a user can utilize the Application Program Interface (API) of the <i>${project.artifactId}</i> package to develop their own tool. The following topics can be found in this document:
       </p>
 
       <ul>
-        <li><a href="#Setup">Setup</a></li>
-        <li><a href="#Execution">Execution</a></li>
+        <li><a href="#API Entry Points">API Entry Points</a></li>
       </ul>
-
     </section>
-
-    <section name="Tool Setup">
-   
-
-      <subsection name="UNIX-Based Setup"/>
-        
-      <subsection name="Windows Setup"/>
        
-
-
-   </section>
- </body>
+    <section name="API Entry Points">
+      <p>We have not had a chance to document the entry points into the API as of the current release. The best source for this information currently is the <a href="../apidocs/index.html">JavaDocs</a> documentation for this project.
+      </p>
+    </section>
+  </body>
 </document>

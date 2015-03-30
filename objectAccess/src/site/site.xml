@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!-- 
-  Copyright 2010, by the California Institute of Technology.
+  Copyright 2010-2015, by the California Institute of Technology.
   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
   Any commercial use must be negotiated with the Office of Technology 
   Transfer at the California Institute of Technology.
@@ -16,35 +16,36 @@
   $Id: site.xml 8116 2010-11-01 16:00:45Z shardman $
 -->
 
-<project name="PDS4 Object Access Library">
+<project name="PDS4 Tools Library">
   <bannerLeft>
-    <src>images/pds4_logo.jpg</src>
-    <href>http://pds-cm.jpl.nasa.gov/2010/</href>
+    <src>images/pds4_logo.png</src>
+    <href>https://pds-cm.jpl.nasa.gov/pds4/</href>
   </bannerLeft>
 
   <bannerRight>
-    <name>PDS4 Object Access Library</name>
+    <name>PDS4 Tools Library</name>
   </bannerRight>
 
   <version/>
 
   <body>
     <links>
-      <item name="PDS4 Object Access Library" href="http://pds-cm.jpl.nasa.gov/2010/pdsObjectAccess/index.html" />
+      <item name="PDS4 Tools Library" href="https://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/objectAccess/index.html" />
     </links>
 
     <menu name="Software Documentation">
       <item name="About" href="index.html"/>
-      <item name="Release Notes" href="release/index.html"/>
+      <item name="Requirements (pdf)" href="docs/requirements.pdf"/>
       <item name="Installation" href="install/index.html"/>
-      <item name="Operation" href="operate/index.html"/>
+      <item name="Development" href="develop/index.html"/>
     </menu>
 
     <menu name="Download">
-      <item name="Requirements Doc(pdf)" href="docs/requirements.pdf"/>
-      <item name="Binary Package (tar.gz)" href="ftp://pds.nasa.gov/pub/toplevel/2010/pds4access/${project.artifactId}-${project.version}-bin.tar.gz"/>
-      <item name="Binary Package (zip)" href="ftp://pds.nasa.gov/pub/toplevel/2010/pds4access/${project.artifactId}-${project.version}-bin.zip"/>
+      <item name="Binary Package (tar.gz)" href="ftp://pds.nasa.gov/pub/toplevel/2010/preparation/${project.artifactId}-${project.version}.tar.gz"/>
+      <item name="Binary Package (zip)" href="ftp://pds.nasa.gov/pub/toplevel/2010/preparation/${project.artifactId}-${project.version}.zip"/>
     </menu>
+
+    <menu ref="modules"/>
 
     <menu ref="reports"/>
   </body>
