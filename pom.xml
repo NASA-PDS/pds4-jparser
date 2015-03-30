@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!--
-  Copyright 2012-2014, by the California Institute of Technology.
+  Copyright 2012-2015, by the California Institute of Technology.
   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
   Any commercial use must be negotiated with the Office of Technology
   Transfer at the California Institute of Technology.
@@ -26,13 +26,17 @@
   <groupId>gov.nasa.pds.2010.preparation</groupId>
   <artifactId>pds4-tools</artifactId>
   <version>0.5.0</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
 
   <name>PDS4 Tools</name>
   <description>
     This is the tools library for the PDS4 planetary data standard.
   </description>
   <url>https://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/</url>
+
+  <modules>
+    <module>objectAccess</module>
+  </modules>
 
   <licenses>
     <license>
