@@ -57,7 +57,10 @@ public class Label {
 	private LabelStandard standard;
 
 	private Label(File labelFile) throws ParseException {
-		parentDir = labelFile.getParentFile();
+		// Need to get the absolute version of the label file, because
+		// relative paths in the current directory will give a null parent
+		// file.
+		parentDir = labelFile.getAbsoluteFile().getParentFile();
 		oa = new ObjectAccess(parentDir);
 		genericProduct = oa.getProduct(labelFile, Product.class);
 		standard = LabelStandard.PDS4;
