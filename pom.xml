@@ -25,7 +25,7 @@
 
   <groupId>gov.nasa.pds.2010.preparation</groupId>
   <artifactId>pds4-tools</artifactId>
-  <version>0.6.0-dev</version>
+  <version>0.5.0</version>
   <packaging>pom</packaging>
 
   <name>PDS4 Tools</name>
@@ -64,7 +64,7 @@
       <email>Pegah.Sarram@nasa.gov</email>
       <organization>NASA Ames Research Center</organization>
       <roles>
-        <role>Developer</role>
+        <role>Former Developer</role>
       </roles>
     </developer>
   </developers>
