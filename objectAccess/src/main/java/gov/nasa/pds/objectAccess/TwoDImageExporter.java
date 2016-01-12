@@ -168,14 +168,20 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	 * @param array2dImage
 	 */
 	private void setImageStatistics(Array2DImage array2dImage) {
-		double dataMin = array2dImage.getObjectStatistics().getMinimum();
-		double dataMax = array2dImage.getObjectStatistics().getMaximum();
-
-		if (array2dImage.getDisplay2DImage().getLineDisplayDirection().equals("UP")) {
-			lineDirectionDown = false;
-		}
-		if (array2dImage.getDisplay2DImage().getSampleDisplayDirection().equals("LEFT")) {
-			setSampleDirectionRight(false);
+	  double dataMin = 0.0;
+	  double dataMax = 0.0;
+	  if (array2dImage.getObjectStatistics() != null) {
+  		dataMin = array2dImage.getObjectStatistics().getMinimum();
+  		dataMax = array2dImage.getObjectStatistics().getMaximum();
+	  }
+	  
+		if (array2dImage.getDisplay2DImage() != null) {
+  		if (array2dImage.getDisplay2DImage().getLineDisplayDirection().equals("UP")) {
+  			lineDirectionDown = false;
+  		}
+  		if (array2dImage.getDisplay2DImage().getSampleDisplayDirection().equals("LEFT")) {
+  			setSampleDirectionRight(false);
+  		}
 		}
 		if (array2dImage.getAxisIndexOrder().equals("LAST_INDEX_FASTEST")) {
 			setFirstIndexFastest(false);
