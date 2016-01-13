@@ -35,11 +35,15 @@ public class ExtractTable {
 
 	private static final String HELP_OPTION = "help";
 
+	private static final String EXTRACT_ALL = "all";
+	
 	private static final String LIST_TABLES_OPTION = "list-tables";
 
 	private static final String FIELDS_OPTION = "fields";
 
 	private static final String INDEX_OPTION = "index";
+	
+	private static final String DATA_FILE_OPTION = "data-file";
 
 	private static final String OUTPUT_FILE_OPTION = "output-file";
 
@@ -65,8 +69,10 @@ public class ExtractTable {
 	private Options options;
 
 	private boolean listTables;
+	private boolean extractAll;
 	private File labelFile;
 	private File outputFile;
+	private File dataFile;
 	private PrintWriter out;
 	private OutputFormat format;
 	private String fieldSeparator;
@@ -100,6 +106,10 @@ public class ExtractTable {
 		tableIndex.setArgName("NUMBER");
 		options.addOption(tableIndex);
 
+		Option dataFile = new Option("d", DATA_FILE_OPTION, true, "data file name, if more than one data file is present (default is the first one listed)");
+		dataFile.setArgName("FILE");
+		options.addOption(dataFile);
+		
 		Option fields = new Option("f", FIELDS_OPTION, true, "comma-separated list of field names or numbers (default is all fields)");
 		fields.setArgName("FIELD_LIST");
 		fields.setValueSeparator(',');
@@ -123,6 +133,7 @@ public class ExtractTable {
 		options.addOption("W", WINDOWS_OPTION, false, "output using Windows line separator (CRLF)");
 		options.addOption("U", UNIX_OPTION, false, "output using Unix line separator (LF)");
 		options.addOption("P", PLATFORM_OPTION, false, "output using current platform line separator (default)");
+		options.addOption("a", EXTRACT_ALL, false, "extract all tables");
 	}
 
 	/**
@@ -159,40 +170,44 @@ public class ExtractTable {
 			System.exit(1);
 		}
 
-		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
-		String fileName = fileArea.getFile().getFileName();
-		File dataFile = new File(labelFile.getParent(), fileName);
-
-		int currentIndex = 1;
-		for (Object obj : objectAccess.getTableObjects(fileArea)) {
-			TableType tableType = TableType.FIXED_BINARY;
-			if (obj instanceof TableCharacter) {
-				tableType = TableType.FIXED_TEXT;
-			} else if (obj instanceof TableDelimited) {
-				tableType = TableType.DELIMITED;
-			}
-
-			TableReader reader = null;
-			try {
-				reader = ExporterFactory.getTableReader(obj, dataFile);
-			} catch (Exception ex) {
-				System.err.println("Cannot create a table reader for the table: " + ex.getMessage());
-				ex.printStackTrace();
-				out.close();
-				return;
-			}
-
-			if (listTables) {
-				out.println("table " + currentIndex + ": " + tableType.getReadableType());
-				listFields(reader.getFields());
-			} else if (currentIndex == tableIndex) {
-				extractTable(reader);
-				break;
-			}
-
-			++currentIndex;
+		for (FileAreaObservational fileArea : product.getFileAreaObservationals()) {
+  		String fileName = fileArea.getFile().getFileName();
+  		File dataFile = new File(labelFile.getParent(), fileName);
+  		if (listTables) {
+  		  out.println("\nfile: " + dataFile.getName());
+  		}
+  		int currentIndex = 1;
+  		for (Object obj : objectAccess.getTableObjects(fileArea)) {
+  			TableType tableType = TableType.FIXED_BINARY;
+  			if (obj instanceof TableCharacter) {
+  				tableType = TableType.FIXED_TEXT;
+  			} else if (obj instanceof TableDelimited) {
+  				tableType = TableType.DELIMITED;
+  			}
+  
+  			TableReader reader = null;
+  			try {
+  				reader = ExporterFactory.getTableReader(obj, dataFile);
+  			} catch (Exception ex) {
+  				System.err.println("Cannot create a table reader for the table: " + ex.getMessage());
+  				ex.printStackTrace();
+  				out.close();
+  				return;
+  			}
+  			if (listTables) {
+  				out.println("  table " + currentIndex + ": " + tableType.getReadableType());
+  				listFields(reader.getFields());
+  			} else if (extractAll || (currentIndex == tableIndex && 
+  			    (this.dataFile == null || this.dataFile.getName().equalsIgnoreCase(fileName))) ) {
+  				extractTable(reader);
+  				break;
+  			}  
+  			++currentIndex;
+  		}
+  		if (!listTables && (this.dataFile == null && !extractAll)) {
+  		  break;
+  		}
 		}
-
 		out.close();
 	}
 
@@ -416,6 +431,7 @@ public class ExtractTable {
 		}
 
 		listTables = (cmdLine.hasOption(LIST_TABLES_OPTION));
+		extractAll = (cmdLine.hasOption(EXTRACT_ALL));
 
 		if (cmdLine.hasOption(INDEX_OPTION)) {
 			tableIndex = Integer.parseInt(cmdLine.getOptionValue(INDEX_OPTION));
@@ -423,6 +439,12 @@ public class ExtractTable {
 			tableIndex = 1;
 		}
 
+		if (cmdLine.hasOption(DATA_FILE_OPTION)) {
+		  dataFile = new File(cmdLine.getOptionValue(DATA_FILE_OPTION));
+		} else {
+		  dataFile = null;
+		}
+		
 		String[] files = cmdLine.getArgs();
 		if (files.length == 0) {
 			showHelp("A label file is required", 1);
