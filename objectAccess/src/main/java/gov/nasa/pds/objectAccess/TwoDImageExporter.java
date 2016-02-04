@@ -146,7 +146,7 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 
 		flexReadToRaster(bufferedInputStream, bufferedImage, lines, samples);
     // Scale the image if there were no min/max values defined in the label.
-    if (dataMin != 0 && dataMax != 0) {
+    if (dataMin == 0 && dataMax == 0) {
       bufferedImage = autoScaleImage(bufferedImage);
     }
 		if (exportType.equals("VICAR") || exportType.equalsIgnoreCase("PDS3")) {
