@@ -10,6 +10,8 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
+import java.awt.image.renderable.ParameterBlock;
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +22,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedOp;
 
 import jpl.mipl.io.plugins.DOMtoPDSlabel;
 import jpl.mipl.io.plugins.ImageToPDS_DOM;
@@ -61,6 +66,10 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	private boolean sampleDirectionRight = true;
 	private boolean firstIndexFastest = true;
 	private int numberOfBands = 1;
+	private double scalingFactor = 1.0;
+	private double valueOffset = 0.0;
+  private double dataMin = 0.0;
+  private double dataMax = 0.0;
 
 
 	TwoDImageExporter(FileAreaObservational fileArea, ObjectProvider provider) throws IOException {
@@ -102,22 +111,24 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	@Override
 	public void convert(Array2DImage array2DImage, OutputStream outputStream) throws IOException {
 		setArray2DImage(array2DImage);
-		int rows = 0;
-		int cols = 0;
+		int lines = 0;
+		int samples = 0;
 		if (array2DImage.getAxes() == 2) {
 			for (AxisArray axis : array2DImage.getAxisArraies()) {
 				//TODO axis ordering -- how does axis order related to index order?
 				if (axis.getSequenceNumber() == 2) {
-					cols = axis.getElements();
+					samples = axis.getElements();
 				} else {
-					rows = axis.getElements();
+					lines = axis.getElements();
 				}
 			}
 		}
 
-		FileInputStream inputFileStream = new FileInputStream(new File(getObjectProvider().getRoot().getAbsolutePath(),
-				getObservationalFileArea().getFile().getFileName()));
-		inputFileStream.skip(Integer.valueOf(array2DImage.getOffset().getValue()));
+    BufferedInputStream bufferedInputStream = new BufferedInputStream(
+        new FileInputStream(
+            new File(getObjectProvider().getRoot().getAbsolutePath(),
+        getObservationalFileArea().getFile().getFileName())));
+		bufferedInputStream.skip(Integer.valueOf(array2DImage.getOffset().getValue()));
 		byte[] levels = new byte[targetLevels];
 		for(int c=0;c<targetLevels;c++) {
 			levels[c] = (byte)(c);
@@ -126,14 +137,18 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 				);
 		switch (targetPixelBitDepth) {
 			case 8:
-				bufferedImage =  new BufferedImage(cols,rows,imageType,getColorModel());
+				bufferedImage =  new BufferedImage(samples, lines, imageType, getColorModel());
 				break;
 			case 16:
-				bufferedImage =  new BufferedImage(cols,rows,imageType);
+				bufferedImage =  new BufferedImage(samples, lines, imageType);
 				break;
 		}
 
-		flexReadToRaster(inputFileStream, bufferedImage, cols, rows);
+		flexReadToRaster(bufferedInputStream, bufferedImage, lines, samples);
+    // Scale the image if there were no min/max values defined in the label.
+    if (dataMin != 0 && dataMax != 0) {
+      bufferedImage = autoScaleImage(bufferedImage);
+    }
 		if (exportType.equals("VICAR") || exportType.equalsIgnoreCase("PDS3")) {
 			try {
 				writeLabel(outputStream, getExportType());
@@ -168,96 +183,44 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	 * @param array2dImage
 	 */
 	private void setImageStatistics(Array2DImage array2dImage) {
-	  double dataMin = 0.0;
-	  double dataMax = 0.0;
 	  if (array2dImage.getObjectStatistics() != null) {
   		dataMin = array2dImage.getObjectStatistics().getMinimum();
   		dataMax = array2dImage.getObjectStatistics().getMaximum();
 	  }
 	  
 		if (array2dImage.getDisplay2DImage() != null) {
-  		if (array2dImage.getDisplay2DImage().getLineDisplayDirection().equals("UP")) {
+  		if (array2dImage.getDisplay2DImage().getLineDisplayDirection().equalsIgnoreCase("UP")) {
   			lineDirectionDown = false;
   		}
-  		if (array2dImage.getDisplay2DImage().getSampleDisplayDirection().equals("LEFT")) {
+  		if (array2dImage.getDisplay2DImage().getSampleDisplayDirection().equalsIgnoreCase("LEFT")) {
   			setSampleDirectionRight(false);
   		}
 		}
-		if (array2dImage.getAxisIndexOrder().equals("LAST_INDEX_FASTEST")) {
+		if (array2dImage.getAxisIndexOrder().equalsIgnoreCase("LAST INDEX FASTEST")) {
 			setFirstIndexFastest(false);
 		}
-
-		if (dataMin == 0 && dataMax == 0) {
-			int rows = 0;
-			int cols = 0;
-			dataMin = Double.POSITIVE_INFINITY;
-			dataMax = Double.NEGATIVE_INFINITY;
-			if (array2dImage.getAxes() == 2) {
-				for (AxisArray axis : array2dImage.getAxisArraies()) {
-					//TODO axis ordering
-					if (axis.getSequenceNumber() == 2) {
-						cols = axis.getElements();
-					} else {
-						rows = axis.getElements();
-					}
-				}
-			}
-
-			File inputFile = new File(getObjectProvider().getRoot().getAbsolutePath(), getObservationalFileArea().getFile().getFileName());
-			int countBytes = -1;
-			DataInputStream di = null;
-
-			try {
-				di = new DataInputStream(new FileInputStream(inputFile));
-
-				for (int y = 0; y < cols; y++){
-					for(int x = 0; x<rows; x++){
-						countBytes += 2;
-						double value = 0;
-						switch (rawDataType) {
-						case UnsignedByte:
-							value = di.readByte();
-							break;
-						case UnsignedMSB2:
-							value = di.readShort();
-							break;
-						case UnsignedMSB4:
-							value = di.readInt();
-							break;
-						case IEEE754MSBSingle:
-							value = di.readFloat();
-							break;
-						}
-						if (value < dataMin) {
-							dataMin = value;
-						}
-						if (value > dataMax) {
-							dataMax = value;
-						}
-					}
-				}
-			} catch (Exception e) {
-				String m = "EOF at byte number: "+countBytes+ "inputFile: " + inputFile;
-				logger.error(m, e);
-			} finally {
-				if (di != null) {
-					try {di.close();} catch (IOException e) {}
-				}
-			}
+		
+		if (array2dImage.getElementArray().getScalingFactor() != null) {
+		  scalingFactor = array2dImage.getElementArray().getScalingFactor().doubleValue();
 		}
-		if (this.maximizeDynamicRange) {
-			rangeScaleSlope = targetLevels / (dataMax - dataMin + 1) ;
-			rangeScaleIntercept = (dataMin*targetLevels) / (dataMin - dataMax - 1 );
-		} else {
-			rangeScaleSlope = targetLevels / Math.pow(2,rawDataType.getBits());
-			rangeScaleIntercept = 0;
+		
+		if (array2dImage.getElementArray().getValueOffset() != null) {
+		  valueOffset = array2dImage.getElementArray().getValueOffset().doubleValue();
 		}
+		
+    if (dataMin != 0 && dataMax != 0) {
+      rangeScaleSlope = targetLevels / (dataMax - dataMin + 1) ;
+      rangeScaleIntercept = (dataMin*targetLevels) / (dataMin - dataMax - 1 );
+    } else {
+      rangeScaleSlope = targetLevels / Math.pow(2,rawDataType.getBits());
+      rangeScaleIntercept = 0;
+    }
 		//TODO Handle adjusting dynamic range more completely?
 
 	}
 
 
-	private void flexReadToRaster(FileInputStream inputFileStream, BufferedImage bufferedImage, int rows, int cols) {
+	private void flexReadToRaster(BufferedInputStream inputFileStream, BufferedImage bufferedImage, int lines, int samples) {
 
 		WritableRaster raster= bufferedImage.getRaster();
 		int countBytes = -1;
@@ -268,48 +231,13 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			int xWrite = 0;
 			int yWrite = 0;
 			if (firstIndexFastest) {
-				for (int y = 0; y < cols; y++){
-					if (lineDirectionDown) {
-						yWrite = y;
-					} else {
-						yWrite = cols-y-1;
-					}
-					for(int x = 0; x<rows; x++){
-						countBytes += 2;
-						double value = 0;
-						switch (rawDataType) {
-						case UnsignedByte:
-							value = di.readByte();
-							break;
-						case UnsignedMSB2:
-							value = di.readShort();
-							break;
-						case UnsignedMSB4:
-							value = di.readInt();
-							break;
-						case IEEE754MSBSingle:
-							value = di.readFloat();
-							break;
-						}
-						//TODO test other input data types
-
-						if (sampleDirectionRight) {
-							xWrite = x;
-						} else {
-							xWrite = rows-x-1;
-						}
-						raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
-
-					}
-				}
-			} else {  //TODO WHat has to change for last index fastest? is this correct?
-				for (int x = 0; x<rows; x++){
+				for (int x = 0; x < samples; x++){
 					if (sampleDirectionRight) {
 						xWrite = x;
 					} else {
-						xWrite = rows-x-1;
+						xWrite = samples-x-1;
 					}
-					for (int y = 0; y < cols; y++){
+					for(int y = 0; y < lines; y++){
 						countBytes += 2;
 						double value = 0;
 						switch (rawDataType) {
@@ -330,13 +258,46 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 						if (lineDirectionDown) {
 							yWrite = y;
 						} else {
-							yWrite = cols-y-1;
+							yWrite = lines-y-1;
 						}
-
-						raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
-
+            value = (value * scalingFactor) + valueOffset;
+            raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
 					}
 				}
+			} else { 
+  			for (int y = 0; y < lines; y++) {
+  				if (lineDirectionDown) {
+  				  yWrite = y;
+  				} else {
+  				  yWrite = lines-y-1;
+  				}
+  				for (int x = 0; x < samples; x++) {
+  					countBytes += 2;
+  					double value = 0;
+  					switch (rawDataType) {
+  					case UnsignedByte:
+  						value = di.readUnsignedByte();
+  						break;
+  					case UnsignedMSB2:
+  						value = di.readUnsignedShort();
+  						break;
+  					case UnsignedMSB4:
+  						value = di.readInt();
+  						break;
+  					case IEEE754MSBSingle:
+  						value = di.readFloat();
+  						break;
+  					}
+  					//TODO test other input data types
+  					if (sampleDirectionRight) {
+  						xWrite = x;
+  					} else {
+  						xWrite = samples-x-1;
+  					}
+  					value = (value * scalingFactor) + valueOffset;
+  					raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
+  				}
+  			}
 			}
 		} catch (Exception e) {
 			String m = "EOF at byte number: "+countBytes+ "inputFile: " + inputFileStream;
@@ -348,7 +309,32 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 		}
 	}
 
-
+  private BufferedImage autoScaleImage(BufferedImage bufferedImage) {
+    ParameterBlock pbMaxMin = new ParameterBlock();
+    pbMaxMin.addSource(bufferedImage);
+    RenderedOp extrema = JAI.create("extrema", pbMaxMin);
+    double[] allMins = (double[])extrema.getProperty("minimum");
+    double[] allMaxs = (double[])extrema.getProperty("maximum");
+    double minValue = allMins[0];
+    double maxValue = allMaxs[0];
+    for(int v=1;v<allMins.length;v++)
+    {
+      if (allMins[v] < minValue) minValue = allMins[v];
+      if (allMaxs[v] > maxValue) maxValue = allMaxs[v];
+    }
+    double[] addThis    = new double[1]; addThis[0]    = minValue;
+    double[] multiplyBy = new double[1]; multiplyBy[0] = 255./(maxValue-minValue);
+    PlanarImage planarImage = PlanarImage.wrapRenderedImage(bufferedImage);
+    ParameterBlock pbSub = new ParameterBlock();
+    pbSub.addSource(planarImage);
+    pbSub.add(addThis);
+    planarImage = (PlanarImage) JAI.create("subtractconst",pbSub,null);    
+    ParameterBlock pbMult = new ParameterBlock();
+    pbMult.addSource(planarImage);
+    pbMult.add(multiplyBy);
+    planarImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);
+    return planarImage.getAsBufferedImage();
+  }
 
 	private void writeRasterImage(OutputStream outputStream, BufferedImage bi) {
 		// Store the image using the export format.
