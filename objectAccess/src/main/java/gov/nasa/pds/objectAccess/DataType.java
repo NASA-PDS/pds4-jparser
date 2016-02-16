@@ -16,6 +16,9 @@ public interface DataType {
 	public enum NumericDataType {
 		SignedByte (8),
 		UnsignedByte (8, "BYTE"),
+		SignedLSB2(16, "HALF"),
+		UnsignedLSB2(16, "HALF"),
+		SignedMSB2(16, "HALF"),
 		UnsignedMSB2 (16, "HALF"),
 		UnsignedMSB4 (32, "FULL"),
 		UnsignedMSB8 (64),

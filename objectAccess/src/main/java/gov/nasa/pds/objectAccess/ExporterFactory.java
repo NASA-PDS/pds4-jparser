@@ -53,6 +53,11 @@ public class ExporterFactory {
 			return new TwoDImageExporter(fileArea, provider);
 	}
 
+	public static ThreeDImageExporter get3DImageExporter(FileAreaObservational fileArea,
+	    ObjectProvider provider) throws Exception {
+	  return new ThreeDImageExporter(fileArea, provider);
+	}
+	
 	/**
 	 * Gets an instance of a Table exporter.
 	 *

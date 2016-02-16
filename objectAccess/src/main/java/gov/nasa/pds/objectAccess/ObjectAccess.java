@@ -1,6 +1,7 @@
 package gov.nasa.pds.objectAccess;
 
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
+import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.FieldDelimited;
@@ -117,6 +118,16 @@ public class ObjectAccess implements ObjectProvider {
     	}
     	return list;
     }
+
+	public List<Array3DImage> getArray3DImages(FileAreaObservational observationalFileArea) {
+    ArrayList<Array3DImage> list = new ArrayList<Array3DImage>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      if (obj.getClass().equals(Array3DImage.class)) {
+        list.add(Array3DImage.class.cast(obj));
+      }
+    }
+    return list;
+	}
 
 	@Override
 	public List<Object> getTableObjects(FileAreaObservational observationalFileArea) {

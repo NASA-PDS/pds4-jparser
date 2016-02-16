@@ -13,18 +13,18 @@
 // $Id$
 package gov.nasa.pds.objectAccess;
 
-import gov.nasa.arc.pds.xml.generated.Array2DImage;
+import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.arc.pds.xml.generated.AxisArray;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 import gov.nasa.pds.objectAccess.DataType.NumericDataType;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
+import java.awt.image.BandedSampleModel;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
-import java.awt.image.PixelInterleavedSampleModel;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.awt.image.renderable.ParameterBlock;
@@ -58,14 +58,14 @@ import org.slf4j.LoggerFactory;
 import com.google.common.primitives.UnsignedLong;
 import com.sun.media.jai.codec.SeekableStream;
 
-
-/** Class for converting 2D PDS images.
- * @author dcberrio
+/** 
+ * Class for converting PDS Array_3D_Image products.
+ * @author mcayanan
  *
  */
-public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2DImage> {
+public class ThreeDImageExporter extends ObjectExporter implements Exporter<Array3DImage> {
 
-	Logger logger = LoggerFactory.getLogger(TwoDImageExporter.class);
+	Logger logger = LoggerFactory.getLogger(ThreeDImageExporter.class);
 
 	private NumericDataType rawDataType;
 
@@ -77,27 +77,25 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	private IndexColorModel colorModel;
 	private BufferedImage bufferedImage;
 	private int imageType = BufferedImage.TYPE_BYTE_INDEXED;
-	private double rangeScaleSlope;
-	private double rangeScaleIntercept;
+	private double rangeScaleSlope = 0.0;
+	private double rangeScaleIntercept = 0.0;
 	private boolean maximizeDynamicRange = true;
 	private String exportType = "PNG";
-	private Array2DImage pdsImage;
+	private Array3DImage pdsImage;
 	private boolean lineDirectionDown = true;
 	private boolean sampleDirectionRight = true;
-	private boolean firstIndexFastest = true;
-	private int numberOfBands = 1;
+	private boolean firstIndexFastest = false;
+	private boolean autoScale = true;
 	private double scalingFactor = 1.0;
 	private double valueOffset = 0.0;
-  private boolean autoScale = true;
-  private boolean isFloatType = false;
+	private boolean isFloatType = false;
 
-
-	TwoDImageExporter(FileAreaObservational fileArea, ObjectProvider provider) throws IOException {
+	ThreeDImageExporter(FileAreaObservational fileArea, ObjectProvider provider) throws IOException {
 		super(fileArea, provider);
 
 	}
 
-	TwoDImageExporter(File label, int fileAreaIndex) throws Exception {
+	ThreeDImageExporter(File label, int fileAreaIndex) throws Exception {
 		super(label, fileAreaIndex);
 	}
 
@@ -116,48 +114,51 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	@Override
 	public void convert(OutputStream outputStream, int objectIndex)
 			throws IOException {
-		List<Array2DImage> imageList = getObjectProvider().getArray2DImages(getObservationalFileArea());
-		setArray2DImage(imageList.get(objectIndex));
-		convert(getArray2DImage(), outputStream);
+		List<Array3DImage> imageList = getObjectProvider().getArray3DImages(getObservationalFileArea());
+		setArray3DImage(imageList.get(objectIndex));
+		convert(getArray3DImage(), outputStream);
 	}
 
 	/**
-	 * Converts a 2D array file to a viewable image file.
+	 * Converts a 3D array file to a viewable image file.
 	 *
 	 * @param outputStream the output stream
-	 * @param array2DImage the array2DImage object to convert
+	 * @param array3DImage the array3DImage object to convert
 	 * @throws IOException if there is an exception writing to the stream or reading the image
 	 */
 	@Override
-	public void convert(Array2DImage array2DImage, OutputStream outputStream) throws IOException {
-		setArray2DImage(array2DImage);
+	public void convert(Array3DImage array3DImage, OutputStream outputStream) throws IOException {
+		setArray3DImage(array3DImage);
 		int lines = 0;
 		int samples = 0;
-		if (array2DImage.getAxes() == 2) {
-			for (AxisArray axis : array2DImage.getAxisArraies()) {
+		int bands = 1;
+		if (array3DImage.getAxes() == 3) {
+			for (AxisArray axis : array3DImage.getAxisArraies()) {
 				//TODO axis ordering -- how does axis order related to index order?
-				if (axis.getSequenceNumber() == 2) {
+				if (axis.getSequenceNumber() == 3) {
 					samples = axis.getElements();
-				} else {
+				} else if (axis.getSequenceNumber() == 2) {
 					lines = axis.getElements();
+				} else {
+				  bands = axis.getElements();
 				}
 			}
 		}
 
-    BufferedInputStream bufferedInputStream = new BufferedInputStream(
-        new FileInputStream(
-            new File(getObjectProvider().getRoot().getAbsolutePath(),
-        getObservationalFileArea().getFile().getFileName())));
-		bufferedInputStream.skip(Integer.valueOf(array2DImage.getOffset().getValue()));
-		
+		BufferedInputStream bufferedInputStream = new BufferedInputStream(
+		    new FileInputStream(
+		        new File(getObjectProvider().getRoot().getAbsolutePath(),
+				getObservationalFileArea().getFile().getFileName())));
+		bufferedInputStream.skip(Integer.valueOf(array3DImage.getOffset().getValue()));
     int scanline_stride = samples;
-    int[] band_offsets = new int[1];
-    for (int i = 0; i < 1; i++) {
+    int[] band_offsets = new int[bands];
+    int[] bank_indices = new int[bands];
+    for (int i = 0; i < bands; i++) {
       band_offsets[i] = 0;
+      bank_indices[i] = i;
     }
-    /* Taken from Vicar IO library. */
     int dataBufferType = DataBuffer.TYPE_BYTE;
-    String dataType = array2DImage.getElementArray().getDataType();
+    String dataType = array3DImage.getElementArray().getDataType();
     if ("IEEE754MSBSingle".equalsIgnoreCase(dataType)) {
       dataBufferType = DataBuffer.TYPE_FLOAT;
       isFloatType = true;
@@ -165,14 +166,13 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
       dataBufferType = DataBuffer.TYPE_DOUBLE;
       isFloatType = true;
     }
-    SampleModel sampleModel =  new PixelInterleavedSampleModel(
-        dataBufferType, samples, lines, 1, scanline_stride, band_offsets);
+    SampleModel sampleModel = new BandedSampleModel(dataBufferType, 
+        samples, lines, scanline_stride, bank_indices, band_offsets);
     ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
     ImageTypeSpecifier imageType = new ImageTypeSpecifier(colorModel, sampleModel);
     bufferedImage = imageType.createBufferedImage(samples, lines);
-
-		flexReadToRaster(bufferedInputStream, bufferedImage, lines, samples);
-    // Auto scale the image if there were no min/max values defined in the label.
+		flexReadToRaster(bufferedInputStream, bufferedImage, lines, samples, bands);
+		// Scale the image if there were no min/max values defined in the label.
     if (autoScale) {
       bufferedImage = autoScaleImage(bufferedImage);
     }
@@ -194,9 +194,58 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 		outputStream.close();
 	}
 
-	private void setImageElementsDataType(Array2DImage array2dImage) {
+	/**
+	 * Auto scales the given image by performing amplitude rescaling.
+	 * 
+	 * @param bufferedImage The image to rescale.
+	 * @return The rescaled image.
+	 */
+	private BufferedImage autoScaleImage(BufferedImage bufferedImage) {
+    ParameterBlock pbMaxMin = new ParameterBlock();
+    pbMaxMin.addSource(bufferedImage);
+    RenderedOp extrema = JAI.create("extrema", pbMaxMin);
+    double[] allMins = (double[])extrema.getProperty("minimum");
+    double[] allMaxs = (double[])extrema.getProperty("maximum");
+    double minValue = allMins[0];
+    double maxValue = allMaxs[0];
+    for(int v=1;v<allMins.length;v++)
+    {
+      if (allMins[v] < minValue) minValue = allMins[v];
+      if (allMaxs[v] > maxValue) maxValue = allMaxs[v];
+    }
+    double[] addThis    = new double[1]; addThis[0]    = minValue;
+    double[] multiplyBy = new double[1]; multiplyBy[0] = 255./(maxValue-minValue);
+    PlanarImage planarImage = PlanarImage.wrapRenderedImage(bufferedImage);
+    ParameterBlock pbSub = new ParameterBlock();
+    pbSub.addSource(planarImage);
+    pbSub.add(addThis);
+    planarImage = (PlanarImage) JAI.create("subtractconst",pbSub,null);    
+    ParameterBlock pbMult = new ParameterBlock();
+    pbMult.addSource(planarImage);
+    pbMult.add(multiplyBy);
+    planarImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);
+    return planarImage.getAsBufferedImage();
+	}
+	
+  /**
+   * Create a surrogate image from the given image so that it can be
+   * displayable.
+   * 
+   * @param bufferedImage The given image to reformat.
+   * 
+   * @return The surrogate image.
+   */
+  private BufferedImage toDisplayableImage(BufferedImage bufferedImage) {
+    ParameterBlock pbConvert = new ParameterBlock();
+    pbConvert.addSource(bufferedImage);
+    pbConvert.add(DataBuffer.TYPE_BYTE);
+    PlanarImage planarImage = JAI.create("format", pbConvert);
+    return planarImage.getAsBufferedImage();
+  }
+	
+	private void setImageElementsDataType(Array3DImage array3dImage) {
 		try {
-			setRawDataType(Enum.valueOf(NumericDataType.class, array2dImage.getElementArray().getDataType()));
+			rawDataType = Enum.valueOf(NumericDataType.class, array3dImage.getElementArray().getDataType());
 		} catch (Exception e) {
 			logger.error("Array data type is not valid, null, or unsupported", e);
 			throw new IllegalArgumentException("Array data type is not valid, null, or unsupported");
@@ -204,50 +253,37 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	}
 
 
-	/** Read in the data maximum and minimum values.
-	 * TODO
-	 * There's various types of range scaling/levels adjustment that we could do:
-	 * 1) Scale all values according to difference between maximum input value and
-	 *  the  target pixel bit depth using a linear transformation
-	 * 2) Scale all values according to the difference between the maximum
-	 * space of input values and the target pixel bit depth...ie not based on
-	 * actual input values
-	 * The default (maximizeDynamicRange true) effects 1) and maximizeDynamicRange false does #2.
-	 * @param array2dImage
-	 */
-	private void setImageStatistics(Array2DImage array2dImage) {
+  /** Read in the data maximum and minimum values.
+   * TODO
+   * There's various types of range scaling/levels adjustment that we could do:
+   * 1) Scale all values according to difference between maximum input value and
+   *  the  target pixel bit depth using a linear transformation
+   * 2) Scale all values according to the difference between the maximum
+   * space of input values and the target pixel bit depth...ie not based on
+   * actual input values
+   * The default (maximizeDynamicRange true) effects 1) and maximizeDynamicRange false does #2.
+   * @param array3dImage
+   */
+  private void setImageStatistics(Array3DImage array3dImage) {
     double dataMin = 0.0;
     double dataMax = 0.0;
+    if (array3dImage.getObjectStatistics() != null) {
+      dataMin = array3dImage.getObjectStatistics().getMinimum();
+      dataMax = array3dImage.getObjectStatistics().getMaximum();
+    }
     
-	  if (array2dImage.getObjectStatistics() != null) {
-  		dataMin = array2dImage.getObjectStatistics().getMinimum();
-  		dataMax = array2dImage.getObjectStatistics().getMaximum();
-	  }
-	  
-		if (array2dImage.getDisplay2DImage() != null) {
-  		if (array2dImage.getDisplay2DImage().getLineDisplayDirection().equalsIgnoreCase("UP")) {
-  			lineDirectionDown = false;
-  		}
-  		if (array2dImage.getDisplay2DImage().getSampleDisplayDirection().equalsIgnoreCase("LEFT")) {
-  			setSampleDirectionRight(false);
-  		}
-		}
-		if (array2dImage.getAxisIndexOrder().equalsIgnoreCase("LAST INDEX FASTEST")) {
-			setFirstIndexFastest(false);
-		}
-		
-		if (array2dImage.getElementArray().getScalingFactor() != null) {
-		  scalingFactor = array2dImage.getElementArray().getScalingFactor().doubleValue();
-		  if (scalingFactor != 1.0) {
-		    autoScale = false;
-		  }
-		}
-		
-		if (array2dImage.getElementArray().getValueOffset() != null) {
-		  valueOffset = array2dImage.getElementArray().getValueOffset().doubleValue();
+    if (array3dImage.getElementArray().getScalingFactor() != null) {
+      scalingFactor = array3dImage.getElementArray().getScalingFactor().doubleValue();
+      if (scalingFactor != 1.0) {
+        autoScale = false;
+      }
+    }
+    
+    if (array3dImage.getElementArray().getValueOffset() != null) {
+      valueOffset = array3dImage.getElementArray().getValueOffset().doubleValue();
       autoScale = false;
-		}
-		
+    }
+    
     if (dataMin != 0 && dataMax != 0) {
       rangeScaleSlope = targetLevels / (dataMax - dataMin + 1) ;
       rangeScaleIntercept = (dataMin*targetLevels) / (dataMin - dataMax - 1 );
@@ -256,29 +292,27 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
       rangeScaleSlope = targetLevels / Math.pow(2,rawDataType.getBits());
       rangeScaleIntercept = 0;
     }
-		//TODO Handle adjusting dynamic range more completely?
-
-	}
+  }
 
 
 	private void flexReadToRaster(BufferedInputStream inputStream, 
-	    BufferedImage bufferedImage, int lines, int samples) throws IOException {
-	  WritableRaster raster = bufferedImage.getRaster();
+	    BufferedImage bufferedImage, int lines, int samples, int bands)
+	    throws IOException {
+		WritableRaster raster= bufferedImage.getRaster();
 		int countBytes = -1;
 		SeekableStream si = null;
-
 		try {
-		  si = SeekableStream.wrapInputStream(inputStream, false);
+      si = SeekableStream.wrapInputStream(inputStream, false);
 			int xWrite = 0;
 			int yWrite = 0;
-			if (firstIndexFastest) {
-				for (int x = 0; x < samples; x++){
-					if (sampleDirectionRight) {
-						xWrite = x;
+		  for (int b = 0; b < bands; b++) {
+				for (int y = 0; y<lines; y++) {
+          if (lineDirectionDown) {
+						yWrite = y;
 					} else {
-						xWrite = samples-x-1;
+						yWrite = lines-y-1;
 					}
-					for(int y = 0; y < lines; y++){
+					for (int x = 0; x < samples; x++) {
 						countBytes += 2;
 						double value = 0;
             switch (rawDataType) {
@@ -314,68 +348,16 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
               break;
             }
 						//TODO test other input data types
-						if (lineDirectionDown) {
-							yWrite = y;
+	          if (sampleDirectionRight) {
+							xWrite = x;
 						} else {
-							yWrite = lines-y-1;
+							xWrite = samples-x-1;
 						}
-            value = (value * scalingFactor) + valueOffset;
-            raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
+            value = (value * scalingFactor) + valueOffset;	         
+            raster.setSample(xWrite, yWrite, b, value * rangeScaleSlope + rangeScaleIntercept );
 					}
 				}
-			} else { 
-  			for (int y = 0; y < lines; y++) {
-  				if (lineDirectionDown) {
-  				  yWrite = y;
-  				} else {
-  				  yWrite = lines-y-1;
-  				}
-  				for (int x = 0; x < samples; x++) {
-  					countBytes += 2;
-  					double value = 0;
-            switch (rawDataType) {
-            case SignedByte:
-              value = si.readByte();
-              break;
-            case UnsignedByte:
-              value = si.readUnsignedByte();
-              break;
-            case UnsignedLSB2:
-              value = si.readUnsignedShortLE();
-              break;
-            case SignedLSB2:
-              value = si.readShortLE();
-              break;
-            case UnsignedMSB2:
-              value = si.readUnsignedShort();
-              break;              
-            case SignedMSB2:
-              value = si.readShort();
-              break;
-            case UnsignedMSB4:
-              value = si.readUnsignedInt();
-              break;
-            case UnsignedMSB8:
-              value = UnsignedLong.valueOf(si.readLong()).doubleValue();
-              break;           
-            case IEEE754MSBSingle:
-              value = si.readFloat();
-              break;
-            case IEEE754MSBDouble:
-              value = si.readDouble();
-              break;
-            }
-  					//TODO test other input data types
-  					if (sampleDirectionRight) {
-  						xWrite = x;
-  					} else {
-  						xWrite = samples-x-1;
-  					}
-  					value = (value * scalingFactor) + valueOffset;
-            raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
-  				}
-  			}
-			}
+		  }
 		} catch (Exception e) {
 			String m = "EOF at byte number: "+countBytes+ "inputFile: " + inputStream;
 			logger.error(m, e);
@@ -385,57 +367,11 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 				try {si.close();} catch (IOException e) {}
 			}
 		}
+		
 	}
 
-	/**
-   * Auto scales the given image by performing amplitude rescaling.
-   * 
-   * @param bufferedImage The image to rescale.
-   * @return The rescaled image.
-   */
-  private BufferedImage autoScaleImage(BufferedImage bufferedImage) {
-    ParameterBlock pbMaxMin = new ParameterBlock();
-    pbMaxMin.addSource(bufferedImage);
-    RenderedOp extrema = JAI.create("extrema", pbMaxMin);
-    double[] allMins = (double[])extrema.getProperty("minimum");
-    double[] allMaxs = (double[])extrema.getProperty("maximum");
-    double minValue = allMins[0];
-    double maxValue = allMaxs[0];
-    for(int v=1;v<allMins.length;v++)
-    {
-      if (allMins[v] < minValue) minValue = allMins[v];
-      if (allMaxs[v] > maxValue) maxValue = allMaxs[v];
-    }
-    double[] addThis    = new double[1]; addThis[0]    = minValue;
-    double[] multiplyBy = new double[1]; multiplyBy[0] = 255./(maxValue-minValue);
-    PlanarImage planarImage = PlanarImage.wrapRenderedImage(bufferedImage);
-    ParameterBlock pbSub = new ParameterBlock();
-    pbSub.addSource(planarImage);
-    pbSub.add(addThis);
-    planarImage = (PlanarImage) JAI.create("subtractconst",pbSub,null);    
-    ParameterBlock pbMult = new ParameterBlock();
-    pbMult.addSource(planarImage);
-    pbMult.add(multiplyBy);
-    planarImage = (PlanarImage)JAI.create("multiplyconst",pbMult,null);
-    return planarImage.getAsBufferedImage();
-  }
 
-  /**
-   * Create a surrogate image from the given image so that it can be
-   * displayable.
-   * 
-   * @param bufferedImage The given image to reformat.
-   * 
-   * @return The surrogate image.
-   */
-  private BufferedImage toDisplayableImage(BufferedImage bufferedImage) {
-    ParameterBlock pbConvert = new ParameterBlock();
-    pbConvert.addSource(bufferedImage);
-    pbConvert.add(DataBuffer.TYPE_BYTE);
-    PlanarImage planarImage = JAI.create("format", pbConvert);
-    return planarImage.getAsBufferedImage();
-  }
-  
+
 	private void writeRasterImage(OutputStream outputStream, BufferedImage bi) {
 		// Store the image using the export format.
 		try {
@@ -486,20 +422,22 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	private void writeLabel(OutputStream outputStream, String type) throws AlreadyOpenException, IOException, Exception {
 		if (type.equalsIgnoreCase("VICAR")) {
 			VicarSystemLabelGenerator labelGenerator = new VicarSystemLabelGenerator();
-			int cols = 0, rows = 0;
-			if (pdsImage.getAxes() == 2) {
+			int cols = 0, rows = 0, bands = 1;
+			if (pdsImage.getAxes() == 3) {
 				for (AxisArray axis : pdsImage.getAxisArraies()) {
 					//TODO axis ordering -- how does axis order related to index order?
-					if (axis.getSequenceNumber() == 2) {
+					if (axis.getSequenceNumber() == 3) {
 						cols = axis.getElements();
-					} else {
+					} else if (axis.getSequenceNumber() == 2) {
 						rows = axis.getElements();
+					} else {
+					  bands = axis.getElements();
 					}
 				}
 			}
 			labelGenerator.set_org("BSQ");  // Unless PDS label supports bands, a
 											// Data Architecture will always be BSQ
-			labelGenerator.set_nb(numberOfBands);
+			labelGenerator.set_nb(bands);
 			labelGenerator.set_nl(cols);
 			labelGenerator.set_ns(rows);
 			labelGenerator.set_binc(1.0);
@@ -566,7 +504,6 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 
 	private void setRawDataType(NumericDataType rawDataType) {
 		this.rawDataType = rawDataType;
-		
 	}
 
 
@@ -647,24 +584,21 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 		this.firstIndexFastest = firstIndexFastest;
 	}
 
-	/** Get the Array 2D Image
+	/** Get the Array 3D Image
 	 * @return pdsImage
 	 */
-	public Array2DImage getArray2DImage() {
+	public Array3DImage getArray3DImage() {
 		return pdsImage;
 	}
 
 
-	/** Set the Array 2D Image
+	/** Set the Array 3D Image
 	 * @param img
 	 */
-	public void setArray2DImage(Array2DImage img) {
+	public void setArray3DImage(Array3DImage img) {
 		this.pdsImage = img;
 		setImageElementsDataType(pdsImage);
 		setImageStatistics(pdsImage);
 		setImageType();
 	}
-
-
-
 }
