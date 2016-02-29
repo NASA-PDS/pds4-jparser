@@ -218,6 +218,42 @@
           <version>18.0</version>
         </dependency>        
     </dependencies>
+    <!-- This profile allows this project to be built under 1.8 -->   
+    <profiles>  
+      <profile>
+        <id>doclint-java8-disable</id>
+        <activation>
+          <jdk>[1.8,)</jdk>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <configuration>
+                <additionalparam>-Xdoclint:none</additionalparam>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-site-plugin</artifactId>
+              <version>3.3</version>
+              <configuration>
+                <reportPlugins>
+                  <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                      <additionalparam>-Xdoclint:none</additionalparam>
+                    </configuration>
+                  </plugin>
+                </reportPlugins>
+              </configuration>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>  
 	<build>
 		<resources>
 			<resource>
@@ -493,5 +529,5 @@
         <ant.commons.net.version>1.8.1</ant.commons.net.version>
         <ant-nodeps.version>1.8.1</ant-nodeps.version>
         <checkstyle.version>2.9.1</checkstyle.version>
-	</properties>
+	</properties>	
 </project>
