@@ -24,6 +24,9 @@
 
   <body>
     <release version="0.6.0" date="TBD" description="TBD">
+      <action dev="slevoe, mcayanan" type="fix" issue="PDS-366">
+        The package fails to run or build in Java 1.8.
+      </action>
       <action dev="mcayanan" type="add" issue="PDS-390">
         ExtractTable should support labels that reference multiple data files. This includes adding in a -d flag option to extract a table from a specific data file. In addition, a -a flag option was added to extract all tables in a single run.
       </action>
