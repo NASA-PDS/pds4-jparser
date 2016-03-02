@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1400.sch" 
+   schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="http://pds.nasa.gov/pds4/mvn/v1/PDS4_MVN_1000.sch"
+   schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:mvn="http://pds.nasa.gov/pds4/mission/mvn/v1"
+   xsi:schemaLocation="
+      http://pds.nasa.gov/pds4/pds/v1 
+      http://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1400.xsd
+      
+      http://pds.nasa.gov/pds4/mission/mvn/v1 
+      http://pds.nasa.gov/pds4/mvn/v1/PDS4_MVN_1000.xsd
+   ">
+   <Identification_Area>
+      <logical_identifier>urn:nasa:pds:maven.anc.events:data:maven_events</logical_identifier>
+      <version_id>1.0</version_id>
+      <title>MAVEN Events List</title>
+      <information_model_version>1.4.0.0</information_model_version>
+      <product_class>Product_Observational</product_class>
+      <Citation_Information>
+         <publication_year>2015</publication_year>
+         <description>
+               This file contains a list of MAVEN mission events to date.
+         </description>
+      </Citation_Information>
+      <Modification_History>
+         <Modification_Detail>
+            <modification_date>2015-05-01</modification_date>
+            <version_id>1.0</version_id>
+            <description>MAVEN Release 1</description>
+         </Modification_Detail>
+      </Modification_History>
+   </Identification_Area> 
+   <Observation_Area>
+      <Time_Coordinates>
+         <start_date_time>2014-11-23T18:15:39Z</start_date_time>
+         <stop_date_time>2015-02-14T17:27:26Z</stop_date_time>
+      </Time_Coordinates>
+      <Investigation_Area>
+         <name>Mars Atmosphere and Volatile EvolutioN</name>
+         <type>Mission</type>
+         <Internal_Reference>
+            <lid_reference>urn:nasa:pds:context:investigation:mission.maven</lid_reference>
+            <reference_type>data_to_investigation</reference_type>
+         </Internal_Reference>
+      </Investigation_Area>
+      <Observing_System>
+         <Observing_System_Component>
+            <name>MAVEN</name>
+            <type>Spacecraft</type>
+            <Internal_Reference>
+               <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.maven</lid_reference>
+               <reference_type>is_instrument_host</reference_type>
+            </Internal_Reference>
+         </Observing_System_Component>
+      </Observing_System>
+      <Target_Identification>
+         <name>Mars</name>
+         <type>Planet</type>
+         <Internal_Reference>
+            <lid_reference>urn:nasa:pds:context:target:planet.mars</lid_reference>
+            <reference_type>data_to_target</reference_type>
+         </Internal_Reference>
+      </Target_Identification>
+      <Mission_Area>
+         <MAVEN xmlns="http://pds.nasa.gov/pds4/mvn/v1">
+            <mission_phase_name>Prime Mission</mission_phase_name>
+         </MAVEN>
+      </Mission_Area>
+   </Observation_Area>
+   <Reference_List>
+        
+   </Reference_List>
+   <File_Area_Observational>
+      <File>
+         <file_name>maven_events_20140801.csv</file_name>
+         <creation_date_time>2015-03-13T15:43:09</creation_date_time>
+         <file_size unit="byte">2248255</file_size>
+         <records>7163</records>
+         <md5_checksum>138f119dc7fc9fac17bae7fa83e60b76</md5_checksum>
+      </File>
+      <Header>
+         <offset unit="byte">0</offset>
+         <!-- Corrected by M. Rose from the original Maven label. -->
+         <object_length unit="byte">99</object_length>
+         <parsing_standard_id>7-Bit ASCII Text</parsing_standard_id>
+      </Header>
+      <Table_Delimited>
+         <offset unit="byte">99</offset>
+         <parsing_standard_id>PDS DSV 1</parsing_standard_id>
+         <records>7162</records>
+         <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+         <field_delimiter>Comma</field_delimiter>
+         <Record_Delimited>
+            <fields>9</fields>
+            <groups>0</groups>
+            <Field_Delimited>
+               <name>Event ID</name>
+               <field_number>1</field_number>
+               <data_type>ASCII_Integer</data_type>
+               <maximum_field_length unit="byte">6</maximum_field_length>
+               <description>
+                  Event ID: unique ID for each event.
+               </description>
+            </Field_Delimited>
+            <Field_Delimited>          
+               <name>event_type_id</name>          
+               <field_number>2</field_number>  
+               <data_type>ASCII_Integer</data_type>
+               <maximum_field_length unit="byte">3</maximum_field_length>
+               <description>
+                  Event type code.
+               </description>
+            </Field_Delimited>
+            <Field_Delimited>          
+               <name>start_time</name>          
+               <field_number>3</field_number>  
+               <data_type>ASCII_Date_Time_YMD</data_type>
+               <maximum_field_length unit="byte">25</maximum_field_length>
+               <description>
+                  Event start time.
+               </description>
+            </Field_Delimited>
+            <Field_Delimited>          
+               <name>end_time</name>          
+               <field_number>4</field_number>  
+               <data_type>ASCII_Date_Time_YMD</data_type>
+               <maximum_field_length unit="byte">25</maximum_field_length>
+               <description>
+                  Event end time.
+               </description>
+            </Field_Delimited>
+            <Field_Delimited>          
+               <name>source</name>          
+               <field_number>5</field_number>  
+               <data_type>ASCII_String</data_type>
+               <maximum_field_length unit="byte">17</maximum_field_length>
+               <description>
+                  Event source: science, Integrated Report (MAVEN Integrated Report), or SPICE (SPICE kernels).
+               </description>
+            </Field_Delimited>
+            <Field_Delimited>          
+               <name>description</name>          
+               <field_number>6</field_number>  
+               <data_type>ASCII_String</data_type>
+               <maximum_field_length unit="byte">60</maximum_field_length>
+               <description>
+                  Text description of the event.
+               </description>
+            </Field_Delimited>
+            <Field_Delimited>          
+               <name>discussion</name>          
+               <field_number>7</field_number>  
+               <data_type>ASCII_String</data_type>
+               <maximum_field_length unit="byte">360</maximum_field_length>
+               <description>
+                  Notes from MAVEN Payload Operations Center database.
+               </description>
+            </Field_Delimited>
+            <Field_Delimited>          
+               <name>modified_time</name>          
+               <field_number>8</field_number>  
+               <data_type>ASCII_Date_Time_YMD</data_type>
+               <maximum_field_length unit="byte">26</maximum_field_length>
+               <description>
+                  Event creation time.
+               </description>
+            </Field_Delimited>
+            <Field_Delimited>          
+               <name>mission_event_id</name>          
+               <field_number>9</field_number>  
+               <data_type>ASCII_Integer</data_type>
+               <maximum_field_length unit="byte">6</maximum_field_length>
+               <description>
+                  Derived from POC event database; does not exist for science events.
+               </description>
+            </Field_Delimited>
+         </Record_Delimited>
+      </Table_Delimited>
+   </File_Area_Observational>
+</Product_Observational>
