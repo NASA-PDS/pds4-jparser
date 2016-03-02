@@ -1,5 +1,6 @@
 package gov.nasa.pds.objectAccess;
 
+import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
@@ -35,6 +36,14 @@ public interface ObjectProvider {
 	 * @return the root file path of the object archive(s) for this ObjectProvider
 	 */
 	File getRoot();
+
+	/**
+	 * Gets a list of Array objects from an observational file area.
+	 *
+	 * @param fileArea the observational file area
+	 * @return an list of arrays, which may be empty
+	 */
+	List<Array> getArrays(FileAreaObservational fileArea);
 
 	/**
 	 *  Returns a list of Array2DImage objects given an observation file area object.

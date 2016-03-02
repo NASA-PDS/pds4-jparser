@@ -1,5 +1,6 @@
 package gov.nasa.pds.objectAccess;
 
+import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
@@ -14,8 +15,12 @@ import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -66,10 +71,21 @@ public class ObjectAccess implements ObjectProvider {
 		this.archiveRoot = archiveRoot.getAbsolutePath();
 	}
 
+	private JAXBContext getJAXBContext(String pkgName) throws JAXBException {
+		ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
+		if (!(currentLoader instanceof WorkaroundClassLoader)) {
+			ClassLoader loader = new WorkaroundClassLoader(
+					currentLoader!=null ? currentLoader : getClass().getClassLoader()
+			);
+			Thread.currentThread().setContextClassLoader(loader);
+		}
+		return JAXBContext.newInstance(pkgName);
+	}
+
 	@Override
 	public <T> T getProduct(File labelFile, Class<T> productClass) throws ParseException {
 		try {
-			JAXBContext context = JAXBContext.newInstance( "gov.nasa.arc.pds.xml.generated");
+			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Unmarshaller u = context.createUnmarshaller();
 			u.setEventHandler(new LenientEventHandler());
 			return productClass.cast(u.unmarshal(labelFile));
@@ -82,7 +98,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public ProductObservational getObservationalProduct(String relativeXmlFilePath) {
 		try {
-			JAXBContext context = JAXBContext.newInstance( "gov.nasa.arc.pds.xml.generated");
+			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Unmarshaller u = context.createUnmarshaller();
 			u.setEventHandler(new LenientEventHandler());
 			File f = new File(getRoot().getAbsolutePath() + File.separator + relativeXmlFilePath);
@@ -97,7 +113,7 @@ public class ObjectAccess implements ObjectProvider {
 	@Override
 	public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) {
 		try {
-			JAXBContext context = JAXBContext.newInstance( "gov.nasa.arc.pds.xml.generated");
+			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			File f = new File(getRoot().getAbsolutePath() + File.separator + relativeXmlFilePath);
@@ -106,6 +122,17 @@ public class ObjectAccess implements ObjectProvider {
 			LOGGER.error("Failed to set the product observational.", e);
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public List<Array> getArrays(FileAreaObservational fileArea) {
+		List<Array> list = new ArrayList<Array>();
+		for (Object obj : fileArea.getDataObjects()) {
+			if (obj instanceof Array) {
+				list.add(Array.class.cast(obj));
+			}
+		}
+		return list;
 	}
 
 	@Override
@@ -297,6 +324,71 @@ public class ObjectAccess implements ObjectProvider {
 			}
 
 			return true;
+		}
+
+	}
+
+	private static class WorkaroundClassLoader extends ClassLoader {
+
+		private static final String IGNORED_RESOURCE = "META-INF/services/javax.xml.parsers.DocumentBuilderFactory";
+
+		/**
+		 * Create a new instance with the given parent classloader.
+		 *
+		 * @param parent the parent classloader
+		 */
+		public WorkaroundClassLoader(ClassLoader parent) {
+			super(parent);
+		}
+
+		@Override
+		protected Enumeration<URL> findResources(String name) throws IOException {
+			if (!name.equals(IGNORED_RESOURCE)) {
+				return super.findResources(name);
+			} else {
+				return new EmptyEnumeration<URL>();
+			}
+		}
+
+		@Override
+		protected URL findResource(String name) {
+			if (!name.equals(IGNORED_RESOURCE)) {
+				return super.findResource(name);
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public URL getResource(String name) {
+			if (!name.equals(IGNORED_RESOURCE)) {
+				return super.getResource(name);
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			if (!name.equals(IGNORED_RESOURCE)) {
+				return super.getResources(name);
+			} else {
+				return new EmptyEnumeration<URL>();
+			}
+		}
+
+	}
+
+	private static class EmptyEnumeration<T> implements Enumeration<T> {
+
+		@Override
+		public boolean hasMoreElements() {
+			return false;
+		}
+
+		@Override
+		public T nextElement() throws NoSuchElementException {
+			throw new NoSuchElementException();
 		}
 
 	}
