@@ -36,6 +36,9 @@
       <action dev="mcayanan" type="add" issue="PDS-431">
         Added support for Array_3D_Image products.
       </action>
+      <action dev="mcayanan" type="add" issue="PDS-432">
+        Added initial support for Array_3D_Spectrum products.
+      </action>
       <action dev="mcayanan" type="fix" issue="PDS-433">
         Not handling scaling_factor, value_offset, and orientation values properly for Array_2D_Image transformations.
       </action>

@@ -3,6 +3,7 @@ package gov.nasa.pds.objectAccess;
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
+import gov.nasa.arc.pds.xml.generated.Array3DSpectrum;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.FieldDelimited;
@@ -154,6 +155,16 @@ public class ObjectAccess implements ObjectProvider {
       }
     }
     return list;
+	}
+	
+	public List<Array3DSpectrum> getArray3DSpectrums(FileAreaObservational observationalFileArea) {
+    ArrayList<Array3DSpectrum> list = new ArrayList<Array3DSpectrum>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      if (obj.getClass().equals(Array3DSpectrum.class)) {
+        list.add(Array3DSpectrum.class.cast(obj));
+      }
+    }
+    return list;	  
 	}
 
 	@Override

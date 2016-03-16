@@ -13,7 +13,7 @@
 // $Id$
 package gov.nasa.pds.objectAccess;
 
-import gov.nasa.arc.pds.xml.generated.Array3DImage;
+import gov.nasa.arc.pds.xml.generated.Array3DSpectrum;
 import gov.nasa.arc.pds.xml.generated.AxisArray;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 import gov.nasa.pds.objectAccess.DataType.NumericDataType;
@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,16 +58,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.UnsignedLong;
+import com.sun.media.jai.codec.MemoryCacheSeekableStream;
 import com.sun.media.jai.codec.SeekableStream;
 
 /** 
- * Class for converting PDS Array_3D_Image products.
+ * Class for converting PDS Array_3D_Spectrum products.
  * @author mcayanan
  *
  */
-public class ThreeDImageExporter extends ObjectExporter implements Exporter<Array3DImage> {
+public class ThreeDSpectrumExporter extends ObjectExporter implements Exporter<Array3DSpectrum> {
 
-	Logger logger = LoggerFactory.getLogger(ThreeDImageExporter.class);
+	Logger logger = LoggerFactory.getLogger(ThreeDSpectrumExporter.class);
 
 	private NumericDataType rawDataType;
 
@@ -79,22 +82,26 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
 	private int imageType = BufferedImage.TYPE_BYTE_INDEXED;
 	private boolean maximizeDynamicRange = true;
 	private String exportType = "PNG";
-	private Array3DImage pdsImage;
+	private Array3DSpectrum pdsImage;
 	private boolean lineDirectionDown = true;
 	private boolean sampleDirectionRight = true;
 	private boolean firstIndexFastest = false;
 	private double scalingFactor = 1.0;
 	private double valueOffset = 0.0;
+	private List<Integer> selectedBands;
   private double dataMin = Double.NEGATIVE_INFINITY;
   private double dataMax = Double.POSITIVE_INFINITY;
 
-	ThreeDImageExporter(FileAreaObservational fileArea, ObjectProvider provider) throws IOException {
+	ThreeDSpectrumExporter(FileAreaObservational fileArea, ObjectProvider provider) throws IOException {
 		super(fileArea, provider);
-
+		selectedBands = new ArrayList<Integer>(
+	      Arrays.asList(new Integer(1), new Integer(1), new Integer(1)));
 	}
 
-	ThreeDImageExporter(File label, int fileAreaIndex) throws Exception {
+	ThreeDSpectrumExporter(File label, int fileAreaIndex) throws Exception {
 		super(label, fileAreaIndex);
+    selectedBands = new ArrayList<Integer>(
+        Arrays.asList(new Integer(1), new Integer(1), new Integer(1)));
 	}
 
 
@@ -112,26 +119,26 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
 	@Override
 	public void convert(OutputStream outputStream, int objectIndex)
 			throws IOException {
-		List<Array3DImage> imageList = getObjectProvider().getArray3DImages(getObservationalFileArea());
-		setArray3DImage(imageList.get(objectIndex));
-		convert(getArray3DImage(), outputStream);
+		List<Array3DSpectrum> imageList = getObjectProvider().getArray3DSpectrums(getObservationalFileArea());
+		setArray3DSpectrum(imageList.get(objectIndex));
+		convert(getArray3DSpectrum(), outputStream);
 	}
 
 	/**
-	 * Converts a 3D array file to a viewable image file.
+	 * Converts a 3D spectrum file to a viewable image file.
 	 *
+	 * @param array3DSpectrum the array3DSpectrum object to convert
 	 * @param outputStream the output stream
-	 * @param array3DImage the array3DImage object to convert
 	 * @throws IOException if there is an exception writing to the stream or reading the image
 	 */
 	@Override
-	public void convert(Array3DImage array3DImage, OutputStream outputStream) throws IOException {
-		setArray3DImage(array3DImage);
+	public void convert(Array3DSpectrum array3DSpectrum, OutputStream outputStream) throws IOException {
+		setArray3DSpectrum(array3DSpectrum);
 		int lines = 0;
 		int samples = 0;
 		int bands = 1;
-		if (array3DImage.getAxes() == 3) {
-			for (AxisArray axis : array3DImage.getAxisArraies()) {
+		if (array3DSpectrum.getAxes() == 3) {
+			for (AxisArray axis : array3DSpectrum.getAxisArraies()) {
 				//TODO axis ordering -- how does axis order related to index order?
 				if (axis.getSequenceNumber() == 3) {
 					samples = axis.getElements();
@@ -147,11 +154,11 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
 		    new FileInputStream(
 		        new File(getObjectProvider().getRoot().getAbsolutePath(),
 				getObservationalFileArea().getFile().getFileName())));
-		bufferedInputStream.skip(Integer.valueOf(array3DImage.getOffset().getValue()));
+		long bytesSkipped = bufferedInputStream.skip(Integer.valueOf(array3DSpectrum.getOffset().getValue()));
     int scanline_stride = samples;
-    int[] band_offsets = new int[bands];
-    int[] bank_indices = new int[bands];
-    for (int i = 0; i < bands; i++) {
+    int[] band_offsets = new int[3];
+    int[] bank_indices = new int[3];
+    for (int i = 0; i < 3; i++) {
       band_offsets[i] = 0;
       bank_indices[i] = i;
     }
@@ -161,13 +168,19 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
     ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
     ImageTypeSpecifier imageType = new ImageTypeSpecifier(colorModel, sampleModel);
     bufferedImage = imageType.createBufferedImage(samples, lines);
-		flexReadToRaster(bufferedInputStream, bufferedImage, lines, samples, bands);
-		// Scale the image if there were no min/max values defined in the label.
+    for (Integer selectedBand : selectedBands) {
+      if (selectedBand.intValue() <= 0 || selectedBand.intValue() > bands) {
+        throw new IOException("Invalid band value entered '"
+            + selectedBand.toString() + "'. Must be greater than 0 "
+            + "or less than " + bands + ".");
+      }
+    }
+    flexReadToRaster(bufferedInputStream, bufferedImage, lines, samples, selectedBands);
+    // Scale the image.
     bufferedImage = scaleImage(bufferedImage);
-    // Call JAI's reformat operation to allow floating point image data to 
-    // be displayable
+    // Converts the data to a displayable image
     bufferedImage = toDisplayableImage(bufferedImage);
-    
+
 		if (exportType.equals("VICAR") || exportType.equalsIgnoreCase("PDS3")) {
 			try {
 				writeLabel(outputStream, getExportType());
@@ -180,12 +193,12 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
 		outputStream.close();
 	}
 
-  /**
-   * Scales the given image by performing amplitude rescaling.
-   * 
-   * @param bufferedImage The image to rescale.
-   * @return The rescaled image.
-   */
+	/**
+	 * Scales the given image by performing amplitude rescaling.
+	 * 
+	 * @param bufferedImage The image to rescale.
+	 * @return The rescaled image.
+	 */
   private BufferedImage scaleImage(BufferedImage bufferedImage) {
     double minValue = dataMin;
     double maxValue = dataMax;
@@ -238,9 +251,9 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
     return planarImage.getAsBufferedImage();
   }
 	
-	private void setImageElementsDataType(Array3DImage array3dImage) {
+	private void setImageElementsDataType(Array3DSpectrum array3dSpectrum) {
 		try {
-			rawDataType = Enum.valueOf(NumericDataType.class, array3dImage.getElementArray().getDataType());
+			rawDataType = Enum.valueOf(NumericDataType.class, array3dSpectrum.getElementArray().getDataType());
 		} catch (Exception e) {
 			logger.error("Array data type is not valid, null, or unsupported", e);
 			throw new IllegalArgumentException("Array data type is not valid, null, or unsupported");
@@ -257,27 +270,27 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
    * space of input values and the target pixel bit depth...ie not based on
    * actual input values
    * The default (maximizeDynamicRange true) effects 1) and maximizeDynamicRange false does #2.
-   * @param array3dImage
+   * @param array3dSpectrum
    */
-  private void setImageStatistics(Array3DImage array3dImage) {
-    if (array3dImage.getElementArray().getScalingFactor() != null) {
-      scalingFactor = array3dImage.getElementArray().getScalingFactor().doubleValue();
+  private void setImageStatistics(Array3DSpectrum array3dSpectrum) {
+    if (array3dSpectrum.getElementArray().getScalingFactor() != null) {
+      scalingFactor = array3dSpectrum.getElementArray().getScalingFactor().doubleValue();
     }
     
-    if (array3dImage.getElementArray().getValueOffset() != null) {
-      valueOffset = array3dImage.getElementArray().getValueOffset().doubleValue();
+    if (array3dSpectrum.getElementArray().getValueOffset() != null) {
+      valueOffset = array3dSpectrum.getElementArray().getValueOffset().doubleValue();
     }
     
     // Does the min/max values specified in the label represent the stored
     // value? If so, then we're doing this right in factoring the scaling_factor
     // and offset.
-    if (array3dImage.getObjectStatistics() != null) {
-      if (array3dImage.getObjectStatistics().getMinimum() != null) {
-        dataMin = array3dImage.getObjectStatistics().getMinimum();
+    if (array3dSpectrum.getObjectStatistics() != null) {
+      if (array3dSpectrum.getObjectStatistics().getMinimum() != null) {
+        dataMin = array3dSpectrum.getObjectStatistics().getMinimum();
         dataMin = (dataMin * scalingFactor) + valueOffset;
       }
-      if (array3dImage.getObjectStatistics().getMaximum() != null) {
-        dataMax = array3dImage.getObjectStatistics().getMaximum();
+      if (array3dSpectrum.getObjectStatistics().getMaximum() != null) {
+        dataMax = array3dSpectrum.getObjectStatistics().getMaximum();
         dataMax = (dataMax * scalingFactor) + valueOffset;
       }
     }
@@ -285,16 +298,24 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
 
 
 	private void flexReadToRaster(BufferedInputStream inputStream, 
-	    BufferedImage bufferedImage, int lines, int samples, int bands)
+	    BufferedImage bufferedImage, int lines, int samples, List<Integer> selectedBands)
 	    throws IOException {
-		WritableRaster raster= bufferedImage.getRaster();
-		int countBytes = -1;
+		long countBytes = -1;
 		SeekableStream si = null;
+    WritableRaster raster = bufferedImage.getRaster();
 		try {
-      si = SeekableStream.wrapInputStream(inputStream, false);
-			int xWrite = 0;
-			int yWrite = 0;
-		  for (int b = 0; b < bands; b++) {
+		  /* file_offset += (band - 1) * sample_bits/8 * line_samples * lines; */
+		  /*  
+		   * value_interval = (float) genstate->istate->maxi - (float) genstate->istate->mini;
+         value_interval = (value_interval / 256) + 1; 
+       */
+		  si = new MemoryCacheSeekableStream(inputStream);
+      int b = 0;
+      for (Integer selectedBand : selectedBands) {
+        si.seek((selectedBand.intValue() - 1) * (rawDataType.getBits()/8) * samples * lines);
+  			int xWrite = 0;
+  			int yWrite = 0;
+  			countBytes = si.getFilePointer();
 				for (int y = 0; y<lines; y++) {
           if (lineDirectionDown) {
 						yWrite = y;
@@ -302,7 +323,6 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
 						yWrite = lines-y-1;
 					}
 					for (int x = 0; x < samples; x++) {
-						countBytes += 2;
 						double value = 0;
             switch (rawDataType) {
             case SignedByte:
@@ -336,7 +356,7 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
               value = si.readDouble();
               break;
             }
-						//TODO test other input data types
+            countBytes += (rawDataType.getBits()/8);
 	          if (sampleDirectionRight) {
 							xWrite = x;
 						} else {
@@ -349,20 +369,21 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
             if (value > dataMax) {
               value = dataMax;
             }             
-            raster.setSample(xWrite, yWrite, b, value);        
+//            value = value * rangeScaleSlope + rangeScaleIntercept;
+            raster.setSample(xWrite, yWrite, b, value);
 					}
 				}
-		  }
+				b++;
+      }
 		} catch (Exception e) {
-			String m = "EOF at byte number: "+countBytes+ "inputFile: " + inputStream;
+			String m = "EOF at byte number: "+countBytes+ " inputFile: " + inputStream;
 			logger.error(m, e);
 			throw new IOException(m);
 		} finally {
 			if (si != null) {
 				try {si.close();} catch (IOException e) {}
 			}
-		}
-		
+		}		
 	}
 
 
@@ -579,21 +600,30 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
 		this.firstIndexFastest = firstIndexFastest;
 	}
 
-	/** Get the Array 3D Image
+	/** Get the Array 3D Spectrum
 	 * @return pdsImage
 	 */
-	public Array3DImage getArray3DImage() {
+	public Array3DSpectrum getArray3DSpectrum() {
 		return pdsImage;
 	}
 
 
-	/** Set the Array 3D Image
+	/** Set the Array 3D Spectrum
 	 * @param img
 	 */
-	public void setArray3DImage(Array3DImage img) {
+	public void setArray3DSpectrum(Array3DSpectrum img) {
 		this.pdsImage = img;
 		setImageElementsDataType(pdsImage);
 		setImageStatistics(pdsImage);
 		setImageType();
+	}
+	
+	/**
+	 * Set the bands to process.
+	 * 
+	 * @param bands A list of bands.
+	 */
+	public void setBands(List<Integer> bands) {
+	  this.selectedBands = bands;
 	}
 }

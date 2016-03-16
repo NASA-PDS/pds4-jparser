@@ -58,6 +58,10 @@ public class ExporterFactory {
 	  return new ThreeDImageExporter(fileArea, provider);
 	}
 	
+	public static ThreeDSpectrumExporter get3DSpectrumExporter(FileAreaObservational fileArea, ObjectProvider provider) throws Exception {
+	  return new ThreeDSpectrumExporter(fileArea, provider);
+	}
+	
 	/**
 	 * Gets an instance of a Table exporter.
 	 *

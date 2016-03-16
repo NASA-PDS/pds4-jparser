@@ -3,6 +3,7 @@ package gov.nasa.pds.objectAccess;
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
+import gov.nasa.arc.pds.xml.generated.Array3DSpectrum;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.FieldDelimited;
@@ -61,6 +62,14 @@ public interface ObjectProvider {
    */
   List<Array3DImage> getArray3DImages(FileAreaObservational observationalFileArea);
 
+  /**
+  *  Returns a list of Array3DSpectrum objects given an observation file area object.
+  *
+  * @param observationalFileArea
+  * @return a list of image objects
+  */
+  List<Array3DSpectrum> getArray3DSpectrums(FileAreaObservational observationalFileArea);
+  
 	/**
 	 * Returns a list of table objects.
 	 *
