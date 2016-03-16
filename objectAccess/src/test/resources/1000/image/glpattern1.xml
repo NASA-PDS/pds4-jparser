@@ -124,8 +124,6 @@
            
             <Object_Statistics>
                 <local_identifier>MPFL_M_IMP_STATISTICS</local_identifier>
-                <maximum>0</maximum>
-                <minimum>0</minimum>
                 <mean>0</mean>
                 <standard_deviation>0</standard_deviation>
             </Object_Statistics>

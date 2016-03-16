@@ -77,8 +77,6 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	private IndexColorModel colorModel;
 	private BufferedImage bufferedImage;
 	private int imageType = BufferedImage.TYPE_BYTE_INDEXED;
-	private double rangeScaleSlope;
-	private double rangeScaleIntercept;
 	private boolean maximizeDynamicRange = true;
 	private String exportType = "PNG";
 	private Array2DImage pdsImage;
@@ -88,8 +86,8 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	private int numberOfBands = 1;
 	private double scalingFactor = 1.0;
 	private double valueOffset = 0.0;
-  private boolean autoScale = true;
-  private boolean isFloatType = false;
+  private double dataMin = Double.NEGATIVE_INFINITY;
+  private double dataMax = Double.POSITIVE_INFINITY;  
 
 
 	TwoDImageExporter(FileAreaObservational fileArea, ObjectProvider provider) throws IOException {
@@ -156,15 +154,8 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
       band_offsets[i] = 0;
     }
     /* Taken from Vicar IO library. */
-    int dataBufferType = DataBuffer.TYPE_BYTE;
+    int dataBufferType = DataBuffer.TYPE_FLOAT;
     String dataType = array2DImage.getElementArray().getDataType();
-    if ("IEEE754MSBSingle".equalsIgnoreCase(dataType)) {
-      dataBufferType = DataBuffer.TYPE_FLOAT;
-      isFloatType = true;
-    } else if ("IEEE754MSBDouble".equalsIgnoreCase(dataType)) {
-      dataBufferType = DataBuffer.TYPE_DOUBLE;
-      isFloatType = true;
-    }
     SampleModel sampleModel =  new PixelInterleavedSampleModel(
         dataBufferType, samples, lines, 1, scanline_stride, band_offsets);
     ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
@@ -173,14 +164,10 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 
 		flexReadToRaster(bufferedInputStream, bufferedImage, lines, samples);
     // Auto scale the image if there were no min/max values defined in the label.
-    if (autoScale) {
-      bufferedImage = autoScaleImage(bufferedImage);
-    }
-    // Call JAI's reformat operation to allow floating point image data to 
-    // be displayable
-    if (isFloatType) {
-      bufferedImage = toDisplayableImage(bufferedImage);
-    }
+    bufferedImage = scaleImage(bufferedImage);
+
+    // Call JAI's reformat operation to allow image data to be displayable
+    bufferedImage = toDisplayableImage(bufferedImage);
     
 		if (exportType.equals("VICAR") || exportType.equalsIgnoreCase("PDS3")) {
 			try {
@@ -215,15 +202,7 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 	 * The default (maximizeDynamicRange true) effects 1) and maximizeDynamicRange false does #2.
 	 * @param array2dImage
 	 */
-	private void setImageStatistics(Array2DImage array2dImage) {
-    double dataMin = 0.0;
-    double dataMax = 0.0;
-    
-	  if (array2dImage.getObjectStatistics() != null) {
-  		dataMin = array2dImage.getObjectStatistics().getMinimum();
-  		dataMax = array2dImage.getObjectStatistics().getMaximum();
-	  }
-	  
+	private void setImageStatistics(Array2DImage array2dImage) {	  
 		if (array2dImage.getDisplay2DImage() != null) {
   		if (array2dImage.getDisplay2DImage().getLineDisplayDirection().equalsIgnoreCase("UP")) {
   			lineDirectionDown = false;
@@ -236,25 +215,26 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 			setFirstIndexFastest(false);
 		}
 		
-		if (array2dImage.getElementArray().getScalingFactor() != null) {
-		  scalingFactor = array2dImage.getElementArray().getScalingFactor().doubleValue();
-		  if (scalingFactor != 1.0) {
-		    autoScale = false;
-		  }
-		}
-		
-		if (array2dImage.getElementArray().getValueOffset() != null) {
-		  valueOffset = array2dImage.getElementArray().getValueOffset().doubleValue();
-      autoScale = false;
-		}
-		
-    if (dataMin != 0 && dataMax != 0) {
-      rangeScaleSlope = targetLevels / (dataMax - dataMin + 1) ;
-      rangeScaleIntercept = (dataMin*targetLevels) / (dataMin - dataMax - 1 );
-      autoScale = false;
-    } else {
-      rangeScaleSlope = targetLevels / Math.pow(2,rawDataType.getBits());
-      rangeScaleIntercept = 0;
+    if (array2dImage.getElementArray().getScalingFactor() != null) {
+      scalingFactor = array2dImage.getElementArray().getScalingFactor().doubleValue();
+    }
+    
+    if (array2dImage.getElementArray().getValueOffset() != null) {
+      valueOffset = array2dImage.getElementArray().getValueOffset().doubleValue();
+    }
+    
+    // Does the min/max values specified in the label represent the stored
+    // value? If so, then we're doing this right in factoring the scaling_factor
+    // and offset.
+    if (array2dImage.getObjectStatistics() != null) {
+      if (array2dImage.getObjectStatistics().getMinimum() != null) {
+        dataMin = array2dImage.getObjectStatistics().getMinimum();
+        dataMin = (dataMin * scalingFactor) + valueOffset;
+      }
+      if (array2dImage.getObjectStatistics().getMaximum() != null) {
+        dataMax = array2dImage.getObjectStatistics().getMaximum();
+        dataMax = (dataMax * scalingFactor) + valueOffset;
+      }
     }
 		//TODO Handle adjusting dynamic range more completely?
 
@@ -320,7 +300,13 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 							yWrite = lines-y-1;
 						}
             value = (value * scalingFactor) + valueOffset;
-            raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
+            if (value < dataMin) {
+              value = dataMin;
+            }
+            if (value > dataMax) {
+              value = dataMax;
+            }
+            raster.setSample(xWrite, yWrite, 0, value);
 					}
 				}
 			} else { 
@@ -371,8 +357,14 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
   					} else {
   						xWrite = samples-x-1;
   					}
-  					value = (value * scalingFactor) + valueOffset;
-            raster.setSample(xWrite, yWrite, 0, value * rangeScaleSlope + rangeScaleIntercept );
+            value = (value * scalingFactor) + valueOffset;
+            if (value < dataMin) {
+              value = dataMin;
+            }
+            if (value > dataMax) {
+              value = dataMax;
+            }
+            raster.setSample(xWrite, yWrite, 0, value);
   				}
   			}
 			}
@@ -393,25 +385,34 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
    * @param bufferedImage The image to rescale.
    * @return The rescaled image.
    */
-  private BufferedImage autoScaleImage(BufferedImage bufferedImage) {
-    ParameterBlock pbMaxMin = new ParameterBlock();
-    pbMaxMin.addSource(bufferedImage);
-    RenderedOp extrema = JAI.create("extrema", pbMaxMin);
-    double[] allMins = (double[])extrema.getProperty("minimum");
-    double[] allMaxs = (double[])extrema.getProperty("maximum");
-    double minValue = allMins[0];
-    double maxValue = allMaxs[0];
-    for(int v=1;v<allMins.length;v++)
-    {
-      if (allMins[v] < minValue) minValue = allMins[v];
-      if (allMaxs[v] > maxValue) maxValue = allMaxs[v];
+  private BufferedImage scaleImage(BufferedImage bufferedImage) {
+    double minValue = dataMin;
+    double maxValue = dataMax;
+    if ( (minValue == Double.NEGATIVE_INFINITY) 
+        || (maxValue == Double.POSITIVE_INFINITY) ) {
+      ParameterBlock pbMaxMin = new ParameterBlock();
+      pbMaxMin.addSource(bufferedImage);
+      RenderedOp extrema = JAI.create("extrema", pbMaxMin);
+      double[] allMins = (double[])extrema.getProperty("minimum");
+      double[] allMaxs = (double[])extrema.getProperty("maximum");
+      if (minValue == Double.NEGATIVE_INFINITY) {
+        minValue = allMins[0];
+      }
+      if (maxValue == Double.POSITIVE_INFINITY) {
+        maxValue = allMaxs[0];
+      }
+      for(int v=1;v<allMins.length;v++)
+      {
+        if (allMins[v] < minValue) minValue = allMins[v];
+        if (allMaxs[v] > maxValue) maxValue = allMaxs[v];
+      }
     }
-    double[] addThis    = new double[1]; addThis[0]    = minValue;
+    double[] subtractThis    = new double[1]; subtractThis[0]    = minValue;
     double[] multiplyBy = new double[1]; multiplyBy[0] = 255./(maxValue-minValue);
     PlanarImage planarImage = PlanarImage.wrapRenderedImage(bufferedImage);
     ParameterBlock pbSub = new ParameterBlock();
     pbSub.addSource(planarImage);
-    pbSub.add(addThis);
+    pbSub.add(subtractThis);
     planarImage = (PlanarImage) JAI.create("subtractconst",pbSub,null);    
     ParameterBlock pbMult = new ParameterBlock();
     pbMult.addSource(planarImage);

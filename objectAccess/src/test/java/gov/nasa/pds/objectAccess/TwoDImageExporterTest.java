@@ -43,7 +43,7 @@ public class TwoDImageExporterTest {
 		int height = 512; 
 		
 		int[][] values = new int[width][height];
-		FileOutputStream rawFile = new FileOutputStream(new File(productDir, "glpattern1.raw"));
+		FileOutputStream rawFile = new FileOutputStream(new File(objectAccess.getArchiveRoot(), "glpattern1.raw"));
 		BufferedOutputStream bos = new BufferedOutputStream(rawFile);
 		for(int h=0;h<height;h++) {
 			for(int w=0;w<width;w++) { 
@@ -66,7 +66,7 @@ public class TwoDImageExporterTest {
 			ic.setExportType("PNG");
 			ic.setArray2DImage(img);
 			//TODO Handle case where image is set first, then other settings are set
-			FileOutputStream fos = new FileOutputStream(new File(productDir, "glpattern1MDRFalse-8.png"));
+			FileOutputStream fos = new FileOutputStream(new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.png"));
 			ic.convert(img, fos);
 		}
 		File outputFile = new File(productDir, "glpattern1MDRFalse-8.png");
@@ -77,9 +77,9 @@ public class TwoDImageExporterTest {
 		int height = 512; 
 		for(int h=0;h<height;h++) {
 			for(int w=0;w<width;w++) {
-				int sample = raster.getSample(w, h, 0);
-				int expected = 127+(int)(128*Math.sin(w/32.)*Math.sin(h/32.)); // Weird sin pattern.
-				Assert.assertEquals(sample, expected);
+				double sample = raster.getSample(w, h, 0);
+				double expected = 127+(int)(128*Math.sin(w/32.)*Math.sin(h/32.)); // Weird sin pattern.
+				Assert.assertEquals(sample, expected, 1.0);
 			}
 		}
 		outputFile.deleteOnExit();
@@ -103,9 +103,9 @@ public class TwoDImageExporterTest {
 		int height = 512; 
 		for(int h=0;h<height;h++) {
 			for(int w=0;w<width;w++) {
-				int sample = raster.getSample(w, h, 0);
-				int expected = 127+(int)(128*Math.sin(w/32.)*Math.sin(h/32.)); // Weird sin pattern.
-				Assert.assertEquals(sample, expected);
+				double sample = raster.getSample(w, h, 0);
+				double expected = 127+(int)(128*Math.sin(w/32.)*Math.sin(h/32.)); // Weird sin pattern.
+				Assert.assertEquals(sample, expected, 1.0);
 			}
 		}
 		outputFile2.deleteOnExit();
