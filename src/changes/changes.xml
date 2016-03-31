@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  Copyright 2012-2015, by the California Institute of Technology.
+  Copyright 2012-2016, by the California Institute of Technology.
   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
   Any commercial use must be negotiated with the Office of Technology Transfer
   at the California Institute of Technology.
@@ -23,9 +23,12 @@
   </properties>
 
   <body>
-    <release version="0.6.0" date="TBD" description="TBD">
+    <release version="0.6.0" date="2016-03-31" description="This release of the PDS4 Tools software is a component of the integrated release 6.1.0 of the PDS4 System. This is an operational release of the system components to date.">
       <action dev="slevoe, mcayanan" type="fix" issue="PDS-366">
-        The package fails to run or build in Java 1.8.
+        Resolved issue with running or building the software in Java 1.8.
+      </action>
+      <action dev="mrose" type="fix" issue="PDS-368">
+        A unit test has been added (with a corrected label) to verify that the table can be extracted properly.
       </action>
       <action dev="mcayanan" type="add" issue="PDS-390">
         ExtractTable should support labels that reference multiple data files. This includes adding in a -d flag option to extract a table from a specific data file. In addition, a -a flag option was added to extract all tables in a single run.
@@ -44,6 +47,12 @@
       </action>
       <action dev="mcayanan" type="update" issue="PDS-434">
         Support for more data types for image transformations: SignedLSB2, UnsignedLSB2, and SignedMSB2.
+      </action>
+      <action dev="mrose" type="update">
+        Updated schema to 1.5.0.0. Added code to ObjectAccess to get all array objects (though users should still use the Label class instead).
+      </action>
+      <action dev="shardman" type="update">
+        Updated the JRE requirement to 1.7 in the Installation document.
       </action>
     </release>
 
