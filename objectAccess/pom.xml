@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
     <groupId>gov.nasa.pds</groupId>
 	<artifactId>objectAccess</artifactId>
-    <version>0.6.0-dev</version>
+    <version>0.6.0</version>
 	<name>PDS Object Access Library</name>
 	<description>Provides access to PDS4 formatted objects</description>
 	<repositories>
