@@ -23,6 +23,9 @@
   </properties>
 
   <body>
+    <release version="0.7.0" date="TBD" description="TBD">
+    </release>
+
     <release version="0.6.0" date="2016-03-31" description="This release of the PDS4 Tools software is a component of the integrated release 6.1.0 of the PDS4 System. This is an operational release of the system components to date.">
       <action dev="slevoe, mcayanan" type="fix" issue="PDS-366">
         Resolved issue with running or building the software in Java 1.8.
