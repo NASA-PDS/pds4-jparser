@@ -1,14 +1,17 @@
-The PDS4 Tools project contains software developed by Ames Research Center
-thats reads and writes PDS4 data products. The software is packaged in a JAR file.
+The PDS4-Tools Library provides APIs for exporting PDS4 table
+and image objects to various formats including CSV, PNG, Vicar, 
+Fits, etc. The software is packaged in a JAR file.
 
-The software can be compiled and installed with the following commands:
-
-% cd superpom
-% mvn clean install 
-% cd ../package 
-% mvn clean package 
-
-The documentation including installation of the software should be online at 
-http://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/. If it is not 
+The software can be compiled with the "mvn compile" command but in order 
+to create the JAR file, you must execute the "mvn compile jar:jar" command. 
+The documentation including release notes, installation and operation of the 
+software should be online at 
+http://pds-cm.jpl.nasa.gov/pds4/preparation/core/. If it is not 
 accessible, you can execute the "mvn site:run" command and view the 
 documentation locally at http://localhost:8080.
+
+In order to create a complete distribution package, execute the 
+following commands: 
+
+% mvn site
+% mvn package

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2010-2016, by the California Institute of Technology.
+  ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
+  Any commercial use must be negotiated with the Office of Technology Transfer
+  at the California Institute of Technology.
+
+  This software is subject to U. S. export control laws and regulations
+  (22 C.F.R. 120-130 and 15 C.F.R. 730-774). To the extent that the software
+  is subject to U.S. export control laws and regulations, the recipient has
+  the responsibility to obtain export licenses or other export authority as
+  may be required before exporting such information to foreign countries or
+  providing access to foreign nationals.
+
+  $Id$
+-->
+
+<document>
+  <properties>
+    <title>Development</title>
+    <author email="Michael.Cayanan@jpl.nasa.gov">Mike Cayanan</author>
+    <author email="Sean.Hardman@jpl.nasa.gov">Sean Hardman</author>
+  </properties>
+
+  <body>
+    <section name="Development">
+       <p>This document describes how a user can utilize the Application Program Interface (API) of the <i>${project.artifactId}</i> package to develop their own tool. The following topics can be found in this document:
+      </p>
+
+      <ul>
+        <li><a href="#API Entry Points">API Entry Points</a></li>
+        <li><a href="#Logging">Logging</a></li>
+      </ul>
+    </section>
+       
+    <section name="API Entry Points">
+      <p>We have not had a chance to document the entry points into the API as of the current release. The best source for this information currently is the <a href="../apidocs/index.html">JavaDocs</a> documentation for this project.
+      </p>
+    </section>
+    
+    <section name="Logging">
+      <p>The PDS4 Tools library can be configured to write log messages to a log file, if desired. It uses the logging library SLF4J. Two JAR files are needed to configure SLF4J:
+      </p>
+      
+      <ul>
+        <li>slf4j-api-n.n.n.jar - The SLF4J API library. Here, n.n.n means the SLF4J version number used.</li>
+        <li>An SLF4J implementation library. There are multiple implementations which use various lower-level logging libraries. The one used in this toolkit is slf4j-nop-n.n.n.jar, the no-operation library that inhibits logging. You can replace this JAR file with an implementation that uses Log4J, java.util.logging functionality, or other logging library.</li>
+      </ul>
+      
+      <p>See the <a href="http://www.slf4j.org/">SJF4J web site</a> for more information about configuring SLF4J.
+      </p>
+    </section>
+  </body>
+</document>
