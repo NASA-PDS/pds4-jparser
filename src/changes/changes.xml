@@ -54,6 +54,9 @@
       <action dev="mcayanan" type="update" issue="PDS-434">
         Support for more data types for image transformations: SignedLSB2, UnsignedLSB2, and SignedMSB2.
       </action>
+      <action dev="hyunlee" type="fix" issue="PDS-445">
+        Updated xerces dependency version from 1.2.3 to 2.9.0 to resolve the error.
+      </action>
       <action dev="mrose" type="update">
         Updated schema to 1.5.0.0. Added code to ObjectAccess to get all array objects (though users should still use the Label class instead).
       </action>
