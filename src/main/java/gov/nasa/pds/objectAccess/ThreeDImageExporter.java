@@ -15,7 +15,9 @@ package gov.nasa.pds.objectAccess;
 
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.arc.pds.xml.generated.AxisArray;
+import gov.nasa.arc.pds.xml.generated.DisplaySettings;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
+import gov.nasa.pds.label.DisplayDirection;
 import gov.nasa.pds.objectAccess.DataType.NumericDataType;
 
 import java.awt.geom.AffineTransform;
@@ -56,6 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.UnsignedLong;
+import com.sun.media.jai.codec.MemoryCacheSeekableStream;
 import com.sun.media.jai.codec.SeekableStream;
 
 /** 
@@ -63,7 +66,7 @@ import com.sun.media.jai.codec.SeekableStream;
  * @author mcayanan
  *
  */
-public class ThreeDImageExporter extends ObjectExporter implements Exporter<Array3DImage> {
+public class ThreeDImageExporter extends ImageExporter implements Exporter<Array3DImage> {
 
 	Logger logger = LoggerFactory.getLogger(ThreeDImageExporter.class);
 
@@ -260,6 +263,43 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
    * @param array3dImage
    */
   private void setImageStatistics(Array3DImage array3dImage) {
+    if (array3dImage.getLocalIdentifier() != null) {
+      DisplaySettings ds = getDisplaySettings(array3dImage.getLocalIdentifier());
+      if (ds != null) {
+        DisplayDirection lineDir = null;
+        try {
+          lineDir = DisplayDirection.getDirectionFromValue(
+            ds.getDisplayDirection().getVerticalDisplayDirection());
+          if (lineDir.equals(DisplayDirection.BOTTOM_TO_TOP)) {
+            lineDirectionDown = false;
+          }
+        } catch (NullPointerException ignore) {
+          logger.error("Cannot find vertical_display_direction element "
+              + "in the Display_Direction area with identifier '"
+              + array3dImage.getLocalIdentifier() + "'.");
+        }
+        
+        DisplayDirection sampleDir = null;
+        try {
+          sampleDir = DisplayDirection.getDirectionFromValue(
+            ds.getDisplayDirection().getHorizontalDisplayDirection());
+          if (sampleDir.equals(DisplayDirection.RIGHT_TO_LEFT)) {
+            setSampleDirectionRight(false);
+          }
+        } catch (NullPointerException ignore) {
+          logger.error("Cannot find horizontal_display_direction element "
+              + "in the Display_Direction area with identifier '"
+              + array3dImage.getLocalIdentifier() + "'.");          
+        }
+      } else {
+        logger.info("No display settings found for identifier '"
+            + array3dImage.getLocalIdentifier() + "'.");
+      }
+    } else {
+      logger.info("No display settings found. Missing local_identifier "
+          + "element in the Array_3D_Image area.");
+    }
+    
     if (array3dImage.getElementArray().getScalingFactor() != null) {
       scalingFactor = array3dImage.getElementArray().getScalingFactor().doubleValue();
     }
@@ -291,7 +331,7 @@ public class ThreeDImageExporter extends ObjectExporter implements Exporter<Arra
 		int countBytes = -1;
 		SeekableStream si = null;
 		try {
-      si = SeekableStream.wrapInputStream(inputStream, false);
+      si = new MemoryCacheSeekableStream(inputStream);
 			int xWrite = 0;
 			int yWrite = 0;
 		  for (int b = 0; b < bands; b++) {

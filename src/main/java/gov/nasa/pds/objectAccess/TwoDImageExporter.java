@@ -15,7 +15,9 @@ package gov.nasa.pds.objectAccess;
 
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.AxisArray;
+import gov.nasa.arc.pds.xml.generated.DisplaySettings;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
+import gov.nasa.pds.label.DisplayDirection;
 import gov.nasa.pds.objectAccess.DataType.NumericDataType;
 
 import java.awt.geom.AffineTransform;
@@ -60,10 +62,11 @@ import com.sun.media.jai.codec.SeekableStream;
 
 
 /** Class for converting 2D PDS images.
- * @author dcberrio
+ * @author dcberrio, mcayanan
  *
  */
-public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2DImage> {
+public class TwoDImageExporter extends ImageExporter 
+implements Exporter<Array2DImage> {
 
 	Logger logger = LoggerFactory.getLogger(TwoDImageExporter.class);
 
@@ -90,9 +93,9 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
   private double dataMax = Double.POSITIVE_INFINITY;  
 
 
-	TwoDImageExporter(FileAreaObservational fileArea, ObjectProvider provider) throws IOException {
+	TwoDImageExporter(FileAreaObservational fileArea, ObjectProvider provider)
+	    throws IOException {
 		super(fileArea, provider);
-
 	}
 
 	TwoDImageExporter(File label, int fileAreaIndex) throws Exception {
@@ -211,6 +214,44 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
   			setSampleDirectionRight(false);
   		}
 		}
+		
+		if (array2dImage.getLocalIdentifier() != null) {
+		  DisplaySettings ds = getDisplaySettings(array2dImage.getLocalIdentifier());
+      if (ds != null) {
+        DisplayDirection lineDir = null;
+        try {
+          lineDir = DisplayDirection.getDirectionFromValue(
+            ds.getDisplayDirection().getVerticalDisplayDirection());
+          if (lineDir.equals(DisplayDirection.BOTTOM_TO_TOP)) {
+            lineDirectionDown = false;
+          }
+        } catch (NullPointerException ignore) {
+          logger.error("Cannot find vertical_display_direction element "
+              + "in the Display_Direction area with identifier '"
+              + array2dImage.getLocalIdentifier() + "'.");
+        }
+        
+        DisplayDirection sampleDir = null;
+        try {
+          sampleDir = DisplayDirection.getDirectionFromValue(
+            ds.getDisplayDirection().getHorizontalDisplayDirection());
+          if (sampleDir.equals(DisplayDirection.RIGHT_TO_LEFT)) {
+            setSampleDirectionRight(false);
+          }
+        } catch (NullPointerException ignore) {
+          logger.error("Cannot find horizontal_display_direction element "
+              + "in the Display_Direction area with identifier '"
+              + array2dImage.getLocalIdentifier() + "'.");
+        }
+      } else {
+        logger.info("No display settings found for identifier '"
+            + array2dImage.getLocalIdentifier() + "'.");
+      }
+		} else {
+		  logger.info("No display settings found. Missing local_identifier "
+		      + "element in the Array_2D_Image area.");
+		}
+		
 		if (array2dImage.getAxisIndexOrder().equalsIgnoreCase("LAST INDEX FASTEST")) {
 			setFirstIndexFastest(false);
 		}
@@ -375,6 +416,13 @@ public class TwoDImageExporter extends ObjectExporter implements Exporter<Array2
 		} finally {
 			if (si != null) {
 				try {si.close();} catch (IOException e) {}
+			}
+			if (inputStream != null) {
+			  try {
+			    inputStream.close();
+			  } catch (IOException ignore) {
+			    //Ignore
+			  }
 			}
 		}
 	}

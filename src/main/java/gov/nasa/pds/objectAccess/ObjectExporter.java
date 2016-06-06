@@ -58,7 +58,7 @@ public abstract class ObjectExporter {
 
 
 
-	private void parseLabel(File label, int fileAreaIndex) throws Exception {
+	protected void parseLabel(File label, int fileAreaIndex) throws Exception {
 		if (label.canRead()) {
 			this.objectProvider = new ObjectAccess(new File(label.getParent()));
 			ProductObservational p = objectProvider.getProduct(label, ProductObservational.class);

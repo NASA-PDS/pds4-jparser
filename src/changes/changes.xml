@@ -27,6 +27,12 @@
       <action dev="mcayanan" type="update" issue="PDS-442">
          Clean up the Maven hierarchy and documentation.
       </action>
+      <action dev="mcayanan" type="update" issue="PDS-452">
+         Support the new way display direction values are set in a label.
+      </action>
+      <action dev="mcayanan" type="update">
+         Updated the default logging implementation from no-op to java.util.logging.
+      </action>
     </release>
 
     <release version="0.6.0" date="2016-03-31" description="This release of the PDS4 Tools software is a component of the integrated release 6.1.0 of the PDS4 System. This is an operational release of the system components to date.">

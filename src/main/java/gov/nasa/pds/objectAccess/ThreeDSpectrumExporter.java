@@ -15,7 +15,9 @@ package gov.nasa.pds.objectAccess;
 
 import gov.nasa.arc.pds.xml.generated.Array3DSpectrum;
 import gov.nasa.arc.pds.xml.generated.AxisArray;
+import gov.nasa.arc.pds.xml.generated.DisplaySettings;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
+import gov.nasa.pds.label.DisplayDirection;
 import gov.nasa.pds.objectAccess.DataType.NumericDataType;
 
 import java.awt.geom.AffineTransform;
@@ -66,7 +68,7 @@ import com.sun.media.jai.codec.SeekableStream;
  * @author mcayanan
  *
  */
-public class ThreeDSpectrumExporter extends ObjectExporter implements Exporter<Array3DSpectrum> {
+public class ThreeDSpectrumExporter extends ImageExporter implements Exporter<Array3DSpectrum> {
 
 	Logger logger = LoggerFactory.getLogger(ThreeDSpectrumExporter.class);
 
@@ -273,6 +275,43 @@ public class ThreeDSpectrumExporter extends ObjectExporter implements Exporter<A
    * @param array3dSpectrum
    */
   private void setImageStatistics(Array3DSpectrum array3dSpectrum) {
+    if (array3dSpectrum.getLocalIdentifier() != null) {
+      DisplaySettings ds = getDisplaySettings(array3dSpectrum.getLocalIdentifier());
+      if (ds != null) {
+        DisplayDirection lineDir = null;
+        try {
+          lineDir = DisplayDirection.getDirectionFromValue(
+            ds.getDisplayDirection().getVerticalDisplayDirection());
+          if (lineDir.equals(DisplayDirection.BOTTOM_TO_TOP)) {
+            lineDirectionDown = false;
+          }
+        } catch (NullPointerException ignore) {
+          logger.error("Cannot find vertical_display_direction element "
+              + "in the Display_Direction area for with identifier '"
+              + array3dSpectrum.getLocalIdentifier() + "'.");
+        }
+        
+        DisplayDirection sampleDir = null;
+        try {
+          sampleDir = DisplayDirection.getDirectionFromValue(
+            ds.getDisplayDirection().getHorizontalDisplayDirection());
+          if (sampleDir.equals(DisplayDirection.RIGHT_TO_LEFT)) {
+            setSampleDirectionRight(false);
+          }
+        } catch (NullPointerException ignore) {
+          logger.error("Cannot find horizontal_display_direction element "
+              + "in the Display_Direction area with identifier '"
+              + array3dSpectrum.getLocalIdentifier() + "'.");    
+        }
+      } else {
+        logger.info("No display settings found for identifier '"
+            + array3dSpectrum.getLocalIdentifier() + "'.");
+      }
+    } else {
+      logger.info("No display settings found. Missing local_identifier "
+          + "element in the Array_3D_Spectrum area.");
+    }
+    
     if (array3dSpectrum.getElementArray().getScalingFactor() != null) {
       scalingFactor = array3dSpectrum.getElementArray().getScalingFactor().doubleValue();
     }

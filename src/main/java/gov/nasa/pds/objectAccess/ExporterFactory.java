@@ -41,6 +41,30 @@ public class ExporterFactory {
 		return new TwoDImageExporter(label, fileAreaIndex);
 	}
 
+	 /**
+   * Gets an instance of an Array3DImage exporter.
+   *
+   * @param label the PDS label file.
+   * @param fileAreaIndex the file area inside the label containing the data to export.
+   * @return an instance of a ThreeDImageExporter.
+   * @throws Exception
+   */
+	public static ThreeDImageExporter get3DImageExporter(File label, int fileAreaIndex) throws Exception {
+	  return new ThreeDImageExporter(label, fileAreaIndex);
+	}
+	  
+  /**
+   * Gets an instance of an Array3DSpectrum exporter.
+   *
+   * @param label the PDS label file.
+   * @param fileAreaIndex the file area inside the label containing the data to export.
+   * @return an instance of a ThreeDSpectrumExporter.
+   * @throws Exception
+   */	
+  public static ThreeDSpectrumExporter get3DSpectrumExporter(File label, int fileAreaIndex) throws Exception {
+    return new ThreeDSpectrumExporter(label, fileAreaIndex);
+  }
+	
 	/**
 	 * Gets an instance of a Table exporter.
 	 *
@@ -66,12 +90,29 @@ public class ExporterFactory {
 			return new TwoDImageExporter(fileArea, provider);
 	}
 
+	/**
+   * Gets an instance of an Array3DImage exporter.
+   *
+   * @param fileArea the file area object containing the data to export
+   * @param provider the object provider pointing to the PDS4 label
+   * @return an instance of a ThreeDImageExporter.
+   * @throws Exception
+   */
 	public static ThreeDImageExporter get3DImageExporter(FileAreaObservational fileArea,
 	    ObjectProvider provider) throws Exception {
 	  return new ThreeDImageExporter(fileArea, provider);
 	}
-	
-	public static ThreeDSpectrumExporter get3DSpectrumExporter(FileAreaObservational fileArea, ObjectProvider provider) throws Exception {
+
+  /**
+   * Gets an instance of an Array3DSpectrum exporter.
+   *
+   * @param fileArea the file area object containing the data to export
+   * @param provider the object provider pointing to the PDS4 label
+   * @return an instance of a ThreeDSpectrumExporter.
+   * @throws Exception
+   */	
+	public static ThreeDSpectrumExporter get3DSpectrumExporter(FileAreaObservational fileArea,
+	    ObjectProvider provider) throws Exception {
 	  return new ThreeDSpectrumExporter(fileArea, provider);
 	}
 	

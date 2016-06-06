@@ -103,12 +103,14 @@
             </manifest>
           </archive>
         </configuration>
-      </plugin>     
+      </plugin>
+      <!--   
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.9</version>
       </plugin>
+      -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -320,17 +322,9 @@
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.6.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-nop</artifactId>
-      <version>1.7.0</version>
-      <type>jar</type>
-      <scope>runtime</scope>
-    </dependency>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.21</version>
+    </dependency>    
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>

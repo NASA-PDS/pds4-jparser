@@ -45,7 +45,7 @@
       
       <ul>
         <li>slf4j-api-n.n.n.jar - The SLF4J API library. Here, n.n.n means the SLF4J version number used.</li>
-        <li>An SLF4J implementation library. There are multiple implementations which use various lower-level logging libraries. The one used in this toolkit is slf4j-nop-n.n.n.jar, the no-operation library that inhibits logging. You can replace this JAR file with an implementation that uses Log4J, java.util.logging functionality, or other logging library.</li>
+        <li>An SLF4J implementation library. There are multiple implementations which use various lower-level logging libraries. The one used in this toolkit is slf4j-jdk14-n.n.n.jar, the library that binds SLF4J with java.util.logging. You can replace this JAR file with an implementation that uses Log4J, Jakarta Commons Logging, or other logging library.</li>
       </ul>
       
       <p>See the <a href="http://www.slf4j.org/">SJF4J web site</a> for more information about configuring SLF4J.
