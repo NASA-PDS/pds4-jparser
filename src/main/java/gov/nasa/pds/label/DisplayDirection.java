@@ -22,14 +22,22 @@ public enum DisplayDirection {
 	/** Display is right-to-left. */
 	LEFT("Left"),
 
+	RIGHT_TO_LEFT("Right to Left"),
+	
 	/** Display is left-to-right. */
 	RIGHT("Right"),
 
+  LEFT_TO_RIGHT("Left to Right"),
+	
 	/** Display is bottom-to-top. */
 	UP("Up"),
-
+	
+  BOTTOM_TO_TOP("Bottom to Top"),
+	
 	/** Display is top-to-bottom. */
-	DOWN("Down");
+	DOWN("Down"),
+	
+	TOP_TO_BOTTOM("Top to Bottom");
 
 	private String elementValue;
 
