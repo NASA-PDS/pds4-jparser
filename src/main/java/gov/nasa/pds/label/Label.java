@@ -15,8 +15,10 @@ package gov.nasa.pds.label;
 
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.ByteStream;
+import gov.nasa.arc.pds.xml.generated.EncodedByteStream;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservationalSupplemental;
+import gov.nasa.arc.pds.xml.generated.ParsableByteStream;
 import gov.nasa.arc.pds.xml.generated.Product;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
@@ -229,10 +231,17 @@ public class Label {
 	}
 
 	private DataObject makeGenericObject(gov.nasa.arc.pds.xml.generated.File file, ByteStream stream) {
-		long fileSize = -1;
-		if (file.getFileSize() != null) {
-			fileSize = file.getFileSize().getValue().longValue();
+		long size = -1;
+		long offset = -1;
+		if (stream instanceof EncodedByteStream) {
+		  EncodedByteStream ebs = (EncodedByteStream) stream;
+		  size = ebs.getObjectLength().getValue();
+		  offset = ebs.getOffset().getValue();
+		} else if (stream instanceof ParsableByteStream) {
+		  ParsableByteStream pbs = (ParsableByteStream) stream;
+		  size = pbs.getObjectLength().getValue();
+		  offset = pbs.getOffset().getValue();
 		}
-		return new GenericObject(parentDir, file, 0L, fileSize);
+		return new GenericObject(parentDir, file, offset, size);
 	}
 }

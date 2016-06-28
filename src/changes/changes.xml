@@ -30,6 +30,9 @@
       <action dev="mcayanan" type="update" issue="PDS-452">
          Support the new way display direction values are set in a label.
       </action>
+      <action dev="mcayanan" type="fix" issue="PDS-455">
+         Fixed to create Generic Objects with correct size and offset values.
+      </action>
       <action dev="mcayanan" type="update">
          Updated the default logging implementation from no-op to java.util.logging.
       </action>
