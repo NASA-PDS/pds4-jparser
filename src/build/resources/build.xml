@@ -15,10 +15,9 @@
   <property name="schema.stripped" location="${temp.directory}/schema-stripped.xsd" />
   <property name="schema.disp" location="${schema.dir}/PDS4_DISP_${schema.version}.xsd" />
   <property name="schema.disp.temp" location="${temp.directory}/PDS4_DISP_${schema.version}.xsd" />
-  <property name="schema.stripped" location="${temp.directory}/schema-stripped.xsd" />
 	    
   <copy file="${schema.disp}" todir="${temp.directory}"/>    
-  <replace file="${schema.disp.temp}" token="http://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1600.xsd" value="${schema.stripped}"/>	
+  <replace file="${schema.disp.temp}" token="http://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1600.xsd" value="schema-stripped.xsd"/>	
   
   <target name="help">
     <echo>Use "ant -projecthelp" to show available targets.</echo>
