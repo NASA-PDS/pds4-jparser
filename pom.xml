@@ -25,7 +25,7 @@
 
   <groupId>gov.nasa.pds.2010.preparation</groupId>
   <artifactId>pds4-tools</artifactId>
-  <version>0.7.0-dev</version>
+  <version>0.7.0</version>
   <packaging>jar</packaging>
 
   <name>PDS4 Tools</name>
@@ -86,7 +86,7 @@
       <email>Paul.Ramirez@jpl.nasa.gov</email>
       <organization>NASA Jet Propulsion Laboratory</organization>
       <roles>
-        <role>Developer</role>
+        <role>Former Developer</role>
       </roles>
     </contributor>
   </contributors>
