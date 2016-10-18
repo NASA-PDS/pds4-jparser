@@ -41,8 +41,8 @@
     </menu>
 
     <menu name="Download">
-      <item name="Binary Package (tar.gz)" href="ftp://pds.nasa.gov/pub/toplevel/2010/preparation/${project.artifactId}-${project.version}.tar.gz"/>
-      <item name="Binary Package (zip)" href="ftp://pds.nasa.gov/pub/toplevel/2010/preparation/${project.artifactId}-${project.version}.zip"/>
+      <item name="Binary Package (tar.gz)" href="ftp://pds.nasa.gov/pub/toplevel/2010/preparation/${project.artifactId}-${project.version}-bin.tar.gz"/>
+      <item name="Binary Package (zip)" href="ftp://pds.nasa.gov/pub/toplevel/2010/preparation/${project.artifactId}-${project.version}-bin.zip"/>
     </menu>
 
     <menu ref="reports"/>
