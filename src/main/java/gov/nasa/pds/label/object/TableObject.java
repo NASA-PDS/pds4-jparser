@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -18,6 +18,7 @@ import gov.nasa.pds.objectAccess.TableReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 
 /**
@@ -29,6 +30,26 @@ public class TableObject extends DataObject {
 	private Object tableObject;
 	private TableReader tableReader;
 
+	 /**
+   * Creates a new instance of the table object.
+   *
+   * @param parentDir the parent directory for the table object
+   * @param fileObject the file object describing the data file
+   * @param tableObject the table object describing the table
+   * @param offset the offset of the table object within the data file
+   * @param size the size of the table object, in bytes
+   * @throws Exception if there is any error accessing the table
+   */
+  public TableObject(
+      File parentDir,
+      gov.nasa.arc.pds.xml.generated.File fileObject,
+      Object tableObject,
+      long offset,
+      long size
+  ) throws Exception {
+    this(parentDir.toURI().toURL(), fileObject, tableObject, offset, size);
+  }
+	
 	/**
 	 * Creates a new instance of the table object.
 	 *
@@ -40,7 +61,7 @@ public class TableObject extends DataObject {
 	 * @throws Exception if there is any error accessing the table
 	 */
 	public TableObject(
-			File parentDir,
+			URL parentDir,
 			gov.nasa.arc.pds.xml.generated.File fileObject,
 			Object tableObject,
 			long offset,

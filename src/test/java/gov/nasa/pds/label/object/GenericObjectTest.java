@@ -27,6 +27,7 @@ import java.math.BigInteger;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
+import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
 
 public class GenericObjectTest {
@@ -37,7 +38,7 @@ public class GenericObjectTest {
 		gov.nasa.arc.pds.xml.generated.File fileObject = getFileObject(f);
 		GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 1, 2);
 
-		assertEquals(obj.getDataFile(), f);
+		assertEquals(FileUtils.toFile(obj.getDataFile()), f);
 		assertEquals(obj.getOffset(), 1);
 		assertEquals(obj.getSize(), 2);
 	}

@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
@@ -99,6 +100,10 @@ implements Exporter<Array2DImage> {
 	}
 
 	TwoDImageExporter(File label, int fileAreaIndex) throws Exception {
+	  this(label.toURI().toURL(), fileAreaIndex);
+	}
+	
+	TwoDImageExporter(URL label, int fileAreaIndex) throws Exception {
 		super(label, fileAreaIndex);
 	}
 
@@ -146,9 +151,8 @@ implements Exporter<Array2DImage> {
 		}
 
     BufferedInputStream bufferedInputStream = new BufferedInputStream(
-        new FileInputStream(
-            new File(getObjectProvider().getRoot().getAbsolutePath(),
-        getObservationalFileArea().getFile().getFileName())));
+        new URL(getObjectProvider().getRoot(),
+    getObservationalFileArea().getFile().getFileName()).openStream());
 		bufferedInputStream.skip(Integer.valueOf(array2DImage.getOffset().getValue()));
 		
     int scanline_stride = samples;

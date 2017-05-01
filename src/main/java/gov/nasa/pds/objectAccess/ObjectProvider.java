@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -29,6 +29,7 @@ import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -49,7 +50,7 @@ public interface ObjectProvider {
 	 *
 	 * @return the root file path of the object archive(s) for this ObjectProvider
 	 */
-	File getRoot();
+	URL getRoot();
 
 	/**
 	 * Gets a list of Array objects from an observational file area.
@@ -202,6 +203,18 @@ public interface ObjectProvider {
 	 * @throws ParseException if there is an error parsing the label
 	 */
 	<T> T getProduct(File labelFile, Class<T> productClass) throws ParseException;
+	
+	/**
+   * Reads a product label of a specified class, and returns an instance of that class
+   * as a result.
+   *
+   * @param <T> the product object class
+   * @param label the url containing the XML label
+   * @param productClass the product object class
+   * @return an instance of the product object
+   * @throws ParseException if there is an error parsing the label
+   */
+  <T> T getProduct(URL label, Class<T> productClass) throws ParseException;
 
 	/**
 	 * Writes a label given the product XML file.

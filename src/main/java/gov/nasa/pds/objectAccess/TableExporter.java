@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -31,11 +31,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +55,24 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	private static final Logger LOGGER   = LoggerFactory.getLogger(TableExporter.class);
 	private static final String US_ASCII = "US-ASCII";
 	
+	 /**
+   * Constructs a <code>TableExporter</code> instance.
+   * It parses the label object to get access to the
+   * observational file area at index <code>fileAreaIndex</code>. 
+   * <p>
+   * The default "US-ASCII" character set is used for both
+   * decoding and encoding the bytes. Use the <code>setEncoder</code>
+   * and <code>setDecoder</code> methods to use a different character set.
+   * </p>
+   * 
+   * @param label the label file
+   * @param fileAreaIndex the index of the observational file area to be used by this exporter
+   * @throws Exception
+   */
+  TableExporter(File label, int fileAreaIndex) throws Exception {
+    this(label.toURI().toURL(), fileAreaIndex);
+  }
+	
 	/**
 	 * Constructs a <code>TableExporter</code> instance.
 	 * It parses the label object to get access to the
@@ -67,7 +87,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 * @param fileAreaIndex the index of the observational file area to be used by this exporter
 	 * @throws Exception
 	 */
-	TableExporter(File label, int fileAreaIndex) throws Exception {
+	TableExporter(URL label, int fileAreaIndex) throws Exception {
 		super(label, fileAreaIndex);		
 		setDecoder(US_ASCII);
 		setEncoder(US_ASCII);
@@ -112,7 +132,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 * @throws IOException If an I/O error occurs
 	 */
 	public void convert(Object object, OutputStream outputStream) throws IOException {		
-		File dataFile = new File(getObjectProvider().getRoot().getAbsolutePath(), getObservationalFileArea().getFile().getFileName());		
+		URL dataFile = new URL(getObjectProvider().getRoot(), getObservationalFileArea().getFile().getFileName());		
 		Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, getEncoder()));
 				
 		if (getExportType().equals("CSV")) {
@@ -205,7 +225,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	/*
 	 * Exports a table object into a CSV file.
 	 */
-	private void exportToCSV(File dataFile, Writer writer, Object table) throws FileNotFoundException, IOException {
+	private void exportToCSV(URL dataFile, Writer writer, Object table) throws FileNotFoundException, IOException {
 		if (table instanceof TableDelimited) {
 			exportDelimitedTableToCSV(dataFile, writer, (TableDelimited) table, getDecoder());
 		} else {
@@ -213,7 +233,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 		}
 	}
 	
-	private void exportFixedWidthTableToCSV(File dataFile, Writer writer, Object table, Charset decoder) throws IOException {
+	private void exportFixedWidthTableToCSV(URL dataFile, Writer writer, Object table, Charset decoder) throws IOException {
 		TableAdapter adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
 		FieldDescription[] fields = adapter.getFields();
 		
@@ -251,11 +271,11 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	/*
 	 * Exports a delimited table object into a CSV file.
 	 */
-	private void exportDelimitedTableToCSV(File dataFile, Writer writer, TableDelimited table, Charset charset) throws FileNotFoundException, IOException {
+	private void exportDelimitedTableToCSV(URL dataFile, Writer writer, TableDelimited table, Charset charset) throws FileNotFoundException, IOException {
 		TableAdapter adapter = AdapterFactory.INSTANCE.getTableAdapter(table);		
 		int records = table.getRecords();
 		long tableOffset = (long) table.getOffset().getValue();
-		
+		InputStream is = null;
 		try {
 			CSVWriter csvWriter = new CSVWriter(writer);
 			
@@ -263,7 +283,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 			csvWriter.writeNext(getColumnHeaders(adapter.getFields()));						
 					
 			// Read column data			
-			InputStream is = new FileInputStream(dataFile);
+			is = dataFile.openStream();
 			is.skip(tableOffset);
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(is, charset));
 			CSVReader reader = new CSVReader(buffer, ((TableDelimitedAdapter) adapter).getFieldDelimiter());
@@ -282,7 +302,9 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 		} catch(IOException ex) {
 			LOGGER.error("I/O error.", ex);
 			throw ex;
-		}	
+		}	 finally {
+		  IOUtils.closeQuietly(is);
+		}
 	} 
 	
 	/*

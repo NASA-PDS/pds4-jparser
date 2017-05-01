@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -18,6 +18,8 @@ import gov.nasa.arc.pds.xml.generated.ProductObservational;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,23 @@ public abstract class ObjectExporter {
 	Logger logger = LoggerFactory.getLogger(ObjectExporter.class);
 	private ObjectProvider objectProvider;
 	private FileAreaObservational fileArea;
+	
+	public ObjectExporter() {
+	  this.objectProvider = null;
+	  this.fileArea = null;
+	}
 
+  /**
+   * Super constructor.  Parses the input label file, reporting errors appropriately.
+   * @param label the label file
+   * @param fileAreaIndex the index of the observational file area to be
+   * used by this exporter
+   * @throws Exception
+   */
+  public ObjectExporter(File label, int fileAreaIndex) throws Exception {
+    this(label.toURI().toURL(), fileAreaIndex);
+  }	
+	
 	/**
 	 * Super constructor.  Parses the input label file, reporting errors appropriately.
 	 * @param label the label file
@@ -40,7 +58,7 @@ public abstract class ObjectExporter {
 	 * used by this exporter
 	 * @throws Exception
 	 */
-	public ObjectExporter(File label, int fileAreaIndex) throws Exception {
+	public ObjectExporter(URL label, int fileAreaIndex) throws Exception {
 		parseLabel(label, fileAreaIndex);
 	}
 
@@ -59,8 +77,22 @@ public abstract class ObjectExporter {
 
 
 	protected void parseLabel(File label, int fileAreaIndex) throws Exception {
-		if (label.canRead()) {
-			this.objectProvider = new ObjectAccess(new File(label.getParent()));
+	  parseLabel(label.toURI().toURL(), fileAreaIndex);
+	}
+	
+	protected void parseLabel(URL label, int fileAreaIndex) throws Exception {
+	  boolean canRead = true;
+	  try {
+	    label.openStream().close();
+	  } catch (IOException io) {
+	    canRead = false;
+	  }
+		if (canRead) {
+      URI labelUri = label.toURI().normalize();
+      URL parentUrl = labelUri.getPath().endsWith("/") ?
+          labelUri.resolve("..").toURL() :
+            labelUri.resolve(".").toURL();
+			this.objectProvider = new ObjectAccess(parentUrl);
 			ProductObservational p = objectProvider.getProduct(label, ProductObservational.class);
 			try {
 				fileArea = p.getFileAreaObservationals().get(fileAreaIndex);
@@ -70,7 +102,7 @@ public abstract class ObjectExporter {
 				throw new Exception(message);
 			}
 		} else {
-			String message = "Input file does not exist: " + label.getAbsolutePath();
+			String message = "Input file does not exist: " + label.toString();
 			logger.error(message);
 			throw new IOException(message);
 		}

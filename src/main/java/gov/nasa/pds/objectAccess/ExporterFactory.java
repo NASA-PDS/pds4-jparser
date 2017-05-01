@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -16,6 +16,7 @@ package gov.nasa.pds.objectAccess;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 
 import java.io.File;
+import java.net.URL;
 
 /**
  * Factory pattern class to create specific object exporters.
@@ -29,6 +30,18 @@ public class ExporterFactory {
 		// never called
 	}
 
+	 /**
+   * Gets an instance of a Array2DImage exporter.
+   *
+   * @param label the PDS label file
+   * @param fileAreaIndex the file area inside the label containing the data to export
+   * @return an instance of a TwoDImageExporter
+   * @throws Exception
+   */
+  public static TwoDImageExporter get2DImageExporter(File label, int fileAreaIndex) throws Exception {
+    return get2DImageExporter(label.toURI().toURL(), fileAreaIndex);
+  }
+	
 	/**
 	 * Gets an instance of a Array2DImage exporter.
 	 *
@@ -37,10 +50,22 @@ public class ExporterFactory {
 	 * @return an instance of a TwoDImageExporter
 	 * @throws Exception
 	 */
-	public static TwoDImageExporter get2DImageExporter(File label, int fileAreaIndex) throws Exception {
+	public static TwoDImageExporter get2DImageExporter(URL label, int fileAreaIndex) throws Exception {
 		return new TwoDImageExporter(label, fileAreaIndex);
 	}
 
+  /**
+   * Gets an instance of an Array3DImage exporter.
+   *
+   * @param label the PDS label file.
+   * @param fileAreaIndex the file area inside the label containing the data to export.
+   * @return an instance of a ThreeDImageExporter.
+   * @throws Exception
+   */
+  public static ThreeDImageExporter get3DImageExporter(File label, int fileAreaIndex) throws Exception {
+    return get3DImageExporter(label.toURI().toURL(), fileAreaIndex);
+  }
+	
 	 /**
    * Gets an instance of an Array3DImage exporter.
    *
@@ -49,9 +74,21 @@ public class ExporterFactory {
    * @return an instance of a ThreeDImageExporter.
    * @throws Exception
    */
-	public static ThreeDImageExporter get3DImageExporter(File label, int fileAreaIndex) throws Exception {
+	public static ThreeDImageExporter get3DImageExporter(URL label, int fileAreaIndex) throws Exception {
 	  return new ThreeDImageExporter(label, fileAreaIndex);
 	}
+	
+  /**
+   * Gets an instance of an Array3DSpectrum exporter.
+   *
+   * @param label the PDS label file.
+   * @param fileAreaIndex the file area inside the label containing the data to export.
+   * @return an instance of a ThreeDSpectrumExporter.
+   * @throws Exception
+   */ 
+  public static ThreeDSpectrumExporter get3DSpectrumExporter(File label, int fileAreaIndex) throws Exception {
+    return get3DSpectrumExporter(label.toURI().toURL(), fileAreaIndex);
+  }
 	  
   /**
    * Gets an instance of an Array3DSpectrum exporter.
@@ -61,10 +98,22 @@ public class ExporterFactory {
    * @return an instance of a ThreeDSpectrumExporter.
    * @throws Exception
    */	
-  public static ThreeDSpectrumExporter get3DSpectrumExporter(File label, int fileAreaIndex) throws Exception {
+  public static ThreeDSpectrumExporter get3DSpectrumExporter(URL label, int fileAreaIndex) throws Exception {
     return new ThreeDSpectrumExporter(label, fileAreaIndex);
   }
 	
+  /**
+   * Gets an instance of a Table exporter.
+   *
+   * @param label the PDS label file
+   * @param fileAreaIndex the file area inside the label containing the data to export
+   * @return an instance of a TableExporter
+   * @throws Exception
+   */
+  public static TableExporter getTableExporter(File label, int fileAreaIndex) throws Exception {
+    return getTableExporter(label.toURI().toURL(), fileAreaIndex);
+  }
+  
 	/**
 	 * Gets an instance of a Table exporter.
 	 *
@@ -73,7 +122,7 @@ public class ExporterFactory {
 	 * @return an instance of a TableExporter
 	 * @throws Exception
 	 */
-	public static TableExporter getTableExporter(File label, int fileAreaIndex) throws Exception {
+	public static TableExporter getTableExporter(URL label, int fileAreaIndex) throws Exception {
 		return new TableExporter(label, fileAreaIndex);
 	}
 
@@ -129,6 +178,18 @@ public class ExporterFactory {
 			return new TableExporter(fileArea, provider);
 	}
 
+	 /**
+   * Gets a table reader object for a given table and data file.
+   *
+   * @param tableObject the table object, binary, character, or delimited
+   * @param dataFile the data file containing the table
+   * @return a table reader for the table
+   * @throws Exception if there is an error reading the file
+   */
+  public static TableReader getTableReader(Object tableObject, File dataFile) throws Exception {
+    return getTableReader(tableObject, dataFile.toURI().toURL());
+  }
+	
 	/**
 	 * Gets a table reader object for a given table and data file.
 	 *
@@ -137,7 +198,7 @@ public class ExporterFactory {
 	 * @return a table reader for the table
 	 * @throws Exception if there is an error reading the file
 	 */
-	public static TableReader getTableReader(Object tableObject, File dataFile) throws Exception {
+	public static TableReader getTableReader(Object tableObject, URL dataFile) throws Exception {
 		return new TableReader(tableObject, dataFile);
 	}
 

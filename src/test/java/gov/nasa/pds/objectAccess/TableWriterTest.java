@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
@@ -61,10 +62,10 @@ public class TableWriterTest {
 	};
 		
 	@Test
-	public void testCharacterTableWriter() throws IOException {
+	public void testCharacterTableWriter() throws IOException, URISyntaxException {
 		Object[] data;		
 		TableRecord record;
-		ObjectAccess objectAccess = new ObjectAccess(CHAR_TABLE_LABEL_PATH);				
+		ObjectAccess objectAccess = new ObjectAccess(CHAR_TABLE_LABEL_PATH);			
 		ProductObservational product = getProduct(objectAccess, charLabelFile);			
 		FileAreaObservational fileArea = getFileArea(product);		
 		File dataFile = getDataFile(fileArea, CHAR_TABLE_LABEL_PATH); 
@@ -116,7 +117,7 @@ public class TableWriterTest {
 	}	
 		
 	@Test
-	public void testBinaryTableWriter() throws IOException {				
+	public void testBinaryTableWriter() throws IOException, URISyntaxException {				
 		Object[] data;
 		TableRecord record;
 		TableWriter writer = null;
@@ -185,7 +186,7 @@ public class TableWriterTest {
 	}
 		
 	@Test
-	public void testDelimitedTableWriter()  throws IOException {									
+	public void testDelimitedTableWriter()  throws IOException, URISyntaxException {									
 		TableRecord record;
 		TableWriter tableWriter = null;
 		String path = "./src/test/resources/1000";
@@ -236,7 +237,7 @@ public class TableWriterTest {
 	}
 	
 	@Test(expectedExceptions={UnsupportedCharsetException.class})
-	public void testBadCharset() throws IOException {		
+	public void testBadCharset() throws IOException, URISyntaxException {		
 		ObjectAccess objectAccess = new ObjectAccess(CHAR_TABLE_LABEL_PATH);				
 		ProductObservational product = getProduct(objectAccess, charLabelFile);			
 		FileAreaObservational fileArea = getFileArea(product);		

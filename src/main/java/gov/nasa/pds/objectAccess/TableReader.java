@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,10 @@ public class TableReader {
 	private CSVReader csvReader = null;
 	private List<String[]> delimitedRecordList;
 
+	public TableReader(Object table, File dataFile) throws Exception {
+	  this(table, dataFile.toURI().toURL());
+	}
+	
 	/**
 	 * Constructs a <code>TableReader</code> instance for reading records from a
 	 * data file associated with a table object.
@@ -58,7 +63,7 @@ public class TableReader {
 	 *
 	 * @throws NullPointerException if table offset is null
 	 */
-	public TableReader(Object table, File dataFile) throws Exception {
+	public TableReader(Object table, URL dataFile) throws Exception {
 		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
 		try {
 			offset = adapter.getOffset();
@@ -68,7 +73,7 @@ public class TableReader {
 		}
 
 		if (adapter instanceof TableDelimitedAdapter) {
-			InputStream is = new FileInputStream(dataFile);
+			InputStream is = dataFile.openStream();
 			is.skip(offset);
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
 			csvReader = new CSVReader(buffer, ((TableDelimitedAdapter) adapter).getFieldDelimiter());

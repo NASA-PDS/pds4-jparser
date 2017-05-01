@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
 
 public class TableReaderTest {
@@ -72,7 +73,7 @@ public class TableReaderTest {
 
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		TableCharacter table = oa.getTableCharacters(fileArea).get(0);
-		File dataFile = new File(oa.getRoot().getAbsolutePath(), fileArea.getFile().getFileName());
+		File dataFile = new File(FileUtils.toFile(oa.getRoot()), fileArea.getFile().getFileName());
 		RecordCharacter record = table.getRecordCharacter();
 		int rows = table.getRecords();
 		int cols = record.getFields();
@@ -108,7 +109,7 @@ public class TableReaderTest {
 		}
 
 		dataFile.deleteOnExit();
-		new File(oa.getRoot().getAbsolutePath(), label).deleteOnExit();
+		new File(FileUtils.toFile(oa.getRoot()), label).deleteOnExit();
 	}
 
 	@Test
@@ -121,7 +122,7 @@ public class TableReaderTest {
 
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		TableBinary table = oa.getTableBinaries(fileArea).get(0);
-		File dataFile = new File(oa.getRoot().getAbsolutePath(), fileArea.getFile().getFileName());
+		File dataFile = new File(FileUtils.toFile(oa.getRoot()), fileArea.getFile().getFileName());
 		RecordBinary record = table.getRecordBinary();
 		int rows = table.getRecords();
 		int cols = record.getFields();
@@ -179,7 +180,7 @@ public class TableReaderTest {
 		}
 
 		dataFile.deleteOnExit();
-		new File(oa.getRoot().getAbsolutePath(), label).deleteOnExit();
+		new File(FileUtils.toFile(oa.getRoot()), label).deleteOnExit();
 	}
 
 	//@Test
@@ -192,7 +193,7 @@ public class TableReaderTest {
 
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		TableBinary table = oa.getTableBinaries(fileArea).get(0);
-		File dataFile = new File(oa.getRoot().getAbsolutePath(), fileArea.getFile().getFileName());
+		File dataFile = new File(FileUtils.toFile(oa.getRoot()), fileArea.getFile().getFileName());
 		RecordBinary record = table.getRecordBinary();
 		int rows = table.getRecords();
 		int cols = record.getFields();
@@ -217,7 +218,7 @@ public class TableReaderTest {
 		}
 
 		dataFile.deleteOnExit();
-		new File(oa.getRoot().getAbsolutePath(), label).deleteOnExit();
+		new File(FileUtils.toFile(oa.getRoot()), label).deleteOnExit();
 	}
 
 	private ProductObservational createProductLabel(ObjectAccess oa, String label) {

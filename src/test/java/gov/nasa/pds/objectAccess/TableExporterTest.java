@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -75,8 +76,8 @@ public class TableExporterTest {
 		ProductObservational product = objectAccess.getObservationalProduct(fileName);
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		List<TableCharacter> list = objectAccess.getTableCharacters(fileArea);
-		File label = new File(objectAccess.getRoot().getAbsolutePath(), fileName);
-		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "char_table.csv");		
+		File label = new File(FileUtils.toFile(objectAccess.getRoot()), fileName);
+		File outputFile = new File(FileUtils.toFile(objectAccess.getRoot()), "char_table.csv");		
 		exportToCSV(label, outputFile, list.get(0), 5, 10, dataObject, false);	
 	}	
 	
@@ -87,8 +88,8 @@ public class TableExporterTest {
 		ProductObservational product = objectAccess.getObservationalProduct(fileName);
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		List<TableCharacter> list = objectAccess.getTableCharacters(fileArea);				
-		File label = new File(objectAccess.getRoot().getAbsolutePath(), fileName);
-		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "char_table_grouped.csv");		
+		File label = new File(FileUtils.toFile(objectAccess.getRoot()), fileName);
+		File outputFile = new File(FileUtils.toFile(objectAccess.getRoot()), "char_table_grouped.csv");		
 		exportToCSV(label, outputFile, list.get(0), 6, 6, groupedCharDataObject, false);		
 	}
 	
@@ -100,8 +101,8 @@ public class TableExporterTest {
 		ProductObservational product = objectAccess.getObservationalProduct(fileName);
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		List<TableBinary> list = objectAccess.getTableBinaries(fileArea);									
-		File label = new File(objectAccess.getRoot(), fileName);
-		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "binary_table.csv");		
+		File label = new File(FileUtils.toFile(objectAccess.getRoot()), fileName);
+		File outputFile = new File(FileUtils.toFile(objectAccess.getRoot()), "binary_table.csv");		
 		exportToCSV(label, outputFile, list.get(0), 2, 16, binDataObejct, true);				
 	}
 	
@@ -111,8 +112,8 @@ public class TableExporterTest {
 		ProductObservational product = objectAccess.getObservationalProduct(DELIMITED_LABEL_NAME);
 		FileAreaObservational fileArea = product.getFileAreaObservationals().get(0);
 		List<TableDelimited> list = objectAccess.getTableDelimiteds(fileArea);
-		File outputFile = new File(objectAccess.getRoot().getAbsolutePath(), "delimited_table.csv");
-		File label = new File(objectAccess.getRoot().getAbsolutePath(), DELIMITED_LABEL_NAME);		
+		File outputFile = new File(FileUtils.toFile(objectAccess.getRoot()), "delimited_table.csv");
+		File label = new File(FileUtils.toFile(objectAccess.getRoot()), DELIMITED_LABEL_NAME);		
 		exportToCSV(label, outputFile, list.get(0), 3, 13, delimitedDataObject, true);		
 	}
 		
@@ -120,7 +121,7 @@ public class TableExporterTest {
 	public void testConvert() throws Exception {
 		ObjectProvider provider = new ObjectAccess(new File(DELIMITED_LABEL_PATH));				
 		ProductObservational product = provider.getObservationalProduct(DELIMITED_LABEL_NAME);
-		File outputFile = new File(provider.getRoot().getAbsolutePath(), "convert_test.csv");
+		File outputFile = new File(FileUtils.toFile(provider.getRoot()), "convert_test.csv");
 		FileOutputStream os = new FileOutputStream(outputFile);		
 		TableExporter exporter = ExporterFactory.getTableExporter(product.getFileAreaObservationals().get(0), provider);
 		exporter.setExportType("CSV");		
@@ -150,7 +151,7 @@ public class TableExporterTest {
 	@Test(expectedExceptions=UnsupportedCharsetException.class)
 	public void testSetDecoder() throws Exception {
 		ObjectProvider provider = new ObjectAccess(new File(DELIMITED_LABEL_PATH));
-		File label = new File(provider.getRoot().getAbsolutePath(), DELIMITED_LABEL_NAME);
+		File label = new File(FileUtils.toFile(provider.getRoot()), DELIMITED_LABEL_NAME);
 		TableExporter exporter = ExporterFactory.getTableExporter(label, 0);		
 		exporter.setDecoder("BAD-CHARSET-NAME");
 	}
@@ -158,7 +159,7 @@ public class TableExporterTest {
 	@Test(expectedExceptions=UnsupportedCharsetException.class)
 	public void testSetEncoder() throws Exception {
 		ObjectProvider provider = new ObjectAccess(new File(DELIMITED_LABEL_PATH));
-		File label = new File(provider.getRoot().getAbsolutePath(), DELIMITED_LABEL_NAME);
+		File label = new File(FileUtils.toFile(provider.getRoot()), DELIMITED_LABEL_NAME);
 		TableExporter exporter = ExporterFactory.getTableExporter(label, 0);		
 		exporter.setEncoder("BAD-CHARSET-NAME");
 	}

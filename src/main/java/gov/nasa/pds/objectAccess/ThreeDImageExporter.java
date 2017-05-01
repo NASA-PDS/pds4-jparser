@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
@@ -96,7 +97,11 @@ public class ThreeDImageExporter extends ImageExporter implements Exporter<Array
 
 	}
 
-	ThreeDImageExporter(File label, int fileAreaIndex) throws Exception {
+  ThreeDImageExporter(File label, int fileAreaIndex) throws Exception {
+    this(label.toURI().toURL(), fileAreaIndex);
+  }
+	
+	ThreeDImageExporter(URL label, int fileAreaIndex) throws Exception {
 		super(label, fileAreaIndex);
 	}
 
@@ -147,9 +152,8 @@ public class ThreeDImageExporter extends ImageExporter implements Exporter<Array
 		}
 
 		BufferedInputStream bufferedInputStream = new BufferedInputStream(
-		    new FileInputStream(
-		        new File(getObjectProvider().getRoot().getAbsolutePath(),
-				getObservationalFileArea().getFile().getFileName())));
+		        new URL(getObjectProvider().getRoot(),
+				getObservationalFileArea().getFile().getFileName()).openStream());
 		bufferedInputStream.skip(Integer.valueOf(array3DImage.getOffset().getValue()));
     int scanline_stride = samples;
     int[] band_offsets = new int[bands];

@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -17,8 +17,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -59,7 +60,7 @@ class ImageConverter {
 		File inputFile = new File(inputFilename);
 
 		// read 2D array
-		BufferedImage bi = readToRaster(inputFile, rows, cols);
+		BufferedImage bi = readToRaster(inputFile.getAbsoluteFile(), rows, cols);
 
 		// ImageIO write
 		writeRasterImage(outputFilename, bi);
@@ -67,14 +68,19 @@ class ImageConverter {
 		return outputFilename;
 	}
 
-	BufferedImage readToRaster(File inputFilename, int rows, int cols) {
+	BufferedImage readToRaster(File inputFilename, int rows, int cols) 
+	    throws MalformedURLException {
+	  return readToRaster(inputFilename.toURI().toURL(), rows, cols);
+	}
+	
+	BufferedImage readToRaster(URL inputFile, int rows, int cols) {
 		BufferedImage rv =  new BufferedImage(rows, cols, BufferedImage.TYPE_BYTE_GRAY); // TYPE_USHORT_GRAY
 		WritableRaster raster= rv.getRaster();
 		int countBytes = -1;
 		DataInputStream di = null;
 
 		try {
-			di = new DataInputStream(new FileInputStream(inputFilename));
+			di = new DataInputStream(inputFile.openStream());
 
 			for (int y = 0; y < cols; y++){
 				for(int x = 0; x<rows; x++){
@@ -93,7 +99,7 @@ class ImageConverter {
 				}
 			}
 		} catch (Exception e) {
-			String m = "EOF at byte number: "+countBytes+ "inputFile: " + inputFilename;
+			String m = "EOF at byte number: "+countBytes+ "inputFile: " + inputFile.toString();
 			LOGGER.error(m, e);
 		} finally {
 			if (di != null) {

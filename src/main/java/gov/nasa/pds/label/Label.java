@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -34,6 +34,9 @@ import gov.nasa.pds.objectAccess.ParseException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -67,18 +70,29 @@ import java.util.List;
 public class Label {
 
 	private ObjectAccess oa;
-	private File parentDir;
+	private URL parentDir;
 	private Product genericProduct;
 	private LabelStandard standard;
 
-	private Label(File labelFile) throws ParseException {
+	private Label(File labelFile) throws ParseException, MalformedURLException {
+	  this(labelFile.toURI().toURL());
+	}
+	
+	private Label(URL label) throws ParseException {
 		// Need to get the absolute version of the label file, because
 		// relative paths in the current directory will give a null parent
 		// file.
-		parentDir = labelFile.getAbsoluteFile().getParentFile();
-		oa = new ObjectAccess(parentDir);
-		genericProduct = oa.getProduct(labelFile, Product.class);
-		standard = LabelStandard.PDS4;
+	  try {
+  	  URI labelUri = label.toURI().normalize();
+  		parentDir = labelUri.getPath().endsWith("/") ?
+          labelUri.resolve("..").toURL() :
+            labelUri.resolve(".").toURL();
+  		oa = new ObjectAccess(parentDir);
+  		genericProduct = oa.getProduct(labelUri.toURL(), Product.class);
+  		standard = LabelStandard.PDS4;
+	  } catch (Exception e) {
+	    throw new ParseException(e.getMessage(), e);
+	  }
 	}
 
 	/**
@@ -99,7 +113,22 @@ public class Label {
 	 * @throws ParseException if there is an error reading the label from the file
 	 */
 	public static Label open(File labelFile) throws ParseException {
-		return new Label(labelFile);
+		try {
+      return new Label(labelFile.toURI().toURL());
+    } catch (MalformedURLException e) {
+      throw new ParseException(e.getMessage(), e);
+    }
+	}
+	
+	 /**
+   * Opens a label from a url.
+   *
+   * @param label the label url
+   * @return the label
+   * @throws ParseException if there is an error reading the label from the url
+   */
+	public static Label open(URL label) throws ParseException {
+	  return new Label(label);
 	}
 
 	/**
@@ -230,7 +259,8 @@ public class Label {
 		return new ArrayObject(parentDir, file, array, array.getOffset().getValue());
 	}
 
-	private DataObject makeGenericObject(gov.nasa.arc.pds.xml.generated.File file, ByteStream stream) {
+	private DataObject makeGenericObject(gov.nasa.arc.pds.xml.generated.File file, ByteStream stream)
+	    throws IOException {
 		long size = -1;
 		long offset = -1;
 		if (stream instanceof EncodedByteStream) {

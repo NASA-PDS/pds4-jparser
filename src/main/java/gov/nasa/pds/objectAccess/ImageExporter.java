@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -15,6 +15,8 @@ package gov.nasa.pds.objectAccess;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,12 +38,49 @@ public abstract class ImageExporter extends ObjectExporter {
    * Constructor.
    * 
    * @param label label file.
+   * @param dataFile data file referenced by the given label
+   * 
+   * @throws Exception If there was an error parsing the label
+   */
+  public ImageExporter(File label, String dataFile) throws Exception {
+    this(label.toURI().toURL(), dataFile);
+  }
+  
+  /**
+   * Constructor.
+   * 
+   * @param label label file url.
+   * @param dataFile data file referenced by the given label
+   * 
+   * @throws Exception If there was an error parsing the label
+   */
+  public ImageExporter(URL label, String dataFile) throws Exception {
+    parseLabel(label, dataFile);
+  }
+  
+  /**
+   * Constructor.
+   * 
+   * @param label label file.
    * @param fileAreaIndex The index of the File_Area_Observational element
    *  that contains the image to export.
    * 
    * @throws Exception If an error occurred parsing the label.
    */
   public ImageExporter(File label, int fileAreaIndex) throws Exception {
+    this(label.toURI().toURL(), fileAreaIndex);
+  }
+  
+  /**
+   * Constructor.
+   * 
+   * @param label label file.
+   * @param fileAreaIndex The index of the File_Area_Observational element
+   *  that contains the image to export.
+   * 
+   * @throws Exception If an error occurred parsing the label.
+   */
+  public ImageExporter(URL label, int fileAreaIndex) throws Exception {
     super(label, fileAreaIndex);
     if (this.displaySettings == null) {
       this.displaySettings = new ArrayList<DisplaySettings>();
@@ -63,6 +102,10 @@ public abstract class ImageExporter extends ObjectExporter {
     this.displaySettings = new ArrayList<DisplaySettings>();
   }
   
+  protected void parseLabel(File label, int fileAreaIndex) throws Exception {
+    parseLabel(label.toURI().toURL(), fileAreaIndex);
+  }
+  
   /**
    * Parse the label.
    * 
@@ -72,9 +115,49 @@ public abstract class ImageExporter extends ObjectExporter {
    *  
    * @throws Exception If an error occurred while parsing the label.
    */
-  protected void parseLabel(File label, int fileAreaIndex) throws Exception {
-    if (label.canRead()) {
-      setObjectProvider(new ObjectAccess(new File(label.getParent())));
+  protected void parseLabel(URL label, int fileAreaIndex) throws Exception {
+    parseLabel(label, "", fileAreaIndex);
+  }
+    
+  /**
+   * Parse the label.
+   * 
+   * @param label The label file.
+   * @param fileAreaIndex The index of the File_Area_Observational element
+   *  that contains the image to export.
+   *  
+   * @throws Exception If an error occurred while parsing the label.
+   */
+  protected void parseLabel(File label, String dataFile) throws Exception {
+    parseLabel(label.toURI().toURL(), dataFile);
+  }
+  
+  /**
+   * Parse the label.
+   * 
+   * @param label The label file.
+   * @param dataFile The name of the data file of the File_Area_Observational element
+   *  that contains the image to export.
+   *  
+   * @throws Exception If an error occurred while parsing the label.
+   */
+  protected void parseLabel(URL label, String dataFile) throws Exception {
+    parseLabel(label, dataFile, -1);
+  }
+  
+  private void parseLabel(URL label, String dataFile, int fileAreaIndex) throws Exception {
+    boolean canRead = true;
+    try {
+      label.openStream().close();
+    } catch (IOException io) {
+      canRead = false;
+    }
+    if (canRead) {
+      URI labelUri = label.toURI().normalize();
+      URL parentUrl = labelUri.getPath().endsWith("/") ?
+          labelUri.resolve("..").toURL() :
+            labelUri.resolve(".").toURL();
+      setObjectProvider(new ObjectAccess(parentUrl));
       ProductObservational p = getObjectProvider().getProduct(label, 
           ProductObservational.class);
       DisciplineArea disciplineArea = null;
@@ -92,19 +175,34 @@ public abstract class ImageExporter extends ObjectExporter {
         logger.error(message);
         throw new Exception(message);
       }
-      try {
-        setObservationalFileArea(p.getFileAreaObservationals()
-            .get(fileAreaIndex));
-      } catch (IndexOutOfBoundsException e) {
-        String message = "Label has no such ObservationalFileArea";
-        logger.error(message);
-        throw new Exception(message);
+      if (fileAreaIndex != -1) {
+        try {
+          setObservationalFileArea(p.getFileAreaObservationals()
+              .get(fileAreaIndex));
+        } catch (IndexOutOfBoundsException e) {
+          String message = "Label has no such ObservationalFileArea";
+          logger.error(message);
+          throw new Exception(message);
+        }
+      } else {
+        for (FileAreaObservational fao : p.getFileAreaObservationals()) {
+          if (dataFile.equalsIgnoreCase(fao.getFile().getFileName())) {
+            setObservationalFileArea(fao);
+            break;
+          }
+        }
+        if (getObservationalFileArea() == null) {
+          String message = "Label has no such ObservationalFileArea with "
+              + "data file name '" + dataFile + "'.";
+          logger.error(message);
+          throw new Exception(message);        
+        }
       }
     } else {
-      String message = "Input file does not exist: " + label.getAbsolutePath();
+      String message = "Input file does not exist: " + label.toString();
       logger.error(message);
       throw new IOException(message);
-    }
+    }    
   }
   
   /**
@@ -126,9 +224,11 @@ public abstract class ImageExporter extends ObjectExporter {
    */
   public DisplaySettings getDisplaySettings(String id) {
     for(DisplaySettings ds : displaySettings) {
-      if (id.equals(ds.getLocalInternalReference()
-          .getLocalIdentifierReference())) {
-        return ds;
+      if (ds.getLocalInternalReference() != null) {
+        if (id.equals(ds.getLocalInternalReference()
+            .getLocalIdentifierReference())) {
+          return ds;
+        }
       }
     }
     return null;

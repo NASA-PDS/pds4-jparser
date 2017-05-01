@@ -23,6 +23,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -32,6 +34,7 @@ import jpl.mipl.io.vicar.VicarInputFile;
 import nom.tam.fits.Fits;
 import nom.tam.fits.ImageHDU;
 
+import org.apache.commons.io.FileUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -48,8 +51,12 @@ public class TwoDImageExporterTest {
 	private final static File productDir = new File("src/test/resources/1000/image");
 	private final static File productFile = new File(productDir, "glpattern1.xml");
 	
-	private final ObjectProvider objectAccess = new ObjectAccess(new File("src/test/resources/" +
-			"1000/image"));
+	private final ObjectProvider objectAccess;
+	
+	public TwoDImageExporterTest() throws MalformedURLException, URISyntaxException {
+	  objectAccess = new ObjectAccess(new File("src/test/resources/" +
+	      "1000/image")); 
+	}
 	
 	public int[][] sineImageValues() throws IOException {
 		int width = 512; // Dimensions of the image
@@ -79,7 +86,7 @@ public class TwoDImageExporterTest {
 			ic.setExportType("PNG");
 			ic.setArray2DImage(img);
 			//TODO Handle case where image is set first, then other settings are set
-			FileOutputStream fos = new FileOutputStream(new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.png"));
+			FileOutputStream fos = new FileOutputStream(new File(FileUtils.toFile(objectAccess.getRoot()), "glpattern1MDRFalse-8.png"));
 			ic.convert(img, fos);
 		}
 		File outputFile = new File(productDir, "glpattern1MDRFalse-8.png");
@@ -134,7 +141,7 @@ public class TwoDImageExporterTest {
 		ic.setExportType("VICAR");
 		FileOutputStream fos = new FileOutputStream(outputFile);
 		ic.convert(fos, 0);
-		VicarInputFile vicarFile = new VicarInputFile(new File(objectAccess.getRoot().getAbsolutePath(), 
+		VicarInputFile vicarFile = new VicarInputFile(new File(FileUtils.toFile(objectAccess.getRoot()), 
 				"glpattern1MDRFalse-8.vic").getAbsolutePath());
 		//System.out.println(vicarFile.getVicarLabel().toString());
 		Assert.assertEquals(vicarFile.getSystemLabel().getOrg(), "BSQ");
@@ -154,7 +161,7 @@ public class TwoDImageExporterTest {
 		ic.setTargetPixelDepth(8);
 		ic.maximizeDynamicRange(false);
 		ic.setExportType("PDS3");
-		FileOutputStream fos = new FileOutputStream(new File(objectAccess.getRoot().getAbsolutePath(), "glpattern1MDRFalse-8.pds3"));
+		FileOutputStream fos = new FileOutputStream(new File(FileUtils.toFile(objectAccess.getRoot()), "glpattern1MDRFalse-8.pds3"));
 		ic.convert(fos, 0);
 		PointerResolver resolver = new StandardPathResolver();
 		DefaultLabelParser parser = new DefaultLabelParser(resolver);

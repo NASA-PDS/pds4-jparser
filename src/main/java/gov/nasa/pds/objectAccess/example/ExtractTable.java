@@ -29,6 +29,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -173,15 +175,24 @@ public class ExtractTable {
 			System.exit(1);
 		}
 
-		ObjectProvider objectAccess = new ObjectAccess();
+		ObjectProvider objectAccess = null;
 		ProductObservational product = null;
 		try {
+		  objectAccess = new ObjectAccess();
 			product = objectAccess.getProduct(labelFile, ProductObservational.class);
 		} catch (gov.nasa.pds.objectAccess.ParseException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			System.exit(1);
-		}
+		} catch (MalformedURLException mu) {
+      System.err.println(mu.getMessage());
+      mu.printStackTrace();
+      System.exit(1);
+    } catch (URISyntaxException ue) {
+      System.err.println(ue.getMessage());
+      ue.printStackTrace();
+      System.exit(1);
+    }
 
 		for (FileAreaObservational fileArea : product.getFileAreaObservationals()) {
   		String fileName = fileArea.getFile().getFileName();

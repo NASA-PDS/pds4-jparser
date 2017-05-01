@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -101,6 +102,10 @@ public class ThreeDSpectrumExporter extends ImageExporter implements Exporter<Ar
 	}
 
 	ThreeDSpectrumExporter(File label, int fileAreaIndex) throws Exception {
+	  this(label.toURI().toURL(), fileAreaIndex);
+	}
+	
+	ThreeDSpectrumExporter(URL label, int fileAreaIndex) throws Exception {
 		super(label, fileAreaIndex);
     selectedBands = new ArrayList<Integer>(
         Arrays.asList(new Integer(1), new Integer(1), new Integer(1)));
@@ -151,11 +156,9 @@ public class ThreeDSpectrumExporter extends ImageExporter implements Exporter<Ar
 				}
 			}
 		}
-
-		BufferedInputStream bufferedInputStream = new BufferedInputStream(
-		    new FileInputStream(
-		        new File(getObjectProvider().getRoot().getAbsolutePath(),
-				getObservationalFileArea().getFile().getFileName())));
+		URL data = new URL(getObjectProvider().getRoot(), getObservationalFileArea().getFile().getFileName());
+    BufferedInputStream bufferedInputStream = new BufferedInputStream(
+        data.openStream());
 		long bytesSkipped = bufferedInputStream.skip(Integer.valueOf(array3DSpectrum.getOffset().getValue()));
     int scanline_stride = samples;
     int[] band_offsets = new int[3];

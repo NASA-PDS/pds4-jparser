@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -16,44 +16,62 @@ package gov.nasa.pds.label.object;
 import gov.nasa.pds.label.io.LengthLimitedInputStream;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * Defines a base type for objects within a label.
  */
 public abstract class DataObject {
 
-	private File parentDir;
+	private URL parentDir;
 	private gov.nasa.arc.pds.xml.generated.File fileObject;
 	private long offset;
 	private long size;
 
-	protected DataObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset, long size) {
+	protected DataObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset, long size)
+	    throws IOException {
+	  this(parentDir.toURI().toURL(), fileObject, offset, size);
+	}
+	
+	protected DataObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset, long size)
+	    throws IOException {
 		this.parentDir = parentDir;
 		this.fileObject = fileObject;
 		this.offset = offset;
 		this.size = size;
 
 		if (size < 0) {
-			File f = getDataFile();
-			if (f.exists()) {
-				size = f.length();
+			URL u = null;
+			URLConnection conn = null;
+			try {
+			  u = getDataFile();
+		    conn = u.openConnection();
+		    size = conn.getContentLengthLong();
+			} finally {		  
+        IOUtils.closeQuietly(
+            conn.getInputStream());
 			}
 		}
 	}
 
 	/**
-	 * Gets a file that refers to the data file for this object.
+	 * Gets a url that refers to the data file for this object.
 	 *
-	 * @return a {@link File} for the file containing the data object
+	 * @return a {@link URL} for the file containing the data object
+	 * @throws MalformedURLException 
 	 */
-	public File getDataFile() {
-		return new File(parentDir, fileObject.getFileName());
+	public URL getDataFile() throws MalformedURLException {
+		return new URL(parentDir, fileObject.getFileName());
 	}
 
 	/**
@@ -78,12 +96,19 @@ public abstract class DataObject {
 		size = newSize;
 	}
 
-	private long getDataSize(File f) {
-		if (size >= 0) {
-			return size;
-		} else {
-			return f.length() - offset;
-		}
+	private long getDataSize(URL u) throws IOException {
+    if (size >= 0) {
+      return size;
+    } else {
+      URLConnection conn = null;
+      try {
+        conn = u.openConnection();
+        return conn.getContentLengthLong() - offset;
+      } finally {     
+        IOUtils.closeQuietly(
+            conn.getInputStream());
+      }
+    }
 	}
 
 	/**
@@ -97,8 +122,8 @@ public abstract class DataObject {
 	 * @throws IOException if there is an error reading the data file
 	 */
 	public InputStream getInputStream() throws FileNotFoundException, IOException {
-		File f = getDataFile();
-		return new LengthLimitedInputStream(new FileInputStream(f), offset, getDataSize(f));
+		URL f = getDataFile();
+		return new LengthLimitedInputStream(f.openStream(), offset, getDataSize(f));
 	}
 
 	/**
@@ -111,14 +136,28 @@ public abstract class DataObject {
 	 * @throws IOException if there is an error reading the data file
 	 */
 	public ByteBuffer getBuffer() throws FileNotFoundException, IOException {
-		File f = getDataFile();
-		if (!f.exists()) {
-			throw new FileNotFoundException("Referenced data file does not exist: " + f.getAbsolutePath());
+		URL u = getDataFile();
+		InputStream is = null;
+		int size = Long.valueOf(getDataSize(u)).intValue();
+		try {
+		  is = u.openStream();
+		  is.skip(offset);
+		  ReadableByteChannel channel = Channels.newChannel(is);
+	    ByteBuffer buffer = ByteBuffer.allocate(size);
+	    int bytesRead = channel.read(buffer);
+	    buffer.flip();
+	    if (bytesRead < size) {
+        throw new IllegalArgumentException("Expected to read in " + size
+            + " bytes but only " + bytesRead + " bytes were read for "
+            + u.toString());
+	    }
+	    return buffer;
+		} catch (IOException io) { 
+			throw new IOException("Error reading data file '"
+			    + u.toString() + "': " + io.getMessage());
+		} finally {
+		  is.close();
 		}
-		if (!f.canRead()) {
-			throw new IOException("Referenced data file is not readable: " + f.getAbsolutePath());
-		}
-		return (new FileInputStream(f)).getChannel().map(FileChannel.MapMode.READ_ONLY, offset, getDataSize(f));
 	}
 
 }

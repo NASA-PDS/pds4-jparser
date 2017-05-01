@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 
 
 /**
@@ -35,10 +36,29 @@ public class ArrayObject extends DataObject {
 	private ArrayAdapter adapter;
 	int[] dimensions;
 
+	 /**
+   * Creats a new array instance.
+   *
+   * @param parentDir the parent directory for the data file
+   * @param fileObject the file object metadata
+   * @param array the array object
+   * @param offset the offset within the data file
+   * @throws IOException if there is an error opening the data file
+   * @throws FileNotFoundException if the data file is not found
+   */
+  public ArrayObject(
+      File parentDir,
+      gov.nasa.arc.pds.xml.generated.File fileObject,
+      Array array,
+      long offset
+  ) throws FileNotFoundException, IOException {
+    this(parentDir.toURI().toURL(), fileObject, array, offset);
+  }
+	
 	/**
 	 * Creats a new array instance.
 	 *
-	 * @param parentDir the parent directory for the data file
+	 * @param parent the parent directory for the data file
 	 * @param fileObject the file object metadata
 	 * @param array the array object
 	 * @param offset the offset within the data file
@@ -46,12 +66,12 @@ public class ArrayObject extends DataObject {
 	 * @throws FileNotFoundException if the data file is not found
 	 */
 	public ArrayObject(
-			File parentDir,
+			URL parent,
 			gov.nasa.arc.pds.xml.generated.File fileObject,
 			Array array,
 			long offset
 	) throws FileNotFoundException, IOException {
-		super(parentDir, fileObject, offset, 0);
+		super(parent, fileObject, offset, 0);
 		this.array = array;
 
 		dimensions = findDimensions();
@@ -275,6 +295,11 @@ public class ArrayObject extends DataObject {
 		return (array instanceof Array2DImage) || (array instanceof Array3DImage);
 	}
 
+	/**
+	 * Returns a BufferedImage object with the type set to TYPE_BYTE_GRAY.
+	 * 
+	 * @return a BufferedImage
+	 */
 	public BufferedImage as2DImage() {
 		if (!(array instanceof Array2DImage)) {
 			throw new UnsupportedOperationException("Data object is not a 2-D image.");

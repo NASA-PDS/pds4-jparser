@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -14,13 +14,17 @@
 package gov.nasa.pds.objectAccess;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +34,29 @@ import org.slf4j.LoggerFactory;
 class ByteWiseFileAccessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ByteWiseFileAccessor.class);
 	private int recordLength;
-	private MappedByteBuffer mappedBuffer = null;
+	private ByteBuffer buffer = null;
 
+	 /**
+   * Constructs a <code>ByteWiseFileAccessor</code> object
+   * which maps a region of a data file into memory.
+   *
+   * @param file the data file
+   * @param offset the offset within the data file
+   * @param length the record length in bytes
+   * @param records the number of records
+   * @throws FileNotFoundException If <code>file</code> does not exist, is a directory
+   *       rather than a regular file, or for some other reason cannot be opened for reading
+   * @throws IOException If an I/O error occurs
+   */
+  ByteWiseFileAccessor(File file, long offset, int length, int records) throws FileNotFoundException, IOException {
+    this(file.toURI().toURL(), offset, length, records);
+  }
+	
 	/**
 	 * Constructs a <code>ByteWiseFileAccessor</code> object
 	 * which maps a region of a data file into memory.
 	 *
-	 * @param file the data file
+	 * @param url the data file
 	 * @param offset the offset within the data file
 	 * @param length the record length in bytes
 	 * @param records the number of records
@@ -44,26 +64,36 @@ class ByteWiseFileAccessor {
 	 * 		   rather than a regular file, or for some other reason cannot be opened for reading
 	 * @throws IOException If an I/O error occurs
 	 */
-	ByteWiseFileAccessor(File file, long offset, int length, int records) throws FileNotFoundException, IOException {
+	ByteWiseFileAccessor(URL url, long offset, int length, int records) throws FileNotFoundException, IOException {
 		this.recordLength = length;
+		URLConnection conn = null;
+		InputStream is = null;
 		try {
-			FileInputStream is = new FileInputStream(file);
-			FileChannel channel = is.getChannel();
-			int size = length * records;
-			if (file.length() < offset + size) {
-				throw new IllegalArgumentException(
-						"The file '" + file.getPath()
-						+ "' is shorter than the end of the table specified in the label ("
-						+ file.length() + " < " + (offset+size) + ")"
-				);
+		  conn = url.openConnection();
+	    is = conn.getInputStream();
+	     int size = length * records;
+	      if (conn.getContentLengthLong() < offset + size) {
+	        throw new IllegalArgumentException(
+	            "The file '" + url.toString()
+	            + "' is shorter than the end of the table specified in the label ("
+	            + conn.getContentLength() + " < " + (offset+size) + ")"
+	        );
+	      }
+	    is.skip(offset);
+	    ReadableByteChannel channel = Channels.newChannel(is);
+			this.buffer = ByteBuffer.allocate(size);
+			int bytesRead = channel.read(this.buffer);
+			this.buffer.flip();
+			if (bytesRead < size) {
+			  throw new IllegalArgumentException("Expected to read in " + size
+			      + " bytes but only " + bytesRead + " bytes were read for "
+			      + url.toString());
 			}
-			this.mappedBuffer = channel.map(FileChannel.MapMode.READ_ONLY, offset, size);
-		} catch (FileNotFoundException ex) {
-			LOGGER.error("The data file does not exist or for some other reason cannot be opened for reading.", ex);
-			throw ex;
 		} catch (IOException ex) {
 			LOGGER.error("I/O error.", ex);
 			throw ex;
+		} finally {
+		  IOUtils.closeQuietly(is);
 		}
 	}
 
@@ -81,8 +111,8 @@ class ByteWiseFileAccessor {
 		// The offset within the mapped buffer
 		int fileOffset = (recordNum - 1) * this.recordLength;
 		byte[] buf = new byte[this.recordLength];
-		mappedBuffer.position(fileOffset);
-		mappedBuffer.get(buf);
+		buffer.position(fileOffset);
+		buffer.get(buf);
 
 		return Arrays.copyOfRange(buf, offset, (offset + length));
 	}

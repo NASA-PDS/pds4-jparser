@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -28,9 +28,14 @@ import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -43,6 +48,8 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,35 +61,61 @@ import org.slf4j.LoggerFactory;
 public class ObjectAccess implements ObjectProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectAccess.class);
 	private String archiveRoot;
-	private File root;
+	private URL root;
 
 	/**
-	 * Creates a new instance with the current directory as the archive root
+	 * Creates a new instance with the current local directory as the archive root
 	 * path.
+	 * @throws URISyntaxException 
+	 * @throws MalformedURLException 
 	 */
-	public ObjectAccess() {
+	
+	public ObjectAccess() throws MalformedURLException, URISyntaxException {
 		this(new File("."));
 	}
+	
 
 	/**
 	 * Constructs an <code>ObjectAccess</code> object and sets the archive root path.
 	 *
 	 * @param archiveRoot the archive root path
+	 * @throws URISyntaxException 
+	 * @throws MalformedURLException 
 	 * @throws Exception
 	 */
-	public ObjectAccess(String archiveRoot) {
-		this(new File(archiveRoot));
+	public ObjectAccess(String archiveRoot) throws MalformedURLException, URISyntaxException {
+	  URL url = null;
+	  try {
+	    url = new URL(archiveRoot);
+	  } catch (MalformedURLException mu) {
+	    url = new File(archiveRoot).toURI().toURL();
+	  }
+	  this.root = url.toURI().normalize().toURL();
+	  this.archiveRoot = this.root.toString();
 	}
 
 	/**
+   * Constructs an <code>ObjectAccess</code> object and sets the archive root path.
+   *
+   * @param archiveRoot the archive root path
+   * @throws URISyntaxException 
+   * @throws MalformedURLException 
+   * @throws Exception
+   */
+	public ObjectAccess(File archiveRoot) throws MalformedURLException, URISyntaxException {
+	  this(archiveRoot.toURI().toURL());
+	}
+	
+	/**
 	 * Constructs an <code>ObjectAccess</code> object and sets the archive root path.
 	 *
 	 * @param archiveRoot the archive root path
-	 * @throws Exception
+	 * @throws URISyntaxException 
+	 * @throws MalformedURLException 
 	 */
-	public ObjectAccess(File archiveRoot) {
-		this.root = archiveRoot;
-		this.archiveRoot = archiveRoot.getAbsolutePath();
+	public ObjectAccess(URL archiveRoot) throws URISyntaxException, MalformedURLException {
+		this.root = archiveRoot.toURI().normalize().toURL();
+		this.archiveRoot = this.root.toString();
 	}
 
 	private JAXBContext getJAXBContext(String pkgName) throws JAXBException {
@@ -96,13 +129,23 @@ public class ObjectAccess implements ObjectProvider {
 		return JAXBContext.newInstance(pkgName);
 	}
 
+  @Override
+  public <T> T getProduct(File labelFile, Class<T> productClass) throws ParseException {
+    try {
+      return getProduct(labelFile.toURI().toURL(), productClass);
+    } catch (MalformedURLException e) {
+      LOGGER.error("Failed to load the product from the label.", e);
+      throw new ParseException("Unable to parse the product label", e);
+    }
+  }
+	
 	@Override
-	public <T> T getProduct(File labelFile, Class<T> productClass) throws ParseException {
+	public <T> T getProduct(URL label, Class<T> productClass) throws ParseException {
 		try {
 			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Unmarshaller u = context.createUnmarshaller();
 			u.setEventHandler(new LenientEventHandler());
-			return productClass.cast(u.unmarshal(labelFile));
+			return productClass.cast(u.unmarshal(label));
 		} catch (JAXBException e) {
 			LOGGER.error("Failed to load the product from the label.", e);
 			throw new ParseException("Unable to parse the product label", e);
@@ -115,23 +158,52 @@ public class ObjectAccess implements ObjectProvider {
 			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Unmarshaller u = context.createUnmarshaller();
 			u.setEventHandler(new LenientEventHandler());
-			File f = new File(getRoot().getAbsolutePath() + File.separator + relativeXmlFilePath);
-			return (ProductObservational) u.unmarshal(f);
+			URL url = new URL(getRoot(), relativeXmlFilePath);
+			return (ProductObservational) u.unmarshal(url);
 		} catch (JAXBException e) {
 			LOGGER.error("Failed to get the product observational.", e);
 			e.printStackTrace();
 			return null;
-		}
+		} catch (MalformedURLException e) {
+      LOGGER.error("Failed to get the product observational.", e);
+      e.printStackTrace();
+      return null;
+    }
 	}
 
+  /**
+   * Writes a label given the product XML file. This method assumes that the 
+   * label will be written to the local file system. Therefore, the protocol
+   * of the ObjectAccess archive root must be a 'file'.
+   *
+   * @param relativeXmlFilePath the XML file path and name of the product to set, relative
+   *      to the ObjectAccess archive root
+   */
 	@Override
 	public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) {
 		try {
 			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			File f = new File(getRoot().getAbsolutePath() + File.separator + relativeXmlFilePath);
-			m.marshal(product, f);
+			if ("file".equalsIgnoreCase(getRoot().getProtocol())) {
+  			File parent = FileUtils.toFile(getRoot());
+  			File f = new File(parent, relativeXmlFilePath);
+  			m.marshal(product, f);
+			} else {
+			  OutputStream os = null;
+			  try {
+			    URL u = new URL(getRoot(), relativeXmlFilePath);
+			    URLConnection conn = u.openConnection();
+			    conn.setDoOutput(true);
+			    os = conn.getOutputStream();
+			    m.marshal(product, os);
+			  } catch (Exception e) {
+			    LOGGER.error("Failed to set the product observational.", e);
+			    e.printStackTrace();
+			  } finally {
+			    IOUtils.closeQuietly(os);
+			  }
+			}
 		} catch (JAXBException e) {
 			LOGGER.error("Failed to set the product observational.", e);
 			e.printStackTrace();
@@ -330,7 +402,7 @@ public class ObjectAccess implements ObjectProvider {
 	}
 
 	@Override
-	public File getRoot() {
+	public URL getRoot() {
 		return this.root;
 	}
 
