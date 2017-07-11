@@ -22,27 +22,16 @@
       <directory>src/main/resources</directory>
       <excludes>
         <exclude>bin/*</exclude>
-        <exclude>examples/data/*.TAB</exclude>
-        <exclude>examples/data/*.dat</exclude>
         <exclude>log4j.properties</exclude>
       </excludes>
-      <fileMode>0644</fileMode>
-      <lineEnding>unix</lineEnding>
-    </fileSet>
-    <fileSet>
-      <outputDirectory></outputDirectory>
-      <directory>src/main/resources</directory>
-      <includes>
-        <include>examples/data/*.TAB</include>
-        <include>examples/data/*.dat</include>
-      </includes>
-      <fileMode>0644</fileMode>
+      <fileMode>644</fileMode>
+      <lineEnding>keep</lineEnding>
     </fileSet>
     <fileSet>
       <outputDirectory>bin</outputDirectory>
       <directory>src/main/resources/bin</directory>
-      <fileMode>0755</fileMode>
-      <lineEnding>unix</lineEnding>
+      <fileMode>755</fileMode>
+      <lineEnding>keep</lineEnding>
     </fileSet>
     <fileSet>
       <directory>target/site</directory>

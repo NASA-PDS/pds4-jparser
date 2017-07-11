@@ -22,40 +22,23 @@
       <directory>src/main/resources</directory>
       <excludes>
         <exclude>bin/*</exclude>
-        <exclude>examples/data/*.TAB</exclude>
-        <exclude>examples/data/*.dat</exclude>
         <exclude>log4j.properties</exclude>
       </excludes>
-      <fileMode>0644</fileMode>
-      <lineEnding>windows</lineEnding>
-    </fileSet>
-    <fileSet>
-      <outputDirectory></outputDirectory>
-      <directory>src/main/resources</directory>
-      <includes>
-        <include>examples/data/*.TAB</include>
-        <include>examples/data/*.dat</include>
-      </includes>
-      <fileMode>0644</fileMode>
+      <fileMode>644</fileMode>
+      <lineEnding>keep</lineEnding>
     </fileSet>
     <fileSet>
       <outputDirectory>bin</outputDirectory>
       <directory>src/main/resources/bin</directory>
-      <excludes>
-      	<exclude>extract-table</exclude>
-      </excludes>
-      <fileMode>0755</fileMode>
-      <lineEnding>windows</lineEnding>
+      <fileMode>755</fileMode>
+      <lineEnding>keep</lineEnding>
     </fileSet>
     <fileSet>
-      <outputDirectory>bin</outputDirectory>
-      <directory>src/main/resources/bin</directory>
-      <includes>
-      	<include>extract-table</include>
-      </includes>
-      <fileMode>0755</fileMode>
-      <lineEnding>unix</lineEnding>
-    </fileSet>
+      <directory>target/site</directory>
+      <outputDirectory>doc</outputDirectory>
+      <fileMode>644</fileMode>
+      <lineEnding>keep</lineEnding>
+    </fileSet>    
   </fileSets>
   
   <files>
@@ -63,14 +46,14 @@
       <source>LICENSE.txt</source>
       <outputDirectory>/</outputDirectory>
       <fileMode>644</fileMode>
-      <lineEnding>windows</lineEnding>
+      <lineEnding>crlf</lineEnding>
     </file>
     <file>
       <source>README-PACKAGE.txt</source>
       <outputDirectory>/</outputDirectory>
       <destName>README.txt</destName>
       <fileMode>644</fileMode>
-      <lineEnding>windows</lineEnding>
+      <lineEnding>crlf</lineEnding>
       <filtered>true</filtered>
     </file>
   </files> 
@@ -84,7 +67,6 @@
     </dependencySet>      
     <dependencySet>
       <outputDirectory>examples/src</outputDirectory>
-      <outputFileNameMapping></outputFileNameMapping>
       <includes>
         <include>gov.nasa.pds.2010.preparation:pds4-tools:*:sources</include>
       </includes>
@@ -93,7 +75,6 @@
         <includes>
           <include>gov/nasa/pds/objectAccess/example/*</include>
         </includes>
-        <lineEnding>windows</lineEnding>
       </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useProjectAttachments>true</useProjectAttachments>
