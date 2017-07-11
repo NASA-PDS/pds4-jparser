@@ -54,12 +54,18 @@ public enum FieldType {
 	/** A date-time using day-of-year. */
 	ASCII_DATE_TIME_DOY("ASCII_Date_Time_DOY"),
 
+	/** A date-time using day-of-year in UTC time zone. */
+	ASCII_DATE_TIME_DOY_UTC("ASCII_Date_Time_DOY_UTC"),
+	
 	/** A date-time using year-month-day in UTC time zone. */
 	ASCII_DATE_TIME_UTC("ASCII_Date_Time_UTC"),
 
 	/** A date-time using year-month-day. */
 	ASCII_DATE_TIME_YMD("ASCII_Date_Time_YMD"),
 
+	 /** A date-time using year-month-day in UTC time zone. */
+  ASCII_DATE_TIME_YMD_UTC("ASCII_Date_Time_YMD_UTC"),
+	
 	/** A date using year-month-day. */
 	ASCII_DATE_YMD("ASCII_Date_YMD"),
 
