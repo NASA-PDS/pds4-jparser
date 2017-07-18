@@ -190,7 +190,9 @@ public enum FieldType {
 	SIGNEDBITSTRING("SignedBitString", new BitFieldAdapter(true), true),
 
 	/** An unsigned bit string in a packed field. */
-	UNSIGNEDBITSTRING("UnsignedBitString", new BitFieldAdapter(false), true);
+	UNSIGNEDBITSTRING("UnsignedBitString", new BitFieldAdapter(false), true),
+	
+	UNKNOWN("Unknown", new DefaultFieldAdapter(), true);
 
 	private static Map<String, FieldType> xmlTypeMap = new HashMap<String, FieldType>();
 	static {
