@@ -21,7 +21,6 @@ import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,25 +44,46 @@ public class TableReader {
 	private long offset;
 	private int currentRow = 0;
 	private TableRecord record = null;
-	private ByteWiseFileAccessor accessor = null;
+	protected ByteWiseFileAccessor accessor = null;
 	private Map<String, Integer> map = new HashMap<String, Integer>();
 	private CSVReader csvReader = null;
 	private List<String[]> delimitedRecordList;
+	private BufferedReader bufferedReader = null;
 
 	public TableReader(Object table, File dataFile) throws Exception {
 	  this(table, dataFile.toURI().toURL());
 	}
 	
+	 /**
+   * Constructs a <code>TableReader</code> instance for reading records from a
+   * data file associated with a table object.
+   *
+   * @param table a table object
+   * @param dataFile an input data file
+   *
+   * @throws NullPointerException if table offset is null
+   */
+  public TableReader(Object table, URL dataFile) throws Exception {
+    this(table, dataFile, true);
+  }
+	
+  public TableReader(Object table, URL dataFile, boolean checkSize) throws Exception {
+    this(table, dataFile, checkSize, false);
+  }
+  
 	/**
 	 * Constructs a <code>TableReader</code> instance for reading records from a
 	 * data file associated with a table object.
 	 *
 	 * @param table a table object
 	 * @param dataFile an input data file
+   * @param checkSize check that the size of the data file is equal to the 
+   * size of the table (length * records) + offset.
 	 *
 	 * @throws NullPointerException if table offset is null
 	 */
-	public TableReader(Object table, URL dataFile) throws Exception {
+	public TableReader(Object table, URL dataFile, boolean checkSize, 
+	    boolean readEntireFile) throws Exception {
 		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
 		try {
 			offset = adapter.getOffset();
@@ -73,18 +93,29 @@ public class TableReader {
 		}
 
 		if (adapter instanceof TableDelimitedAdapter) {
+		  TableDelimitedAdapter tda = (TableDelimitedAdapter) adapter;
 			InputStream is = dataFile.openStream();
 			is.skip(offset);
-			BufferedReader buffer = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
-			csvReader = new CSVReader(buffer, ((TableDelimitedAdapter) adapter).getFieldDelimiter());
+			bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
+			accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
+			csvReader = new CSVReader(bufferedReader, tda.getFieldDelimiter());
 			delimitedRecordList = csvReader.readAll();
 		} else {
-			accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength(), adapter.getRecordCount());
+		  if (readEntireFile) {
+		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());
+		  } else {
+		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength(),
+			    adapter.getRecordCount(), checkSize);
+		  }
 		}
 
 		createFieldMap();
 	}
 
+	public TableAdapter getAdapter() {
+	  return this.adapter;
+	}
+	
 	/**
 	 * Gets the field descriptions for fields in the table.
 	 *
@@ -94,6 +125,14 @@ public class TableReader {
 		return adapter.getFields();
 	}
 
+	/**
+	 * 
+	 * @return the field map.
+	 */
+	public Map<String, Integer> getFieldMap() {
+	  return map;
+	}
+	
 	/**
 	 * Reads the next record from the data file.
 	 *
@@ -107,7 +146,7 @@ public class TableReader {
 
 		return getTableRecord();
 	}
-
+	
 	/**
 	 * Gets access to the table record given the index. The current row is set to
 	 * this index, thus, subsequent call to readNext() gets the next record from
@@ -168,5 +207,25 @@ public class TableReader {
 			++fieldIndex;
 		}
 	}
-
+	
+	/**
+	 * Sets the current row.
+	 * 
+	 * @param row The row to set.
+	 */
+	public void setCurrentRow(int row) {
+	  this.currentRow = row;
+	}
+	
+	/**
+	 * 
+	 * @return the current row.
+	 */
+	public int getCurrentRow() {
+	  return this.currentRow;
+	}
+	
+	public ByteWiseFileAccessor getAccessor() {
+	  return this.accessor;
+	}
 }

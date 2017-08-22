@@ -31,10 +31,10 @@ public enum DelimiterType {
 	SEMICOLON("semicolon", ';'),
 
 	/** Horizontal tab field delimiter. */
-	HORIZONTAL_TAB("horizontal_tab", (char) 9),
+	HORIZONTAL_TAB("horizontal tab", (char) 9),
 
 	/** Vertical tab field delimiter. */
-	VERTICAL_BAR("vertical_bar", (char) 11),
+	VERTICAL_BAR("vertical bar", (char) 11),
 
 	/** Carriage return and line feed (CRLF) record delimiter. */
 	CARRIAGE_RETURN_LINE_FEED("carriage_return line_feed", "\r\n");

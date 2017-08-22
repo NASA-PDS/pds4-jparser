@@ -23,8 +23,25 @@ public class FieldDescription {
 	private FieldType type;
 	private int offset;
 	private int length;
+	private int maxLength;
 	private int startBit;
 	private int stopBit;
+	private String format;
+	private Double minimum;
+	private Double maximum;
+	
+	public FieldDescription() {
+	  name = "";
+	  type = null;
+	  offset = -1;
+	  length = -1;
+	  maxLength = -1;
+	  startBit = -1;
+	  stopBit = -1;
+	  format = "";
+	  minimum = null;
+	  maximum = null;
+	}
 	
 	/**
 	 * Gets the field name.
@@ -103,6 +120,26 @@ public class FieldDescription {
 		this.length = length;
 	}
 
+	 /**
+   * Gets the maximum field length, in bytes. This
+   * is only used for fields of delimited
+   * tables.
+   * 
+   * @return the max field length
+   */
+  public int getMaxLength() {
+    return maxLength;
+  }
+  
+  /**
+   * Sets the maximum field length, in bytes.
+   * 
+   * @param length the new maximum field length
+   */
+  public void setMaxLength(int length) {
+    this.maxLength = length;
+  }
+	
 	/**
 	 * Gets the start bit, for bit fields. Bits
 	 * are counted from left to right, where zero
@@ -139,6 +176,30 @@ public class FieldDescription {
 	 */
 	public void setStopBit(int stopBit) {
 		this.stopBit = stopBit;
+	}
+	
+	public String getFormat() {
+	  return format;
+	}
+	
+	public void setFormat(String format) {
+	  this.format = format;
+	}
+	
+	public void setMinimum(Double min) {
+	  this.minimum = min;
+	}
+	
+	public Double getMinimum() {
+	  return minimum;
+	}
+	
+	public void setMaximum(Double max) {
+	  this.maximum = max;
+	}
+	
+	public Double getMaximum() {
+	  return maximum;
 	}
 	
 }

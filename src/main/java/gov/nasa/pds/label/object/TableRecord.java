@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2017, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -14,6 +14,7 @@
 package gov.nasa.pds.label.object;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 
 /**
  * Defines an object for table records that can read the field values
@@ -188,6 +189,15 @@ public interface TableRecord {
 	String getString(String name);
 
 	/**
+   * Gets the string value of a field given the name.
+   *
+   * @param name the field name
+   * @param charset the charset to use.
+   * @return a String value
+   */
+	String getString(String name, Charset charset);
+	
+	/**
 	 * Gets the string value of a field given the index.
 	 *
 	 * @param index the field index (1-relative)
@@ -195,7 +205,17 @@ public interface TableRecord {
 	 * @throws IllegalArgumentException If data type is not supported
 	 */
 	String getString(int index);
-
+	
+	 /**
+   * Gets the string value of a field given the index.
+   *
+   * @param index the field index (1-relative)
+   * @param charset The charset to use.
+   * @return a String value
+   * @throws IllegalArgumentException If data type is not supported
+   */
+	String getString(int index, Charset charset);
+	
 	/**
 	 * Sets a string value to a field given the index. In a fixed-width text file,
 	 * numeric values are right justified and non-numeric values are left justified.
@@ -325,4 +345,16 @@ public interface TableRecord {
 	 */
 	void clear();
 
+	/**
+	 * 
+	 * @return Gets the record location.
+	 */
+	public RecordLocation getLocation();
+	
+	/**
+	 * Sets the record location.
+	 * 
+	 * @param location the record location.
+	 */
+	public void setLocation(RecordLocation location);
 }

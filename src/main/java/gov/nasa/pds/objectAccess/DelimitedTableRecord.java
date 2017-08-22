@@ -13,9 +13,11 @@
 // $Id$
 package gov.nasa.pds.objectAccess;
 
+import gov.nasa.pds.label.object.RecordLocation;
 import gov.nasa.pds.label.object.TableRecord;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +35,8 @@ public class DelimitedTableRecord implements TableRecord {
 	private List<String> items;
 	private String[] recordValue = null;
 	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
-
+	private RecordLocation location;
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DelimitedTableRecord.class);
 
 	/**
@@ -48,6 +51,7 @@ public class DelimitedTableRecord implements TableRecord {
 		this.fieldMap = map;
 		this.fieldCount = fieldCount;
 		this.items = new ArrayList<String>(fieldCount);
+		this.location = null;
 		initializeItems();
 	}
 
@@ -62,6 +66,7 @@ public class DelimitedTableRecord implements TableRecord {
 	DelimitedTableRecord(Map<String, Integer> map, int fieldCount, String[] value) {
 		this.fieldMap = map;
 		this.fieldCount = fieldCount;
+		this.location = null;
 		setRecordValue(value);
 	}
 
@@ -192,9 +197,19 @@ public class DelimitedTableRecord implements TableRecord {
 	}
 
 	@Override
+	public String getString(int index, Charset charset) {
+	  throw new UnsupportedOperationException("Operation not supported.");
+	}
+	
+	@Override
 	public String getString(String name) {
 		checkFieldName(name);
 		return getString(this.fieldMap.get(name));
+	}
+	
+	@Override
+	public String getString(String name, Charset charset) {
+	  throw new UnsupportedOperationException("Operation not supported.");
 	}
 
 	@Override
@@ -340,4 +355,13 @@ public class DelimitedTableRecord implements TableRecord {
 		}
 	}
 
+  @Override
+  public RecordLocation getLocation() {
+    return this.location;
+  }
+
+  @Override
+  public void setLocation(RecordLocation location) {
+    this.location = location;
+  }
 }

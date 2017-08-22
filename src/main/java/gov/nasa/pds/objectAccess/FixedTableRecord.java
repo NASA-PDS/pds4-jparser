@@ -15,6 +15,7 @@ package gov.nasa.pds.objectAccess;
 
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
+import gov.nasa.pds.label.object.RecordLocation;
 import gov.nasa.pds.label.object.TableRecord;
 import gov.nasa.pds.objectAccess.table.DefaultFieldAdapter;
 import gov.nasa.pds.objectAccess.table.DelimiterType;
@@ -38,6 +39,7 @@ public class FixedTableRecord implements TableRecord {
 	private byte[] recordBytes = null;
 	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
 	private FieldDescription[] fields;
+	private RecordLocation location;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FixedTableRecord.class);
 
@@ -57,6 +59,7 @@ public class FixedTableRecord implements TableRecord {
 		this.fieldMap = map;
 		this.fields = fields;
 		this.buffer = ByteBuffer.allocate(length);
+		this.location = null;
 
 		if (!isBinary) {
 			String delimiter = DelimiterType.CARRIAGE_RETURN_LINE_FEED.getRecordDelimiter();
@@ -79,9 +82,10 @@ public class FixedTableRecord implements TableRecord {
 	 * @param map    a hash mapping field name to field index
 	 * @param fields an array of field descriptions (field meta data)
 	 */
-	FixedTableRecord(byte[] value, Map<String, Integer> map, FieldDescription[] fields) {
+	public FixedTableRecord(byte[] value, Map<String, Integer> map, FieldDescription[] fields) {
 		this.fieldMap = map;
 		this.fields = fields;
+		this.location = null;
 		setRecordValue(value);
 	}
 
@@ -199,12 +203,22 @@ public class FixedTableRecord implements TableRecord {
 		checkFieldName(name);
 		return getString(this.fieldMap.get(name));
 	}
+	
+	public String getString(String name, Charset charset) {
+    checkFieldName(name);
+    return getString(this.fieldMap.get(name), charset);	  
+	}
 
 	@Override
 	public String getString(int index) {
 		FieldDescription field = getField(index);
 		return field.getType().getAdapter().getString(recordBytes, field.getOffset(), field.getLength(), field.getStartBit(), field.getStopBit());
 	}
+	
+  public String getString(int index, Charset charset) {
+    FieldDescription field = getField(index);
+    return field.getType().getAdapter().getString(recordBytes, field.getOffset(), field.getLength(), field.getStartBit(), field.getStopBit(), charset);
+  }	
 
 	@Override
 	public void setString(int index, String value) {
@@ -344,4 +358,13 @@ public class FixedTableRecord implements TableRecord {
 		}
 	}
 
+  @Override
+  public RecordLocation getLocation() {
+    return this.location;
+  }
+
+  @Override
+  public void setLocation(RecordLocation location) {
+    this.location = location;
+  }
 }

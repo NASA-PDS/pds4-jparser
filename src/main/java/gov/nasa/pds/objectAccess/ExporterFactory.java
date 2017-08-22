@@ -199,7 +199,6 @@ public class ExporterFactory {
 	 * @throws Exception if there is an error reading the file
 	 */
 	public static TableReader getTableReader(Object tableObject, URL dataFile) throws Exception {
-		return new TableReader(tableObject, dataFile);
+		return new TableReader(tableObject, dataFile, true);
 	}
-
 }

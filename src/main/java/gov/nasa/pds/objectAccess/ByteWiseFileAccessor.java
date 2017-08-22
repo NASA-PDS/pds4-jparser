@@ -28,10 +28,12 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.nasa.pds.objectAccess.utility.Utility;
+
 /**
  * Class that provides common I/O functionality for PDS data objects.
  */
-class ByteWiseFileAccessor {
+public class ByteWiseFileAccessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ByteWiseFileAccessor.class);
 	private int recordLength;
 	private ByteBuffer buffer = null;
@@ -48,10 +50,27 @@ class ByteWiseFileAccessor {
    *       rather than a regular file, or for some other reason cannot be opened for reading
    * @throws IOException If an I/O error occurs
    */
-  ByteWiseFileAccessor(File file, long offset, int length, int records) throws FileNotFoundException, IOException {
+  public ByteWiseFileAccessor(File file, long offset, int length, int records) throws FileNotFoundException, IOException {
     this(file.toURI().toURL(), offset, length, records);
   }
 	
+  /**
+   * Constructs a <code>ByteWiseFileAccessor</code> object
+   * which maps a region of a data file into memory.
+   *
+   * @param url the data file
+   * @param offset the offset within the data file
+   * @param length the record length in bytes
+   * @param records the number of records
+   * @throws FileNotFoundException If <code>file</code> does not exist, is a directory
+   *       rather than a regular file, or for some other reason cannot be opened for reading
+   * @throws IOException If an I/O error occurs
+   */
+  public ByteWiseFileAccessor(URL url, long offset, int length, int records) 
+      throws FileNotFoundException, IOException {
+    this(url, offset, length, records, true);
+  }
+  
 	/**
 	 * Constructs a <code>ByteWiseFileAccessor</code> object
 	 * which maps a region of a data file into memory.
@@ -60,34 +79,41 @@ class ByteWiseFileAccessor {
 	 * @param offset the offset within the data file
 	 * @param length the record length in bytes
 	 * @param records the number of records
+	 * @param checkSize check that the size of the data file is equal to the 
+	 * size of the table (length * records) + offset.
 	 * @throws FileNotFoundException If <code>file</code> does not exist, is a directory
 	 * 		   rather than a regular file, or for some other reason cannot be opened for reading
 	 * @throws IOException If an I/O error occurs
 	 */
-	ByteWiseFileAccessor(URL url, long offset, int length, int records) throws FileNotFoundException, IOException {
+  public ByteWiseFileAccessor(URL url, long offset, int length, int records, boolean checkSize)
+	    throws FileNotFoundException, IOException {
 		this.recordLength = length;
 		URLConnection conn = null;
 		InputStream is = null;
 		try {
 		  conn = url.openConnection();
-	    is = conn.getInputStream();
-	     int size = length * records;
-	      if (conn.getContentLengthLong() < offset + size) {
-	        throw new IllegalArgumentException(
-	            "The file '" + url.toString()
-	            + "' is shorter than the end of the table specified in the label ("
-	            + conn.getContentLength() + " < " + (offset+size) + ")"
-	        );
-	      }
+	    is = Utility.openConnection(conn);
+	    int size = length * records;
+	    if (checkSize) {
+  	    if (conn.getContentLengthLong() < offset + size) {
+  	      throw new IllegalArgumentException(
+  	        "The file '" + url.toString()
+  	        + "' is shorter than the end of the table specified in the label ("
+  	        + conn.getContentLength() + " < " + (offset+size) + ")"
+  	      );
+  	    }
+	    }
 	    is.skip(offset);
 	    ReadableByteChannel channel = Channels.newChannel(is);
-			this.buffer = ByteBuffer.allocate(size);
+      this.buffer = ByteBuffer.allocate(size);
 			int bytesRead = channel.read(this.buffer);
 			this.buffer.flip();
-			if (bytesRead < size) {
-			  throw new IllegalArgumentException("Expected to read in " + size
-			      + " bytes but only " + bytesRead + " bytes were read for "
-			      + url.toString());
+			if (checkSize) {
+  			if (bytesRead < size) {
+  			  throw new IllegalArgumentException("Expected to read in " + size
+  			      + " bytes but only " + bytesRead + " bytes were read for "
+  			      + url.toString());
+  			}
 			}
 		} catch (IOException ex) {
 			LOGGER.error("I/O error.", ex);
@@ -98,6 +124,34 @@ class ByteWiseFileAccessor {
 	}
 
 	/**
+	 * Constructor.
+	 * 
+	 * @param url The data file.
+	 * @param offset The offset within the data file.
+	 * @throws IOException If an I/O error occurs.
+	 */
+  public ByteWiseFileAccessor(URL url, long offset, int length) throws IOException {
+    this.recordLength = length;
+    URLConnection conn = null;
+    InputStream is = null;
+    try {
+      conn = url.openConnection();
+      is = Utility.openConnection(conn);
+      long size = conn.getContentLengthLong() - offset;
+      is.skip(offset);
+      ReadableByteChannel channel = Channels.newChannel(is);
+      this.buffer = ByteBuffer.allocate(Long.valueOf(size).intValue());
+      int bytesRead = channel.read(this.buffer);
+      this.buffer.flip();
+    } catch (IOException ex) {
+      LOGGER.error("I/O error.", ex);
+      throw ex;
+    } finally {
+      IOUtils.closeQuietly(is);
+    }	  
+	}
+	
+	/**
 	 * Reads <code>length</code> bytes of data from a specified record at the given offset.
 	 *
 	 * @param recordNum the record number to read bytes from (1-relative)
@@ -105,7 +159,7 @@ class ByteWiseFileAccessor {
 	 * @param length the number of bytes to read from the record
 	 * @return an array of bytes
 	 */
-	byte[] readRecordBytes(int recordNum, int offset, int length) {
+  public byte[] readRecordBytes(int recordNum, int offset, int length) {
 		assert recordNum > 0;
 
 		// The offset within the mapped buffer
@@ -115,5 +169,39 @@ class ByteWiseFileAccessor {
 		buffer.get(buf);
 
 		return Arrays.copyOfRange(buf, offset, (offset + length));
+	}
+	
+	/**
+	 * Reads a byte from the buffer.
+	 * 
+	 * @return A byte.
+	 */
+  public byte readByte() {
+	  return buffer.get();
+	}
+	
+	/**
+	 * Marks the buffer.
+	 * 
+	 */
+  public void mark() {
+	  buffer.mark();
+	}
+	
+	/**
+	 * Resets the buffer.
+	 * 
+	 */
+  public void reset() {
+	  buffer.reset();
+	}
+	
+	/**
+	 * Checks to see if the buffer can still be read.
+	 * 
+	 * @return 'true' if there are more bytes to be read. 'false' otherwise.
+	 */
+  public boolean hasRemaining() {
+	  return buffer.hasRemaining();
 	}
 }

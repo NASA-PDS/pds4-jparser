@@ -65,6 +65,24 @@ public class TableBinaryAdapter implements TableAdapter {
 		desc.setType(FieldType.getFieldType(field.getDataType()));
 		desc.setOffset(field.getFieldLocation().getValue() - 1 + baseOffset);
 		desc.setLength(field.getFieldLength().getValue());
+    if (field.getFieldFormat() != null) {
+      desc.setFormat(field.getFieldFormat());
+    }
+    if (field.getFieldStatistics() != null) {
+      if (field.getFieldStatistics().getMinimum() != null) {
+        desc.setMinimum(field.getFieldStatistics().getMinimum());
+      }
+      if (field.getFieldStatistics().getMaximum() != null) {
+        desc.setMaximum(field.getFieldStatistics().getMaximum());
+      }
+    }
+    // We need to set the start and stop bit to avoid having an error
+    // thrown when it comes time to reading in the data
+    if (desc.getType().equals(FieldType.SIGNEDBITSTRING) || 
+        desc.getType().equals(FieldType.UNSIGNEDBITSTRING)) {
+      desc.setStartBit(0);
+      desc.setStopBit(desc.getLength() - 1);
+    }
 		fields.add(desc);
 	}
 

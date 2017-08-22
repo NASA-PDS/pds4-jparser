@@ -20,6 +20,8 @@ import gov.nasa.arc.pds.xml.generated.Array3DSpectrum;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.FieldDelimited;
+import gov.nasa.arc.pds.xml.generated.FileArea;
+import gov.nasa.arc.pds.xml.generated.FileAreaBrowse;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservationalSupplemental;
 import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
@@ -92,6 +94,16 @@ public interface ObjectProvider {
 	 */
 	public List<Object> getTableObjects(FileAreaObservational observationalFileArea);
 
+	public List<Object> getTableObjects(FileAreaBrowse browseFileArea);
+	
+	public List<Object> getTableObjects(FileArea fileArea);
+
+	public List<Object> getTablesAndImages(FileAreaObservational observationalFileArea);
+
+	public List<Object> getTablesAndImages(FileAreaBrowse browseFileArea);
+	  
+	public List<Object> getTablesAndImages(FileArea fileArea);
+	
 	/**
 	 * Returns a list of TableCharacter objects given an observation file area object.
 	 *

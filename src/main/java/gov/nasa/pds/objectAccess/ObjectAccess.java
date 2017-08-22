@@ -15,20 +15,25 @@ package gov.nasa.pds.objectAccess;
 
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
+import gov.nasa.arc.pds.xml.generated.Array2DSpectrum;
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.arc.pds.xml.generated.Array3DSpectrum;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.FieldDelimited;
+import gov.nasa.arc.pds.xml.generated.FileArea;
+import gov.nasa.arc.pds.xml.generated.FileAreaBrowse;
+import gov.nasa.arc.pds.xml.generated.FileAreaInventory;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservationalSupplemental;
+import gov.nasa.arc.pds.xml.generated.FileAreaSIPDeepArchive;
+import gov.nasa.arc.pds.xml.generated.FileAreaTransferManifest;
 import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -266,7 +271,89 @@ public class ObjectAccess implements ObjectProvider {
 		}
 		return list;
 	}
+	
+	@Override
+	public List<Object> getTableObjects(FileAreaBrowse browseFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<Object>();
+    for (Object obj : browseFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(TableCharacter.class)
+          || clazz.equals(TableBinary.class)
+          || clazz.equals(TableDelimited.class)) {
+        list.add(obj);
+      }
+    }
+    return list;	  
+	}
+	
+	@Override
+	public List<Object> getTableObjects(FileArea fileArea) {
+	  List<Object> list = new ArrayList<Object>();
+	  if (fileArea instanceof FileAreaObservational) {
+	    list.addAll(getTableObjects((FileAreaObservational) fileArea));
+	  } else if (fileArea instanceof FileAreaInventory) {
+	    list.add(((FileAreaInventory) fileArea).getInventory());
+	  } else if (fileArea instanceof FileAreaSIPDeepArchive) {
+	    list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive());
+	  } else if (fileArea instanceof FileAreaTransferManifest) {
+	    list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
+	  } else if (fileArea instanceof FileAreaBrowse) {
+	    list.addAll(getTableObjects((FileAreaBrowse) fileArea));
+	  }
+	  return list;
+	}
+	
+	public List<Object> getTablesAndImages(FileArea fileArea) {
+	  List<Object> list = new ArrayList<Object>();
+	   if (fileArea instanceof FileAreaObservational) {
+	      list.addAll(getTablesAndImages((FileAreaObservational) fileArea));
+	    } else if (fileArea instanceof FileAreaInventory) {
+	      list.add(((FileAreaInventory) fileArea).getInventory());
+	    } else if (fileArea instanceof FileAreaSIPDeepArchive) {
+	      list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive());
+	    } else if (fileArea instanceof FileAreaTransferManifest) {
+	      list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
+	    } else if (fileArea instanceof FileAreaBrowse) {
+	      list.addAll(getTablesAndImages((FileAreaBrowse) fileArea));
+	    }
+	    return list;
+	}
 
+	public List<Object> getTablesAndImages(FileAreaObservational observationalFileArea) {
+    List<Object> list = new ArrayList<Object>();
+    Class<?> clazz;
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(Array3DSpectrum.class) || 
+          clazz.equals(Array2DImage.class) || 
+          clazz.equals(Array3DImage.class) || 
+          clazz.equals(TableCharacter.class) || 
+          clazz.equals(TableBinary.class) || 
+          clazz.equals(TableDelimited.class) ) {
+        list.add(obj);
+      }
+    }
+    return list;
+	}
+	
+  public List<Object> getTablesAndImages(FileAreaBrowse browseFileArea) {
+    List<Object> list = new ArrayList<Object>();
+    Class<?> clazz;
+    for (Object obj : browseFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(Array3DSpectrum.class) || 
+          clazz.equals(Array2DImage.class) || 
+          clazz.equals(Array3DImage.class) || 
+          clazz.equals(TableCharacter.class) || 
+          clazz.equals(TableBinary.class) || 
+          clazz.equals(TableDelimited.class) ) {
+        list.add(obj);
+      }
+    }
+    return list;
+	}
+	
 	@Override
 	public List<TableCharacter> getTableCharacters(FileAreaObservational observationalFileArea) {
 		ArrayList<TableCharacter> list = new ArrayList<TableCharacter>();
@@ -385,7 +472,6 @@ public class ObjectAccess implements ObjectProvider {
 		}
 		return list;
 	}
-
 
 	/**
 	 * Determines if this is a PDS convertible image.
