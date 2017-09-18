@@ -106,7 +106,10 @@ public class ByteWiseFileAccessor {
 	    is.skip(offset);
 	    ReadableByteChannel channel = Channels.newChannel(is);
       this.buffer = ByteBuffer.allocate(size);
-			int bytesRead = channel.read(this.buffer);
+      int bytesRead = 0;
+      do {
+        bytesRead = channel.read(this.buffer);
+      } while (bytesRead > 0);
 			this.buffer.flip();
 			if (checkSize) {
   			if (bytesRead < size) {
@@ -141,7 +144,10 @@ public class ByteWiseFileAccessor {
       is.skip(offset);
       ReadableByteChannel channel = Channels.newChannel(is);
       this.buffer = ByteBuffer.allocate(Long.valueOf(size).intValue());
-      int bytesRead = channel.read(this.buffer);
+      int bytesRead = 0;
+      do {
+        bytesRead = channel.read(this.buffer);
+      } while (bytesRead > 0);
       this.buffer.flip();
     } catch (IOException ex) {
       LOGGER.error("I/O error.", ex);
