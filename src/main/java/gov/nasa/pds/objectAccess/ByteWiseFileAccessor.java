@@ -106,15 +106,17 @@ public class ByteWiseFileAccessor {
 	    is.skip(offset);
 	    ReadableByteChannel channel = Channels.newChannel(is);
       this.buffer = ByteBuffer.allocate(size);
+      int totalBytesRead = 0;
       int bytesRead = 0;
       do {
         bytesRead = channel.read(this.buffer);
+        totalBytesRead += bytesRead;
       } while (bytesRead > 0);
 			this.buffer.flip();
 			if (checkSize) {
-  			if (bytesRead < size) {
+  			if (totalBytesRead < size) {
   			  throw new IllegalArgumentException("Expected to read in " + size
-  			      + " bytes but only " + bytesRead + " bytes were read for "
+  			      + " bytes but only " + totalBytesRead + " bytes were read for "
   			      + url.toString());
   			}
 			}
