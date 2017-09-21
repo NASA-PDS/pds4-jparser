@@ -16,8 +16,16 @@ package gov.nasa.pds.objectAccess.utility;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+
+import org.xml.sax.InputSource;
 
 /**
  * Utility class.
@@ -62,6 +70,19 @@ public class Utility {
       if (conn instanceof HttpURLConnection) {
         ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
       }
+      // This code can go away when we permanently move to Java 8
+      if (conn instanceof HttpsURLConnection) {
+        try {
+          SSLContext context = SSLContext.getInstance("TLSv1.2");
+          context.init(null, null, new java.security.SecureRandom());
+          HttpsURLConnection test = (HttpsURLConnection) conn;
+          SSLSocketFactory sf = test.getSSLSocketFactory();
+          SSLSocketFactory d = HttpsURLConnection.getDefaultSSLSocketFactory();
+          ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());          
+        } catch (Exception e) {
+          throw new IOException(e.getMessage());
+        }
+      }
       // We want to open the input stream before getting headers
       // because getHeaderField() et al swallow IOExceptions.
       in = conn.getInputStream();
@@ -92,5 +113,25 @@ public class Utility {
       }
     } while (redir);
     return in;
+  }
+  
+  /**
+   * 
+   * 
+   * @param url
+   * @return
+   * @throws IOException
+   */
+  public static InputSource openConnection(URL url) throws IOException {
+    InputSource inputSource = new InputSource(
+        Utility.openConnection(url.openConnection()));
+    URI uri = null;
+    try {
+      uri = url.toURI();
+    } catch (URISyntaxException e) {
+      // Ignore. Shouldn't happen!
+    }
+    inputSource.setSystemId(uri.toString());
+    return inputSource;
   }
 }

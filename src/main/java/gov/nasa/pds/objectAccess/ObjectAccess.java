@@ -33,6 +33,7 @@ import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
+import gov.nasa.pds.objectAccess.utility.Utility;
 
 import java.io.File;
 import java.io.IOException;
@@ -150,8 +151,8 @@ public class ObjectAccess implements ObjectProvider {
 			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Unmarshaller u = context.createUnmarshaller();
 			u.setEventHandler(new LenientEventHandler());
-			return productClass.cast(u.unmarshal(label));
-		} catch (JAXBException e) {
+			return productClass.cast(u.unmarshal(Utility.openConnection(label)));
+		} catch (JAXBException | IOException e) {
 			LOGGER.error("Failed to load the product from the label.", e);
 			throw new ParseException("Unable to parse the product label", e);
 		}

@@ -29,6 +29,9 @@
       </action>
       <action dev="mcayanan" type="update" issue="PDS-508">
         Modified to support valiation of data content of table products.
+      </action>
+      <action dev="mcayanan" type="update">
+        Updated to resolve a handshake issue when running with a JRE 7 older than update 95.
       </action>      
     </release>
 

@@ -18,6 +18,7 @@ import gov.nasa.pds.label.object.TableRecord;
 import gov.nasa.pds.objectAccess.table.AdapterFactory;
 import gov.nasa.pds.objectAccess.table.TableAdapter;
 import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
+import gov.nasa.pds.objectAccess.utility.Utility;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -94,7 +95,7 @@ public class TableReader {
 
 		if (adapter instanceof TableDelimitedAdapter) {
 		  TableDelimitedAdapter tda = (TableDelimitedAdapter) adapter;
-			InputStream is = dataFile.openStream();
+		  InputStream is = Utility.openConnection(dataFile.openConnection());
 			is.skip(offset);
 			bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
 			accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
