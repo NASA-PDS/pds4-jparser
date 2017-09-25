@@ -90,6 +90,7 @@ public class ByteWiseFileAccessor {
 		this.recordLength = length;
 		URLConnection conn = null;
 		InputStream is = null;
+		ReadableByteChannel channel = null;
 		try {
 		  conn = url.openConnection();
 	    is = Utility.openConnection(conn);
@@ -104,7 +105,7 @@ public class ByteWiseFileAccessor {
   	    }
 	    }
 	    is.skip(offset);
-	    ReadableByteChannel channel = Channels.newChannel(is);
+	    channel = Channels.newChannel(is);
       this.buffer = ByteBuffer.allocate(size);
       int totalBytesRead = 0;
       int bytesRead = 0;
@@ -125,6 +126,9 @@ public class ByteWiseFileAccessor {
 			throw ex;
 		} finally {
 		  IOUtils.closeQuietly(is);
+		  if (channel != null) {
+		    channel.close();
+		  }
 		}
 	}
 
@@ -139,12 +143,13 @@ public class ByteWiseFileAccessor {
     this.recordLength = length;
     URLConnection conn = null;
     InputStream is = null;
+    ReadableByteChannel channel = null;
     try {
       conn = url.openConnection();
       is = Utility.openConnection(conn);
       long size = conn.getContentLengthLong() - offset;
       is.skip(offset);
-      ReadableByteChannel channel = Channels.newChannel(is);
+      channel = Channels.newChannel(is);
       this.buffer = ByteBuffer.allocate(Long.valueOf(size).intValue());
       int bytesRead = 0;
       do {
@@ -156,6 +161,9 @@ public class ByteWiseFileAccessor {
       throw ex;
     } finally {
       IOUtils.closeQuietly(is);
+      if (channel != null) {
+        channel.close();
+      }
     }	  
 	}
 	
