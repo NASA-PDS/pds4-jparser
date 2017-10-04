@@ -23,6 +23,9 @@
   </properties>
 
   <body>
+    <release version="0.10.0" date="TBD" description="TBD">
+    </release>
+
     <release version="0.9.0" date="2017-09-29" description="This release of the PDS4 Tools software is a component of the integrated release 8.0.0 of the PDS4 System. This is an operational release of the system components to date.">
       <action dev="mcayanan" type="add" issue="PDS-495">
         Added support for URLs.
