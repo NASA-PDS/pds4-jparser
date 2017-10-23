@@ -23,6 +23,7 @@ import gov.nasa.pds.objectAccess.ExporterFactory;
 import gov.nasa.pds.objectAccess.ObjectAccess;
 import gov.nasa.pds.objectAccess.ObjectProvider;
 import gov.nasa.pds.objectAccess.TableReader;
+import gov.nasa.pds.objectAccess.utility.Utility;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,6 +32,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,7 +87,7 @@ public class ExtractTable {
 
 	private boolean listTables;
 	private boolean extractAll;
-	private File labelFile;
+	private URL labelUrl;
 	private File outputFile;
 	private File dataFile;
 	private PrintWriter out;
@@ -170,16 +172,22 @@ public class ExtractTable {
 			out = new PrintWriter(new OutputStreamWriter(System.out));
 		}
 
-		if (!labelFile.isFile() || !labelFile.canRead()) {
-			System.err.println("Cannot read label file " + labelFile.getPath());
-			System.exit(1);
+		try {
+		  Utility.openConnection(labelUrl.openConnection()).close();
+		} catch (IOException io) {
+      System.err.println("Cannot read label file " + labelUrl.toString());
+      System.exit(1);		  
 		}
 
 		ObjectProvider objectAccess = null;
 		ProductObservational product = null;
+		URL parent = null;
 		try {
 		  objectAccess = new ObjectAccess();
-			product = objectAccess.getProduct(labelFile, ProductObservational.class);
+			product = objectAccess.getProduct(labelUrl, ProductObservational.class);
+	    parent = labelUrl.toURI().getPath().endsWith("/") ?
+	        labelUrl.toURI().resolve("..").toURL() :
+	          labelUrl.toURI().resolve(".").toURL();
 		} catch (gov.nasa.pds.objectAccess.ParseException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -193,12 +201,18 @@ public class ExtractTable {
       ue.printStackTrace();
       System.exit(1);
     }
-
+		
 		for (FileAreaObservational fileArea : product.getFileAreaObservationals()) {
   		String fileName = fileArea.getFile().getFileName();
-  		File dataFile = new File(labelFile.getParent(), fileName);
+  		URL dataFile = null;
+      try {
+        dataFile = new URL(parent, fileName);
+      } catch (MalformedURLException mu) {
+        mu.printStackTrace();
+        System.exit(1);
+      }
   		if (listTables) {
-  		  out.println("\nfile: " + dataFile.getName());
+  		  out.println("\nfile: " + dataFile.toString());
   		}
   		int currentIndex = 1;
   		for (Object obj : objectAccess.getTableObjects(fileArea)) {
@@ -473,7 +487,19 @@ public class ExtractTable {
 		if (files.length == 0) {
 			showHelp("A label file is required", 1);
 		}
-		labelFile = new File(files[0]);
+		
+    try {
+      labelUrl = new URL(files[0]);
+    } catch (MalformedURLException u) {
+      File file = new File(files[0]);
+      file = file.getAbsoluteFile();
+      try {
+        labelUrl = file.toURI().toURL();
+      } catch (MalformedURLException mu) {
+        mu.printStackTrace();
+        System.exit(1);
+      }
+    }
 
 		if (cmdLine.hasOption(CSV_OPTION)) {
 			format = OutputFormat.CSV;
