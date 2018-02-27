@@ -144,9 +144,18 @@ public abstract class DataObject {
 		  is.skip(offset);
 		  ReadableByteChannel channel = Channels.newChannel(is);
 	    ByteBuffer buffer = ByteBuffer.allocate(size);
-	    int bytesRead = channel.read(buffer);
-	    buffer.flip();
-	    if (bytesRead < size) {
+	    int totalBytesRead = 0;
+	    int bytesRead = 0;
+      do {
+        bytesRead = channel.read(buffer);
+        if (bytesRead == -1) {
+          throw new IOException("Unexpectedly reached the end of file "
+              + "before reading in " + size + " byte(s).");
+        }
+        totalBytesRead += bytesRead;
+      } while (bytesRead > 0);
+      buffer.flip();
+	    if (totalBytesRead < size) {
         throw new IllegalArgumentException("Expected to read in " + size
             + " bytes but only " + bytesRead + " bytes were read for "
             + u.toString());
@@ -156,8 +165,7 @@ public abstract class DataObject {
 			throw new IOException("Error reading data file '"
 			    + u.toString() + "': " + io.getMessage());
 		} finally {
-		  is.close();
+		  IOUtils.closeQuietly(is);
 		}
 	}
-
 }

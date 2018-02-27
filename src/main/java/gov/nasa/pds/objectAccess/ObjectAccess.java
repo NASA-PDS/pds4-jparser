@@ -184,9 +184,10 @@ public class ObjectAccess implements ObjectProvider {
    *
    * @param relativeXmlFilePath the XML file path and name of the product to set, relative
    *      to the ObjectAccess archive root
+   * @throws Exception 
    */
 	@Override
-	public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) {
+	public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) throws Exception {
 		try {
 			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Marshaller m = context.createMarshaller();
@@ -206,6 +207,7 @@ public class ObjectAccess implements ObjectProvider {
 			  } catch (Exception e) {
 			    LOGGER.error("Failed to set the product observational.", e);
 			    e.printStackTrace();
+			    throw e;
 			  } finally {
 			    IOUtils.closeQuietly(os);
 			  }
@@ -213,9 +215,21 @@ public class ObjectAccess implements ObjectProvider {
 		} catch (JAXBException e) {
 			LOGGER.error("Failed to set the product observational.", e);
 			e.printStackTrace();
+			throw e;
 		}
 	}
 
+	@Override
+	public List<Array> getArrays(FileArea fileArea) {
+    List<Array> list = new ArrayList<Array>();
+    if (fileArea instanceof FileAreaObservational) {
+      list.addAll(getArrays((FileAreaObservational) fileArea));
+    } else if (fileArea instanceof FileAreaBrowse) {
+      list.addAll(getArrays((FileAreaBrowse) fileArea));
+    }
+    return list;  
+	}
+	
 	@Override
 	public List<Array> getArrays(FileAreaObservational fileArea) {
 		List<Array> list = new ArrayList<Array>();
@@ -225,6 +239,17 @@ public class ObjectAccess implements ObjectProvider {
 			}
 		}
 		return list;
+	}
+	
+	@Override
+	public List<Array> getArrays(FileAreaBrowse fileArea) {
+	  List<Array> list = new ArrayList<Array>();
+	  for (Object obj : fileArea.getDataObjects()) {
+	    if (obj instanceof Array) {
+	      list.add(Array.class.cast(obj));
+	    }
+	  }
+	  return list;
 	}
 
 	@Override

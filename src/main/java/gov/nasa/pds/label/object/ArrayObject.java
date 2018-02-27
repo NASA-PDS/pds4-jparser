@@ -34,6 +34,7 @@ public class ArrayObject extends DataObject {
 
 	private Array array;
 	private ArrayAdapter adapter;
+	private ElementType elementType;
 	int[] dimensions;
 
 	 /**
@@ -75,7 +76,7 @@ public class ArrayObject extends DataObject {
 		this.array = array;
 
 		dimensions = findDimensions();
-		ElementType elementType = ElementType.getTypeForName(array.getElementArray().getDataType());
+		elementType = ElementType.getTypeForName(array.getElementArray().getDataType());
 		setSize(findSize(elementType.getSize()));
 		adapter = new ArrayAdapter(dimensions, getBuffer(), elementType);
 	}
@@ -307,6 +308,10 @@ public class ArrayObject extends DataObject {
 
 		BufferedImage image = new BufferedImage(dimensions[0], dimensions[1], BufferedImage.TYPE_BYTE_GRAY);
 		return image;
+	}
+	
+	public ElementType getElementType() {
+	  return elementType;
 	}
 
 }

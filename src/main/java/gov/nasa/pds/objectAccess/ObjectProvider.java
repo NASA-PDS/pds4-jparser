@@ -54,14 +54,30 @@ public interface ObjectProvider {
 	 */
 	URL getRoot();
 
+	 /**
+   * Gets a list of Array objects from a file area.
+   *
+   * @param fileArea the file area.
+   * @return an list of arrays, which may be empty.
+   */
+	List<Array> getArrays(FileArea fileArea);
+	
 	/**
 	 * Gets a list of Array objects from an observational file area.
 	 *
-	 * @param fileArea the observational file area
-	 * @return an list of arrays, which may be empty
+	 * @param fileArea the observational file area.
+	 * @return an list of arrays, which may be empty.
 	 */
 	List<Array> getArrays(FileAreaObservational fileArea);
 
+	/**
+   * Gets a list of Array objects from a browse file area.
+   *
+   * @param fileArea the browse file area
+   * @return an list of arrays, which may be empty
+   */
+	List<Array> getArrays(FileAreaBrowse fileArea);
+	
 	/**
 	 *  Returns a list of Array2DImage objects given an observation file area object.
 	 *
@@ -234,6 +250,6 @@ public interface ObjectProvider {
 	 * @param relativeXmlFilePath the XML file path and name of the product to set, relative
 	 * 		  to the ObjectAccess archive root
 	 */
-	void setObservationalProduct(String relativeXmlFilePath, ProductObservational product);
+	void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) throws Exception;
 
 }

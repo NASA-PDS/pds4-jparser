@@ -221,7 +221,7 @@ public class TableReaderTest {
 		new File(FileUtils.toFile(oa.getRoot()), label).deleteOnExit();
 	}
 
-	private ProductObservational createProductLabel(ObjectAccess oa, String label) {
+	private ProductObservational createProductLabel(ObjectAccess oa, String label) throws Exception {
 		int cols = 2;    // number of fields
 		int length = 11; // record length
 		gov.nasa.arc.pds.xml.generated.File file = new gov.nasa.arc.pds.xml.generated.File();
@@ -270,7 +270,7 @@ public class TableReaderTest {
 		return oa.getObservationalProduct(label);
 	}
 
-	private ProductObservational createBinaryProductLabel(ObjectAccess oa, String label) {
+	private ProductObservational createBinaryProductLabel(ObjectAccess oa, String label) throws Exception {
 		int cols = 6;
 
 		gov.nasa.arc.pds.xml.generated.File file = new gov.nasa.arc.pds.xml.generated.File();
@@ -319,7 +319,7 @@ public class TableReaderTest {
 		return oa.getObservationalProduct(label);
 	}
 
-	private ProductObservational createBitFieldBinaryProductLabel(ObjectAccess oa, String label) {
+	private ProductObservational createBitFieldBinaryProductLabel(ObjectAccess oa, String label) throws Exception {
 		int cols = 1;
 		gov.nasa.arc.pds.xml.generated.File file = new gov.nasa.arc.pds.xml.generated.File();
 		file.setFileName("BinaryTableReader.dat");
