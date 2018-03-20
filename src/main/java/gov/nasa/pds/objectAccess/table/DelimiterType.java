@@ -16,6 +16,8 @@ package gov.nasa.pds.objectAccess.table;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.WordUtils;
+
 /**
  * Defines a set of field and record delimiters for a table.
  * Indicates the type string that will be found in XML label instances, and
@@ -37,12 +39,12 @@ public enum DelimiterType {
 	VERTICAL_BAR("vertical bar", '|'),
 
 	/** Carriage return and line feed (CRLF) record delimiter. */
-	CARRIAGE_RETURN_LINE_FEED("carriage_return line_feed", "\r\n");
+	CARRIAGE_RETURN_LINE_FEED("carriage-return line-feed", "\r\n");
 
 	private static Map<String, DelimiterType> xmlTypeMap = new HashMap<String, DelimiterType>();
 	static {
 		for (DelimiterType type : DelimiterType.values()) {
-			xmlTypeMap.put(type.getXmlType(), type);
+			xmlTypeMap.put(type.getXmlType().toLowerCase(), type);
 		}
 	}
 
@@ -82,7 +84,7 @@ public enum DelimiterType {
 	 * @return the XML type string
 	 */
 	public String getXmlType() {
-		return xmlType;
+		return WordUtils.capitalize(xmlType, new char[]{' ', '-'});
 	}
 
 	/**

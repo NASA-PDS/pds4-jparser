@@ -93,6 +93,16 @@
   </contributors>
 
   <build> 
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <targetPath>gov/nasa/pds/label/jaxb</targetPath>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>namespaces.properties</include>
+        </includes>
+      </resource>
+    </resources>  
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -475,7 +485,12 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>18.0</version>
-    </dependency>        
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.2.4</version>
+    </dependency>     
   </dependencies>
   <!-- This profile allows this project to be built under 1.8 -->   
   <profiles>  

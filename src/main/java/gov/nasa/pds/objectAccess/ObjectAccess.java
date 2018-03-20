@@ -15,7 +15,6 @@ package gov.nasa.pds.objectAccess;
 
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
-import gov.nasa.arc.pds.xml.generated.Array2DSpectrum;
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.arc.pds.xml.generated.Array3DSpectrum;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
@@ -33,10 +32,13 @@ import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
+import gov.nasa.pds.label.jaxb.PDSXMLEventReader;
+import gov.nasa.pds.label.jaxb.XMLLabelContext;
 import gov.nasa.pds.objectAccess.utility.Utility;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -53,6 +55,9 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -68,6 +73,8 @@ public class ObjectAccess implements ObjectProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectAccess.class);
 	private String archiveRoot;
 	private URL root;
+	private final XMLInputFactory xif = XMLInputFactory.newInstance();
+	private XMLLabelContext labelContext;
 
 	/**
 	 * Creates a new instance with the current local directory as the archive root
@@ -98,6 +105,7 @@ public class ObjectAccess implements ObjectProvider {
 	  }
 	  this.root = url.toURI().normalize().toURL();
 	  this.archiveRoot = this.root.toString();
+	  this.labelContext = new XMLLabelContext();
 	}
 
 	/**
@@ -122,6 +130,7 @@ public class ObjectAccess implements ObjectProvider {
 	public ObjectAccess(URL archiveRoot) throws URISyntaxException, MalformedURLException {
 		this.root = archiveRoot.toURI().normalize().toURL();
 		this.archiveRoot = this.root.toString();
+    this.labelContext = new XMLLabelContext();
 	}
 
 	private JAXBContext getJAXBContext(String pkgName) throws JAXBException {
@@ -160,23 +169,46 @@ public class ObjectAccess implements ObjectProvider {
 
 	@Override
 	public ProductObservational getObservationalProduct(String relativeXmlFilePath) {
+	  InputStream in = null;
 		try {
 			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Unmarshaller u = context.createUnmarshaller();
 			u.setEventHandler(new LenientEventHandler());
 			URL url = new URL(getRoot(), relativeXmlFilePath);
-			return (ProductObservational) u.unmarshal(url);
+			in = url.openStream();
+			XmlRootElement a = ProductObservational.class.getAnnotation(XmlRootElement.class);
+			String root = a.name();
+			PDSXMLEventReader xsr = new PDSXMLEventReader(
+			    xif.createXMLEventReader(in), root);
+			ProductObservational po = (ProductObservational) u.unmarshal(xsr);
+	    labelContext = xsr.getLabelContext();
+	    return po;
 		} catch (JAXBException e) {
 			LOGGER.error("Failed to get the product observational.", e);
 			e.printStackTrace();
-			return null;
+      return null;
 		} catch (MalformedURLException e) {
       LOGGER.error("Failed to get the product observational.", e);
       e.printStackTrace();
       return null;
+    } catch (XMLStreamException e) {
+      LOGGER.error("Failed to get the product observational: ", e);
+      e.printStackTrace();
+      return null;
+    } catch (IOException e) {
+      LOGGER.error("Failed to get the product observational.", e);
+      e.printStackTrace();
+      return null;
+    } finally {
+      IOUtils.closeQuietly(in);
     }
 	}
 
+	 public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) 
+	     throws Exception {
+	   setObservationalProduct(relativeXmlFilePath, product, null);
+	 }
+	
   /**
    * Writes a label given the product XML file. This method assumes that the 
    * label will be written to the local file system. Therefore, the protocol
@@ -184,14 +216,25 @@ public class ObjectAccess implements ObjectProvider {
    *
    * @param relativeXmlFilePath the XML file path and name of the product to set, relative
    *      to the ObjectAccess archive root
-   * @throws Exception 
+   *      
+   * @param product The Product_Observational object to serialize into an XML file.
+   * 
+   * @param labelContext A context to use when creating the XML file. Can be set to null.
+   * 
+   * @throws Exception If there was an error creating the XML file.
    */
 	@Override
-	public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) throws Exception {
+	public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product, 
+	    XMLLabelContext labelContext) throws Exception {
 		try {
 			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			if (labelContext != null) {
+			  m.setProperty("com.sun.xml.bind.namespacePrefixMapper", labelContext.getNamespaces());
+			  m.setProperty("com.sun.xml.bind.xmlHeaders", labelContext.getXmlModelPIs());
+			  m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, labelContext.getSchemaLocation());
+			}
 			if ("file".equalsIgnoreCase(getRoot().getProtocol())) {
   			File parent = FileUtils.toFile(getRoot());
   			File f = new File(parent, relativeXmlFilePath);
@@ -600,5 +643,8 @@ public class ObjectAccess implements ObjectProvider {
 		}
 
 	}
-
+	
+	public XMLLabelContext getXMLLabelContext() {
+	  return this.labelContext;
+	}
 }

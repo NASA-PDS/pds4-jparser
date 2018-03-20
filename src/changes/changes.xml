@@ -27,6 +27,9 @@
       <action dev="mcayanan" type="update" issue="PDS-543">
         Updated to support validation of Arrays.
       </action>
+      <action dev="mcayanan" type="update" issue="PDS-544">
+        Updated to capture label context information when reading in a PDS4 product label (i.e. namespaces, schema locations, schematron references).
+      </action>
     </release>
 
     <release version="0.9.0" date="2017-09-29" description="This release of the PDS4 Tools software is a component of the integrated release 8.0.0 of the PDS4 System. This is an operational release of the system components to date.">

@@ -29,6 +29,7 @@ import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
+import gov.nasa.pds.label.jaxb.XMLLabelContext;
 
 import java.io.File;
 import java.net.URL;
@@ -249,7 +250,24 @@ public interface ObjectProvider {
 	 *
 	 * @param relativeXmlFilePath the XML file path and name of the product to set, relative
 	 * 		  to the ObjectAccess archive root
+	 * 
+	 * @param product The Product_Observational object to serialize into an XML file.
 	 */
 	void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) throws Exception;
+	
+	 /**
+   * Writes a label given the product XML file.
+   *
+   * @param relativeXmlFilePath the XML file path and name of the product to set, relative
+   *      to the ObjectAccess archive root.
+   *      
+   * @param product The Product_Observational object to serialize into an XML file.
+   * 
+   * @param context A context to use when creating the XML file. Can be set to null.
+   * 
+   * @throws Exception If there was an error creating the XML file.
+   */
+  void setObservationalProduct(String relativeXmlFilePath, ProductObservational product, 
+      XMLLabelContext context) throws Exception;
 
 }

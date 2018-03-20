@@ -19,8 +19,8 @@ import static org.testng.Assert.assertNotNull;
 import org.testng.annotations.Test;
 
 public class DelimiterTypeTest {
-	private static final String SEMICOLON = "semicolon";
-	private static final String CARRIAGE_RETURN_LINE_FEED = "carriage_return line_feed";
+	private static final String SEMICOLON = "Semicolon";
+	private static final String CARRIAGE_RETURN_LINE_FEED = "Carriage-Return Line-Feed";
 
 	@Test
 	public void testGetFieldDelimiter() {
