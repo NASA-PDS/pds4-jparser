@@ -100,12 +100,12 @@ public class ArrayObject extends DataObject {
 	}
 
 	private long findSize(int elementSize) {
-		int count = 1;
+		long count = 1;
 		for (int i=0; i < dimensions.length; ++i) {
 			count *= dimensions[i];
 		}
 
-		return count * elementSize;
+		return (long) (count * elementSize);
 	}
 
 	/**

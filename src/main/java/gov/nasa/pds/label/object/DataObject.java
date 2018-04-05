@@ -138,7 +138,13 @@ public abstract class DataObject {
 	public ByteBuffer getBuffer() throws FileNotFoundException, IOException {
 		URL u = getDataFile();
 		InputStream is = null;
-		int size = Long.valueOf(getDataSize(u)).intValue();
+		long datasize = getDataSize(u);
+		if (datasize > Integer.MAX_VALUE) {
+		  throw new UnsupportedOperationException("Data object size is greater "
+		      + "than the max currently allowed at this time "
+		      + "(got=" + datasize + ", max=" + Integer.MAX_VALUE + ").");
+		}
+		int size = Long.valueOf(datasize).intValue();
 		try {
 		  is = u.openStream();
 		  is.skip(offset);
