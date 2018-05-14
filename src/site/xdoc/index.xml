@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2012-2015, by the California Institute of Technology.
+  Copyright 2012-2018, by the California Institute of Technology.
   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
   Any commercial use must be negotiated with the Office of Technology 
   Transfer at the California Institute of Technology.
@@ -23,7 +23,7 @@
 
   <body>
     <section name="About PDS4 Tools">
-      <p>This is the tools library for the PDS4 planetary data standard.
+      <p>Software for accessing PDS4 data objects including selected transformations to common formats. This software is packaged as a Java library with an example driver program and is called by the Validate Tool to assist in validation and by the Transform Tool to transform PDS4 products into common formats.
       </p>
 
       <p>Please send comments, change requests and bug reports to the <a href="mailto:pds_operator@jpl.nasa.gov">PDS Operator</a> at pds_operator@jpl.nasa.gov.
