@@ -147,7 +147,7 @@ public class DelimitedTableReaderTest {
 		this.dataFile = dataFile;
 	}
 	
-	private Offset getOffset(int value) {
+	private Offset getOffset(long value) {
 		Offset offset = new Offset();
 		offset.setValue(value);
 		return offset;

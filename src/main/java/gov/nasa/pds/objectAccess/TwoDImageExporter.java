@@ -153,7 +153,7 @@ implements Exporter<Array2DImage> {
     BufferedInputStream bufferedInputStream = new BufferedInputStream(
         new URL(getObjectProvider().getRoot(),
     getObservationalFileArea().getFile().getFileName()).openStream());
-		bufferedInputStream.skip(Integer.valueOf(array2DImage.getOffset().getValue()));
+		bufferedInputStream.skip(Long.valueOf(array2DImage.getOffset().getValue()));
 		
     int scanline_stride = samples;
     int[] band_offsets = new int[1];

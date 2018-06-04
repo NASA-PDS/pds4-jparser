@@ -154,7 +154,7 @@ public class ThreeDImageExporter extends ImageExporter implements Exporter<Array
 		BufferedInputStream bufferedInputStream = new BufferedInputStream(
 		        new URL(getObjectProvider().getRoot(),
 				getObservationalFileArea().getFile().getFileName()).openStream());
-		bufferedInputStream.skip(Integer.valueOf(array3DImage.getOffset().getValue()));
+		bufferedInputStream.skip(Long.valueOf(array3DImage.getOffset().getValue()));
     int scanline_stride = samples;
     int[] band_offsets = new int[bands];
     int[] bank_indices = new int[bands];

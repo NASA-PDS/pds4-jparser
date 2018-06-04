@@ -244,7 +244,7 @@ public class Label {
 
 	private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableDelimited table) throws Exception {
 		// The range for a delimited table must be the rest of the file past the offset position.
-		int offset = 0;
+		long offset = 0;
 		if (table.getOffset() != null) {
 			offset = table.getOffset().getValue();
 		}

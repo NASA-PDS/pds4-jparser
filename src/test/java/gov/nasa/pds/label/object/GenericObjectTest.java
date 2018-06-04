@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
@@ -41,6 +42,7 @@ public class GenericObjectTest {
 		assertEquals(FileUtils.toFile(obj.getDataFile()), f);
 		assertEquals(obj.getOffset(), 1);
 		assertEquals(obj.getSize(), 2);
+    obj.closeChannel();
 	}
 
 	@Test
@@ -50,6 +52,7 @@ public class GenericObjectTest {
 		GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 0, f.length());
 		String actual = readStream(obj.getInputStream());
 		assertEquals(actual, "hello");
+    obj.closeChannel();
 	}
 
 	@Test
@@ -57,8 +60,9 @@ public class GenericObjectTest {
 		File f = createTempFile("hello");
 		gov.nasa.arc.pds.xml.generated.File fileObject = getFileObject(f);
 		GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 0, f.length());
-		String actual = readBuffer(obj.getBuffer(), "hello".length());
+		String actual = readBuffer(obj.getChannel(), "hello".length());
 		assertEquals(actual, "hello");
+		obj.closeChannel();
 	}
 
 	@Test
@@ -68,6 +72,7 @@ public class GenericObjectTest {
 		GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 1, 2);
 		String actual = readStream(obj.getInputStream());
 		assertEquals(actual, "el");
+    obj.closeChannel();
 	}
 
 	@Test
@@ -75,8 +80,9 @@ public class GenericObjectTest {
 		File f = createTempFile("hello");
 		gov.nasa.arc.pds.xml.generated.File fileObject = getFileObject(f);
 		GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 1, 2);
-		String actual = readBuffer(obj.getBuffer(), 2);
+		String actual = readBuffer(obj.getChannel(), 2);
 		assertEquals(actual, "el");
+    obj.closeChannel();
 	}
 
 	private File createTempFile(String data) throws IOException {
@@ -111,7 +117,10 @@ public class GenericObjectTest {
 		return new String(b, 0, nRead, "US-ASCII");
 	}
 
-	private String readBuffer(ByteBuffer buf, int length) throws UnsupportedEncodingException {
+	private String readBuffer(SeekableByteChannel ch, int length) throws IOException {
+	  ByteBuffer buf = ByteBuffer.allocate(length);
+	  int bytesRead = ch.read(buf);
+	  buf.flip();
 		byte[] b = new byte[length];
 		buf.get(b);
 		try {

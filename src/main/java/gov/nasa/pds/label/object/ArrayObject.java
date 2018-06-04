@@ -78,7 +78,7 @@ public class ArrayObject extends DataObject {
 		dimensions = findDimensions();
 		elementType = ElementType.getTypeForName(array.getElementArray().getDataType());
 		setSize(findSize(elementType.getSize()));
-		adapter = new ArrayAdapter(dimensions, getBuffer(), elementType);
+		adapter = new ArrayAdapter(dimensions, getChannel(), elementType);
 	}
 
 	private int[] findDimensions() {
@@ -132,8 +132,9 @@ public class ArrayObject extends DataObject {
 	 * @param row the row
 	 * @param column the column
 	 * @return the element value, as an int
+	 * @throws IOException 
 	 */
-	public int getInt(int row, int column) {
+	public int getInt(int row, int column) throws IOException {
 		return getInt(new int[] {row, column});
 	}
 
@@ -143,8 +144,9 @@ public class ArrayObject extends DataObject {
 	 * @param row the row
 	 * @param column the column
 	 * @return the element value, as a long
+	 * @throws IOException 
 	 */
-	public long getLong(int row, int column) {
+	public long getLong(int row, int column) throws IOException {
 		return getLong(new int[] {row, column});
 	}
 
@@ -154,8 +156,9 @@ public class ArrayObject extends DataObject {
 	 * @param row the row
 	 * @param column the column
 	 * @return the element value, as a double
+	 * @throws IOException 
 	 */
-	public double getDouble(int row, int column) {
+	public double getDouble(int row, int column) throws IOException {
 		return getDouble(new int[] {row, column});
 	}
 
@@ -166,8 +169,9 @@ public class ArrayObject extends DataObject {
 	 * @param i2 the second index
 	 * @param i3 the third index
 	 * @return the element value, as an int
+	 * @throws IOException 
 	 */
-	public int getInt(int i1, int i2, int i3) {
+	public int getInt(int i1, int i2, int i3) throws IOException {
 		return getInt(new int[] {i1, i2, i3});
 	}
 
@@ -178,8 +182,9 @@ public class ArrayObject extends DataObject {
 	 * @param i2 the second index
 	 * @param i3 the third index
 	 * @return the element value, as a long
+	 * @throws IOException 
 	 */
-	public long getLong(int i1, int i2, int i3) {
+	public long getLong(int i1, int i2, int i3) throws IOException {
 		return getLong(new int[] {i1, i2, i3});
 	}
 
@@ -190,8 +195,9 @@ public class ArrayObject extends DataObject {
 	 * @param i2 the second index
 	 * @param i3 the third index
 	 * @return the element value, as a double
+	 * @throws IOException 
 	 */
-	public double getDouble(int i1, int i2, int i3) {
+	public double getDouble(int i1, int i2, int i3) throws IOException {
 		return adapter.getDouble(i1, i2, i3);
 	}
 
@@ -200,8 +206,9 @@ public class ArrayObject extends DataObject {
 	 *
 	 * @param position the indices of the element
 	 * @return the value of the element, as an int
+	 * @throws IOException 
 	 */
-	public int getInt(int[] position) {
+	public int getInt(int[] position) throws IOException {
 		checkIndices(position);
 		return adapter.getInt(position);
 	}
@@ -211,8 +218,9 @@ public class ArrayObject extends DataObject {
 	 *
 	 * @param position the indices of the element
 	 * @return the value of the element, as a long
+	 * @throws IOException 
 	 */
-	public long getLong(int[] position) {
+	public long getLong(int[] position) throws IOException {
 		checkIndices(position);
 		return adapter.getLong(position);
 	}
@@ -222,8 +230,9 @@ public class ArrayObject extends DataObject {
 	 *
 	 * @param position the indices of the element
 	 * @return the value of the element, as a double
+	 * @throws IOException 
 	 */
-	public double getDouble(int[] position) {
+	public double getDouble(int[] position) throws IOException {
 		checkIndices(position);
 		return adapter.getDouble(position);
 	}
@@ -242,8 +251,9 @@ public class ArrayObject extends DataObject {
 	 * Gets the entire 2-D array, as doubles.
 	 *
 	 * @return an array of double with all array elements
+	 * @throws IOException 
 	 */
-	public double[][] getElements2D() {
+	public double[][] getElements2D() throws IOException {
 		checkDimensions(2);
 
 		double[][] values = new double[dimensions[0]][dimensions[1]];
@@ -260,8 +270,9 @@ public class ArrayObject extends DataObject {
 	 * Gets the entire 3-D array, as doubles.
 	 *
 	 * @return an array of double with all array elements
+	 * @throws IOException 
 	 */
-	public double[][][] getElements3D() {
+	public double[][][] getElements3D() throws IOException {
 		checkDimensions(3);
 
 		double[][][] values = new double[dimensions[0]][dimensions[1]][dimensions[2]];

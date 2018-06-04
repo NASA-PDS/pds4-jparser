@@ -161,9 +161,14 @@ public class ObjectAccess implements ObjectProvider {
 			Unmarshaller u = context.createUnmarshaller();
 			u.setEventHandler(new LenientEventHandler());
 			return productClass.cast(u.unmarshal(Utility.openConnection(label)));
-		} catch (JAXBException | IOException e) {
-			LOGGER.error("Failed to load the product from the label.", e);
-			throw new ParseException("Unable to parse the product label", e);
+		} catch (JAXBException je) {
+			LOGGER.error("Failed to load the product from the label.", je);
+			throw new ParseException("Unable to parse the product label", je);
+		} catch (IOException io) {
+      LOGGER.error("Failed to load the product from the label.", io);
+      throw new ParseException("Unable to parse the product label", io);
+		} catch (Exception e) {
+		  throw new ParseException("Error while parsing the product label", e);
 		}
 	}
 

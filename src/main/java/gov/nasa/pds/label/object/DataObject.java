@@ -13,19 +13,28 @@
 // $Id$
 package gov.nasa.pds.label.object;
 
-import gov.nasa.pds.label.io.LengthLimitedInputStream;
+import gov.nasa.pds.objectAccess.utility.Utility;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
+import org.apache.commons.compress.utils.BoundedInputStream;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -37,6 +46,7 @@ public abstract class DataObject {
 	private gov.nasa.arc.pds.xml.generated.File fileObject;
 	private long offset;
 	private long size;
+	private SeekableByteChannel channel;
 
 	protected DataObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset, long size)
 	    throws IOException {
@@ -49,6 +59,7 @@ public abstract class DataObject {
 		this.fileObject = fileObject;
 		this.offset = offset;
 		this.size = size;
+		this.channel = null;
 
 		if (size < 0) {
 			URL u = null;
@@ -121,57 +132,120 @@ public abstract class DataObject {
 	 * @throws FileNotFoundException if the data file cannot be found
 	 * @throws IOException if there is an error reading the data file
 	 */
-	public InputStream getInputStream() throws FileNotFoundException, IOException {
-		URL f = getDataFile();
-		return new LengthLimitedInputStream(f.openStream(), offset, getDataSize(f));
+	public InputStream getInputStream() throws IOException {
+	  ReadableByteChannel ch = null;
+	  if (channel != null) {
+	    ch = channel;
+	  } else {
+	    ch = getChannel();
+	  }
+	  return new BufferedInputStream(Channels.newInputStream(ch));
 	}
 
 	/**
-	 * Gets a {@link ByteBuffer} for accessing the data object. The buffer is
-	 * read-only, and represents only the portion of the data file containing
-	 * the data object.
+	 * Gets a {@link SeekableByteChannel} for accessing the data object. 
+	 * The channel is read-only, and represents only the portion of the 
+	 * data file containing the data object. You must remember to call the
+	 * closeChannel() method once reading of the data is finished.
 	 *
-	 * @return a <code>ByteBuffer</code> for reading bytes from the data object
-	 * @throws FileNotFoundException if the data file cannot be found
+	 * @return a <code>SeekableByteChannel</code> for reading bytes from the
+	 *  data object
+	 * 
 	 * @throws IOException if there is an error reading the data file
 	 */
-	public ByteBuffer getBuffer() throws FileNotFoundException, IOException {
-		URL u = getDataFile();
-		InputStream is = null;
-		long datasize = getDataSize(u);
-		if (datasize > Integer.MAX_VALUE) {
-		  throw new UnsupportedOperationException("Data object size is greater "
-		      + "than the max currently allowed at this time "
-		      + "(got=" + datasize + ", max=" + Integer.MAX_VALUE + ").");
-		}
-		int size = Long.valueOf(datasize).intValue();
-		try {
-		  is = u.openStream();
-		  is.skip(offset);
-		  ReadableByteChannel channel = Channels.newChannel(is);
-	    ByteBuffer buffer = ByteBuffer.allocate(size);
-	    int totalBytesRead = 0;
-	    int bytesRead = 0;
-      do {
-        bytesRead = channel.read(buffer);
-        if (bytesRead == -1) {
-          throw new IOException("Unexpectedly reached the end of file "
-              + "before reading in " + size + " byte(s).");
-        }
-        totalBytesRead += bytesRead;
-      } while (bytesRead > 0);
-      buffer.flip();
-	    if (totalBytesRead < size) {
-        throw new IllegalArgumentException("Expected to read in " + size
-            + " bytes but only " + bytesRead + " bytes were read for "
-            + u.toString());
+	public SeekableByteChannel getChannel() throws IOException {
+	  if (channel != null) {
+	    return channel;
+	  } else {
+  		URL u = getDataFile();
+  		long datasize = getDataSize(u);
+  		try {
+  		  channel = createChannel(u, offset, datasize);
+  		} catch (IOException io) { 
+  		  io.printStackTrace();
+  			throw new IOException("Error reading data file '"
+  			    + u.toString() + "': " + io.getMessage());
+  		}
+      return channel;
+	  }
+	}
+	
+	
+	/**
+	 * Closes the underlying channel to the data.
+	 * 
+	 */
+	public void closeChannel() {
+	  try {
+	    if (channel != null) {
+	      channel.close();
 	    }
-	    return buffer;
-		} catch (IOException io) { 
-			throw new IOException("Error reading data file '"
-			    + u.toString() + "': " + io.getMessage());
-		} finally {
-		  IOUtils.closeQuietly(is);
-		}
+    } catch (IOException e) {
+      // Ignore
+    }
+	}
+	
+	/**
+	 * Creates a FileChannel that represents the portion of the data within 
+	 * the file. This is done by creating a temp file in the OS default temp
+	 * area.
+	 * 
+	 * The closeChannel() method will need to be called once reading of the data
+	 * is finished.
+	 * 
+	 * @param url The data file.
+	 * @param offset The offset to the start of the data.
+	 * @param size The size of the data.
+	 * 
+	 * @return An SeekableByteChannel of the data.
+	 * 
+	 * @throws IOException If an error occurred creating this FileChannel.
+	 */
+	private SeekableByteChannel createChannel(URL url, long offset, long size) 
+	    throws IOException {
+    FileOutputStream fileStream = null;
+    Path temp = null;
+    /** Indicates how large the buffer is. */
+    final int MAX_SIZE = Integer.MAX_VALUE / 43;
+    InputStream input = Utility.openConnection(url.openConnection());
+    input.skip(offset);
+    SeekableByteChannel createdChannel = null;
+    try {
+      if (size > MAX_SIZE) {
+        temp = Files.createTempFile(FilenameUtils.getBaseName(url.toString()), null);
+        temp.toFile().deleteOnExit();
+        ReadableByteChannel channel = Channels.newChannel(input);
+        try {
+          fileStream = new FileOutputStream(temp.toFile());
+          FileChannel fc = fileStream.getChannel();
+          long totalBytesRead = 0;
+          long bytesRead = fc.transferFrom(channel, 0, size);
+          totalBytesRead += bytesRead;
+          if (totalBytesRead != size) {
+            do {
+              fc.position(fc.position() + bytesRead);
+              bytesRead = fc.transferFrom(channel, fc.position(), size);
+              totalBytesRead += bytesRead;
+            } while (bytesRead != 0 && totalBytesRead < size);
+            fc.position(0);
+          }
+          if (totalBytesRead != size) {
+            throw new IOException("Error while copying data object to file '"
+                + temp.toString() + "': Number of bytes read does not match the "
+                + "expected size (got=" + totalBytesRead + ", expected=" + size + ")");
+          }
+        } finally {
+          IOUtils.closeQuietly(fileStream);
+        }
+        createdChannel = Files.newByteChannel(temp, StandardOpenOption.READ, 
+            StandardOpenOption.DELETE_ON_CLOSE);
+      } else {
+        BoundedInputStream bis = new BoundedInputStream(input, size);
+        createdChannel = new SeekableInMemoryByteChannel(IOUtils.toByteArray(bis)); 
+      }
+    } finally {
+      IOUtils.closeQuietly(input);
+    }
+    return createdChannel;
 	}
 }

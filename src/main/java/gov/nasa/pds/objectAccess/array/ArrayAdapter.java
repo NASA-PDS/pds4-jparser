@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -13,7 +13,9 @@
 // $Id$
 package gov.nasa.pds.objectAccess.array;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 
 /**
  * Implements a class that gives access to the elements of an array.
@@ -21,21 +23,21 @@ import java.nio.ByteBuffer;
 public class ArrayAdapter {
 
 	private int[] dimensions;
-	private ByteBuffer buf;
 	private ElementType elementType;
+	private MappedBuffer buf;
 	
 	/**
-	 * Creates a new array adapter with given dimensions, byte buffer
+	 * Creates a new array adapter with given dimensions, a channel
 	 * with the array data, and element data type name.
 	 * 
 	 * @param dimensions the array dimensions
-	 * @param buf the byte buffer containing the array data
+	 * @param channel the channel object containing the array data
 	 * @param elementType the elmeent type
 	 */
-	public ArrayAdapter(int[] dimensions, ByteBuffer buf, ElementType elementType) {
+	public ArrayAdapter(int[] dimensions, SeekableByteChannel channel, ElementType elementType) {
 		this.dimensions = dimensions;
-		this.buf = buf;
 		this.elementType = elementType;
+		this.buf = new MappedBuffer(channel, elementType.getSize());
 	}
 	
 	/**
@@ -53,8 +55,9 @@ public class ArrayAdapter {
 	 * @param row the row
 	 * @param column the column
 	 * @return the element value, as an int
+	 * @throws IOException 
 	 */
-	public int getInt(int row, int column) {
+	public int getInt(int row, int column) throws IOException {
 		return getInt(new int[] {row, column});
 	}
 	
@@ -64,8 +67,9 @@ public class ArrayAdapter {
 	 * @param row the row
 	 * @param column the column
 	 * @return the element value, as a long
+	 * @throws IOException 
 	 */
-	public long getLong(int row, int column) {
+	public long getLong(int row, int column) throws IOException {
 		return getLong(new int[] {row, column});
 	}
 	
@@ -75,8 +79,9 @@ public class ArrayAdapter {
 	 * @param row the row
 	 * @param column the column
 	 * @return the element value, as a double
+	 * @throws IOException 
 	 */
-	public double getDouble(int row, int column) {
+	public double getDouble(int row, int column) throws IOException {
 		return getDouble(new int[] {row, column});
 	}
 	
@@ -87,8 +92,9 @@ public class ArrayAdapter {
 	 * @param i2 the second index
 	 * @param i3 the third index
 	 * @return the element value, as an int
+	 * @throws IOException 
 	 */
-	public int getInt(int i1, int i2, int i3) {
+	public int getInt(int i1, int i2, int i3) throws IOException {
 		return getInt(new int[] {i1, i2, i3});
 	}
 	
@@ -99,8 +105,9 @@ public class ArrayAdapter {
 	 * @param i2 the second index
 	 * @param i3 the third index
 	 * @return the element value, as a long
+	 * @throws IOException 
 	 */
-	public long getLong(int i1, int i2, int i3) {
+	public long getLong(int i1, int i2, int i3) throws IOException {
 		return getLong(new int[] {i1, i2, i3});
 	}
 	
@@ -111,8 +118,9 @@ public class ArrayAdapter {
 	 * @param i2 the second index
 	 * @param i3 the third index
 	 * @return the element value, as a double
+	 * @throws IOException 
 	 */
-	public double getDouble(int i1, int i2, int i3) {
+	public double getDouble(int i1, int i2, int i3) throws IOException {
 		return getDouble(new int[] {i1, i2, i3});
 	}
 	
@@ -121,10 +129,11 @@ public class ArrayAdapter {
 	 * 
 	 * @param position the indices of the element
 	 * @return the value of the element, as an int
+	 * @throws IOException 
 	 */
-	public int getInt(int[] position) {
+	public int getInt(int[] position) throws IOException {
 		checkDimensions(position);
-		moveToPosition(position);
+		ByteBuffer buf = moveToPosition(position);
 		return elementType.getAdapter().getInt(buf);
 	}
 	
@@ -133,10 +142,11 @@ public class ArrayAdapter {
 	 * 
 	 * @param position the indices of the element
 	 * @return the value of the element, as a long
+	 * @throws IOException 
 	 */
-	public long getLong(int[] position) {
+	public long getLong(int[] position) throws IOException {
 		checkDimensions(position);
-		moveToPosition(position);
+		ByteBuffer buf = moveToPosition(position);
 		return elementType.getAdapter().getLong(buf);
 	}
 	
@@ -145,21 +155,22 @@ public class ArrayAdapter {
 	 * 
 	 * @param position the indices of the element
 	 * @return the value of the element, as a double
+	 * @throws IOException 
 	 */
-	public double getDouble(int[] position) {
+	public double getDouble(int[] position) throws IOException {
 		checkDimensions(position);
-		moveToPosition(position);
+		ByteBuffer buf = moveToPosition(position);
 		return elementType.getAdapter().getDouble(buf);
 	}
 	
-	private void moveToPosition(int[] position) {
-		int index = position[0];
+	private ByteBuffer moveToPosition(int[] position) throws IOException {
+		long index = position[0];
 		
 		for (int i=1; i < position.length; ++i) {
 			index = index*dimensions[i] + position[i]; 
 		}
-		
-		buf.position(index * elementType.getSize());
+		index = index * elementType.getSize();
+		return buf.getBuffer(index);
 	}
 	
 	private void checkDimensions(int[] position) {
@@ -173,4 +184,91 @@ public class ArrayAdapter {
 		}
 	}
 	
+	/**
+	 * Class that provides a mechanism for buffering the given data for 
+	 * optimal I/O especially for greater than 2GB sized data.
+	 * 
+	 * @author mcayanan
+	 *
+	 */
+	private class MappedBuffer {
+	  /** The position within the data of where the buffer is. */
+	  private long startPosition;
+	  /** A buffer to cache a portion of the data. */
+	  private ByteBuffer cachedBuffer;
+	  /** Indicates how large the buffer is. */
+	  private final int BUFFER_SIZE = Integer.MAX_VALUE / 43;
+	  /** The data type size. */
+	  private int dataTypeSize;
+	  /** The channel containing the data. */
+	  private SeekableByteChannel channel;
+	  
+	  /**
+	   * Constructor.
+	   * 
+	   * @param channel The channel containing the data.
+	   * @param dataTypeSize The data type size. 
+	   */
+	  public MappedBuffer(SeekableByteChannel channel, int dataTypeSize) {
+	    this.channel = channel;
+	    this.dataTypeSize = dataTypeSize;
+	  }
+	  
+	  /**
+	   * Get the buffer.
+	   * 
+	   * @param index The position of where to get the data.
+	   * 
+	   * @return The ByteBuffer.
+	   * 
+	   * @throws IOException
+	   */
+	  public ByteBuffer getBuffer(long index) throws IOException {
+	    ByteBuffer buf = null;
+	    if (cachedBuffer == null) {
+	      buf = createNewBuffer(index);
+	      cachedBuffer = buf;
+	    } else {
+	      buf = cachedBuffer;
+	    }
+	    /** 
+	     * Conditions where we need a new buffer:
+	     * - index less than startPosition
+	     * - index greater than (startPosition + BUFFER_SIZE)
+	     * 
+	     */
+	     if ( index < startPosition ||
+	          (index + dataTypeSize) > (startPosition + BUFFER_SIZE)) {
+	       buf = createNewBuffer(index);
+	       cachedBuffer = buf;
+	     } else {
+	       int relativePosition = (int) (index - startPosition);
+	       buf.position(relativePosition);
+	     }
+	     return buf;
+	  }
+	  
+	  /**
+	   * Creates a new buffer starting from the given index.
+	   * 
+	   * @param index The position of where to start creating the buffer.
+	   * 
+	   * @return A ByteBuffer that starts from the given index.
+	   * 
+	   * @throws IOException
+	   */
+	  private ByteBuffer createNewBuffer(long index) throws IOException {
+	    channel.position(index);
+	    ByteBuffer buf = null;
+	    if ( (channel.size() - channel.position()) < (BUFFER_SIZE) ) {
+	      buf = ByteBuffer.allocate((int) (channel.size() - channel.position()));
+	    } else {
+	      buf = ByteBuffer.allocate(BUFFER_SIZE);
+	    }
+	    channel.read(buf);
+	    buf.flip();
+	    startPosition = index;
+	    return buf;
+	  }
+	}
 }

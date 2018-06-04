@@ -159,7 +159,7 @@ public class ThreeDSpectrumExporter extends ImageExporter implements Exporter<Ar
 		URL data = new URL(getObjectProvider().getRoot(), getObservationalFileArea().getFile().getFileName());
     BufferedInputStream bufferedInputStream = new BufferedInputStream(
         data.openStream());
-		long bytesSkipped = bufferedInputStream.skip(Integer.valueOf(array3DSpectrum.getOffset().getValue()));
+		long bytesSkipped = bufferedInputStream.skip(Long.valueOf(array3DSpectrum.getOffset().getValue()));
     int scanline_stride = samples;
     int[] band_offsets = new int[3];
     int[] bank_indices = new int[3];

@@ -322,8 +322,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>5.8</version>
-      <classifier>jdk15</classifier>
+      <version>6.10</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -490,10 +489,17 @@
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
       <version>2.2.4</version>
-    </dependency>     
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.16</version>
+    </dependency>
   </dependencies>
-  <!-- This profile allows this project to be built under 1.8 -->   
-  <profiles>  
+  <!-- This profile allows this project to be built under 1.8 -->
+  <!-- Update 5/24/2018 - Disabling as this is specified in the parent 2010 POM
+  <profiles>
     <profile>
       <id>doclint-java8-disable</id>
       <activation>
@@ -528,7 +534,8 @@
       </build>
     </profile>
   </profiles>  
-
+  -->
+  
   <!-- Project Information and Reports inherited from parent. -->
   <reporting>
     <!-- Project Reports not inherited from parent. -->
