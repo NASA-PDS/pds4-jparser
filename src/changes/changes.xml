@@ -24,6 +24,9 @@
 
   <body>
     <release version="0.11.0" date="TBD" description="TBD">
+      <action dev="mcayanan" type="update" issue="PDS-549">
+        Minor update to the APIs in the RecordLocation class. 
+      </action>
       <action dev="mcayanan" type="fix" issue="PDS-556">
         Fixed to support validation of Arrays greater than 2GB.
       </action>

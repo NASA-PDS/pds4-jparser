@@ -13,6 +13,8 @@
 // $Id$
 package gov.nasa.pds.label.object;
 
+import java.net.URL;
+
 /**
  * Class that holds table record location information.
  * 
@@ -22,10 +24,10 @@ package gov.nasa.pds.label.object;
 public final class RecordLocation {
   
   /** The label associated with the data. */
-  private String label;
+  private URL label;
   
   /** The data file associated with the record. */
-  private String dataFile;
+  private URL dataFile;
   
   /** The index of the table associated with the record. */
   private int table;
@@ -41,7 +43,7 @@ public final class RecordLocation {
    * @param table The table index.
    * @param record The record index.
    */
-  public RecordLocation(String label, String dataFile, int table, int record) {
+  public RecordLocation(URL label, URL dataFile, int table, int record) {
     this.label = label;
     this.dataFile = dataFile;
     this.table = table;
@@ -52,7 +54,7 @@ public final class RecordLocation {
    * 
    * @return the label.
    */
-  public String getLabel() {
+  public URL getLabel() {
     return this.label;
   }
   
@@ -60,7 +62,7 @@ public final class RecordLocation {
    * 
    * @return the data file.
    */
-  public String getDataFile() {
+  public URL getDataFile() {
     return this.dataFile;
   }
   
