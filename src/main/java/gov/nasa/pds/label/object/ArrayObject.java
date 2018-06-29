@@ -1,4 +1,4 @@
-// Copyright 2006-2017, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -84,7 +84,7 @@ public class ArrayObject extends DataObject {
 	private int[] findDimensions() {
 		int[] dims = new int[array.getAxes()];
 		for (int i=0; i < dims.length; ++i) {
-			dims[i] = array.getAxisArraies().get(i).getElements();
+			dims[i] = array.getAxisArraies().get(i).getElements().intValueExact();
 		}
 
 		return dims;

@@ -54,8 +54,8 @@ public class TableCharacterAdapter implements TableAdapter {
 		FieldDescription desc = new FieldDescription();
 		desc.setName(field.getName());
 		desc.setType(FieldType.getFieldType(field.getDataType()));
-		desc.setOffset(field.getFieldLocation().getValue() - 1 + baseOffset);
-		desc.setLength(field.getFieldLength().getValue());
+		desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
+		desc.setLength(field.getFieldLength().getValue().intValueExact());
     if (field.getFieldFormat() != null) {
       desc.setFormat(field.getFieldFormat());
     }
@@ -71,22 +71,22 @@ public class TableCharacterAdapter implements TableAdapter {
 	}
 
 	private void expandGroupField(GroupFieldCharacter group, int outerOffset) {
-		int baseOffset = outerOffset + group.getGroupLocation().getValue() - 1;
+		int baseOffset = outerOffset + group.getGroupLocation().getValue().intValueExact() - 1;
 
-		int groupLength = group.getGroupLength().getValue() / group.getRepetitions();
+		int groupLength = group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
 
 		// Check that the group length is large enough for the contained fields.
 		int actualGroupLength = getGroupExtent(group);
 
 		if (groupLength < actualGroupLength) {
 			System.err.println("WARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
-					+ (groupLength * group.getRepetitions())
+					+ (groupLength * group.getRepetitions().intValueExact())
 					+ "<"
-					+ (actualGroupLength * group.getRepetitions()));
+					+ (actualGroupLength * group.getRepetitions().intValueExact()));
 			groupLength = actualGroupLength;
 		}
 
-		for (int i=0; i < group.getRepetitions(); ++i) {
+		for (int i=0; i < group.getRepetitions().intValueExact(); ++i) {
 			expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset);
 			baseOffset += groupLength;
 		}
@@ -98,12 +98,12 @@ public class TableCharacterAdapter implements TableAdapter {
 		for (Object o : group.getFieldCharactersAndGroupFieldCharacters()) {
 			if (o instanceof GroupFieldCharacter) {
 				GroupFieldCharacter field = (GroupFieldCharacter) o;
-				int fieldEnd = field.getGroupLocation().getValue() + getGroupExtent(field) - 1;
+				int fieldEnd = field.getGroupLocation().getValue().intValueExact() + getGroupExtent(field) - 1;
 				groupExtent = Math.max(groupExtent, fieldEnd);
 			} else {
 				// Must be FieldCharacter
 				FieldCharacter field = (FieldCharacter) o;
-				int fieldEnd = field.getFieldLocation().getValue() + field.getFieldLength().getValue() - 1;
+				int fieldEnd = field.getFieldLocation().getValue().intValueExact() + field.getFieldLength().getValue().intValueExact() - 1;
 				groupExtent = Math.max(groupExtent,  fieldEnd);
 			}
 		}
@@ -113,7 +113,7 @@ public class TableCharacterAdapter implements TableAdapter {
 
 	@Override
 	public int getRecordCount() {
-		return table.getRecords();
+		return table.getRecords().intValueExact();
 	}
 
 	@Override
@@ -133,12 +133,12 @@ public class TableCharacterAdapter implements TableAdapter {
 
 	@Override
 	public long getOffset() {
-		return table.getOffset().getValue();
+		return table.getOffset().getValue().longValueExact();
 	}
 
 	@Override
 	public int getRecordLength() {
-		return table.getRecordCharacter().getRecordLength().getValue();
+		return table.getRecordCharacter().getRecordLength().getValue().intValueExact();
 	}
 
 }

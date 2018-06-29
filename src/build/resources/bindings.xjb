@@ -11,6 +11,10 @@
         
         <jxb:globalBindings generateValueClass="true">
             <xjc:simple />
+            <!--
+            <jxb:javaType name="com.google.common.primitives.UnsignedLong" xmlType="xs:unsignedLong" 
+                          parseMethod="UnsignedLong.valueOf"/>
+            -->
         </jxb:globalBindings>
         
   		<!--jxb:bindings node="//xs:complexType[@name='Array_2D_Image']">
@@ -86,12 +90,14 @@
         </jxb:bindings>
         <jxb:bindings node="//xs:complexType[@name='File_Area_Browse']//xs:choice/xs:element[1]">
             <jxb:property name="dataObjects" />
-        </jxb:bindings>        
+        </jxb:bindings>
+        <!--  
         <jxb:bindings node="//xs:complexType[@name='offset']">
             <jxb:property>
               <jxb:baseType name="long" />
         </jxb:property>    
         </jxb:bindings>
+        -->
 	</jxb:bindings>
 	
 </jxb:bindings>

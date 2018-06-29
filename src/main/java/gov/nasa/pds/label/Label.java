@@ -34,6 +34,7 @@ import gov.nasa.pds.objectAccess.ParseException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -235,18 +236,20 @@ public class Label {
 	}
 
 	private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableBinary table) throws Exception {
-		return new TableObject(parentDir, file, table, table.getOffset().getValue(), table.getRecords() * table.getRecordBinary().getRecordLength().getValue());
+	  BigInteger size = table.getRecords().multiply(table.getRecordBinary().getRecordLength().getValue());
+		return new TableObject(parentDir, file, table, table.getOffset().getValue().longValueExact(), size.longValueExact());
 	}
 
 	private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableCharacter table) throws Exception {
-		return new TableObject(parentDir, file, table, table.getOffset().getValue(), table.getRecords() * table.getRecordCharacter().getRecordLength().getValue());
+	  BigInteger size = table.getRecords().multiply(table.getRecordCharacter().getRecordLength().getValue());
+		return new TableObject(parentDir, file, table, table.getOffset().getValue().longValueExact(), size.longValueExact());
 	}
 
 	private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableDelimited table) throws Exception {
 		// The range for a delimited table must be the rest of the file past the offset position.
 		long offset = 0;
 		if (table.getOffset() != null) {
-			offset = table.getOffset().getValue();
+			offset = table.getOffset().getValue().longValueExact();
 		}
 		long size = -1;
 		if (file.getFileSize() != null) {
@@ -256,7 +259,7 @@ public class Label {
 	}
 
 	private DataObject makeArray(gov.nasa.arc.pds.xml.generated.File file, Array array) throws FileNotFoundException, IOException {
-		return new ArrayObject(parentDir, file, array, array.getOffset().getValue());
+		return new ArrayObject(parentDir, file, array, array.getOffset().getValue().longValueExact());
 	}
 
 	private DataObject makeGenericObject(gov.nasa.arc.pds.xml.generated.File file, ByteStream stream)
@@ -265,12 +268,12 @@ public class Label {
 		long offset = -1;
 		if (stream instanceof EncodedByteStream) {
 		  EncodedByteStream ebs = (EncodedByteStream) stream;
-		  size = ebs.getObjectLength().getValue();
-		  offset = ebs.getOffset().getValue();
+		  size = ebs.getObjectLength().getValue().longValueExact();
+		  offset = ebs.getOffset().getValue().longValueExact();
 		} else if (stream instanceof ParsableByteStream) {
 		  ParsableByteStream pbs = (ParsableByteStream) stream;
-		  size = pbs.getObjectLength().getValue();
-		  offset = pbs.getOffset().getValue();
+		  size = pbs.getObjectLength().getValue().longValueExact();
+		  offset = pbs.getOffset().getValue().longValueExact();
 		}
 		return new GenericObject(parentDir, file, offset, size);
 	}

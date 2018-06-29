@@ -1,4 +1,4 @@
-// Copyright 2006-2017, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -142,11 +142,11 @@ public class ThreeDImageExporter extends ImageExporter implements Exporter<Array
 			for (AxisArray axis : array3DImage.getAxisArraies()) {
 				//TODO axis ordering -- how does axis order related to index order?
 				if (axis.getSequenceNumber() == 3) {
-					samples = axis.getElements();
+					samples = axis.getElements().intValueExact();
 				} else if (axis.getSequenceNumber() == 2) {
-					lines = axis.getElements();
+					lines = axis.getElements().intValueExact();
 				} else {
-				  bands = axis.getElements();
+				  bands = axis.getElements().intValueExact();
 				}
 			}
 		}
@@ -154,7 +154,7 @@ public class ThreeDImageExporter extends ImageExporter implements Exporter<Array
 		BufferedInputStream bufferedInputStream = new BufferedInputStream(
 		        new URL(getObjectProvider().getRoot(),
 				getObservationalFileArea().getFile().getFileName()).openStream());
-		bufferedInputStream.skip(Long.valueOf(array3DImage.getOffset().getValue()));
+		bufferedInputStream.skip(array3DImage.getOffset().getValue().longValueExact());
     int scanline_stride = samples;
     int[] band_offsets = new int[bands];
     int[] bank_indices = new int[bands];
@@ -466,11 +466,11 @@ public class ThreeDImageExporter extends ImageExporter implements Exporter<Array
 				for (AxisArray axis : pdsImage.getAxisArraies()) {
 					//TODO axis ordering -- how does axis order related to index order?
 					if (axis.getSequenceNumber() == 3) {
-						cols = axis.getElements();
+						cols = axis.getElements().intValueExact();
 					} else if (axis.getSequenceNumber() == 2) {
-						rows = axis.getElements();
+						rows = axis.getElements().intValueExact();
 					} else {
-					  bands = axis.getElements();
+					  bands = axis.getElements().intValueExact();
 					}
 				}
 			}

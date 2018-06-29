@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.math.BigInteger;
 import java.util.List;
 
 import org.testng.annotations.Test;
@@ -109,7 +110,7 @@ public class DelimitedTableReaderTest {
 		f4.setDataType(FieldType.ASCII_STRING.getXMLType());
 		
 		GroupFieldDelimited group = new GroupFieldDelimited();
-		group.setRepetitions(2);
+		group.setRepetitions(BigInteger.valueOf(2));
 				
 		List<Object> groupFields = group.getFieldDelimitedsAndGroupFieldDelimiteds();
 		groupFields.add(f4);
@@ -125,7 +126,7 @@ public class DelimitedTableReaderTest {
 		tbl.setFieldDelimiter(DelimiterType.COMMA.getXmlType());
 		tbl.setRecordDelimiter(DelimiterType.CARRIAGE_RETURN_LINE_FEED.getXmlType());
 		tbl.setRecordDelimited(rec);
-		tbl.setRecords(2);
+		tbl.setRecords(BigInteger.valueOf(2));
 		tbl.setOffset(getOffset(0));
 		
 		this.table = tbl;
@@ -149,7 +150,7 @@ public class DelimitedTableReaderTest {
 	
 	private Offset getOffset(long value) {
 		Offset offset = new Offset();
-		offset.setValue(value);
+		offset.setValue(BigInteger.valueOf(value));
 		return offset;
 	}
 }

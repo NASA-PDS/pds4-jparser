@@ -63,8 +63,8 @@ public class TableBinaryAdapter implements TableAdapter {
 		FieldDescription desc = new FieldDescription();
 		desc.setName(field.getName());
 		desc.setType(FieldType.getFieldType(field.getDataType()));
-		desc.setOffset(field.getFieldLocation().getValue() - 1 + baseOffset);
-		desc.setLength(field.getFieldLength().getValue());
+		desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
+		desc.setLength(field.getFieldLength().getValue().intValueExact());
     if (field.getFieldFormat() != null) {
       desc.setFormat(field.getFieldFormat());
     }
@@ -96,30 +96,42 @@ public class TableBinaryAdapter implements TableAdapter {
 		FieldDescription desc = new FieldDescription();
 		desc.setName(bitField.getName());
 		desc.setType(FieldType.getFieldType(bitField.getDataType()));
-		desc.setOffset(field.getFieldLocation().getValue() - 1 + baseOffset);
-		desc.setLength(field.getFieldLength().getValue());
-		desc.setStartBit(bitField.getStartBit() - 1);
-		desc.setStopBit(bitField.getStopBit() - 1);
+		desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
+		desc.setLength(field.getFieldLength().getValue().intValueExact());
+		int startBit = 0;
+		if (bitField.getStartBit() != null) {
+		  startBit = bitField.getStartBit().intValueExact();
+		} else if (bitField.getStartBitLocation() != null) {
+		  startBit = bitField.getStartBitLocation().intValueExact();
+		}
+		desc.setStartBit(startBit - 1);
+		int stopBit = 0;
+    if (bitField.getStopBit() != null) {
+      stopBit = bitField.getStopBit().intValueExact();
+    } else if (bitField.getStopBitLocation() != null) {
+      stopBit = bitField.getStopBitLocation().intValueExact();
+    }
+		desc.setStopBit(stopBit - 1);
 		fields.add(desc);
 	}
 
 	private void expandGroupField(GroupFieldBinary group, int outerOffset) {
-		int baseOffset = outerOffset + group.getGroupLocation().getValue() - 1;
+		int baseOffset = outerOffset + group.getGroupLocation().getValue().intValueExact() - 1;
 
-		int groupLength = group.getGroupLength().getValue() / group.getRepetitions();
+		int groupLength = group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
 
 		// Check that the group length is large enough for the contained fields.
 		int actualGroupLength = getGroupExtent(group);
 
 		if (groupLength < actualGroupLength) {
 			System.err.println("WARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
-					+ (groupLength * group.getRepetitions())
+					+ (groupLength * group.getRepetitions().intValueExact())
 					+ "<"
-					+ (actualGroupLength * group.getRepetitions()));
+					+ (actualGroupLength * group.getRepetitions().intValueExact()));
 			groupLength = actualGroupLength;
 		}
 
-		for (int i=0; i < group.getRepetitions(); ++i) {
+		for (int i=0; i < group.getRepetitions().intValueExact(); ++i) {
 			expandFields(group.getFieldBinariesAndGroupFieldBinaries(), baseOffset);
 			baseOffset += groupLength;
 		}
@@ -131,12 +143,12 @@ public class TableBinaryAdapter implements TableAdapter {
 		for (Object o : group.getFieldBinariesAndGroupFieldBinaries()) {
 			if (o instanceof GroupFieldBinary) {
 				GroupFieldBinary field = (GroupFieldBinary) o;
-				int fieldEnd = field.getGroupLocation().getValue() + getGroupExtent(field) - 1;
+				int fieldEnd = field.getGroupLocation().getValue().intValueExact() + getGroupExtent(field) - 1;
 				groupExtent = Math.max(groupExtent, fieldEnd);
 			} else {
 				// Must be FieldBinary
 				FieldBinary field = (FieldBinary) o;
-				int fieldEnd = field.getFieldLocation().getValue() + field.getFieldLength().getValue() - 1;
+				int fieldEnd = field.getFieldLocation().getValue().intValueExact() + field.getFieldLength().getValue().intValueExact() - 1;
 				groupExtent = Math.max(groupExtent,  fieldEnd);
 			}
 		}
@@ -146,7 +158,7 @@ public class TableBinaryAdapter implements TableAdapter {
 
 	@Override
 	public int getRecordCount() {
-		return table.getRecords();
+		return table.getRecords().intValueExact();
 	}
 
 	@Override
@@ -166,12 +178,12 @@ public class TableBinaryAdapter implements TableAdapter {
 
 	@Override
 	public long getOffset() {
-		return table.getOffset().getValue();
+		return table.getOffset().getValue().longValueExact();
 	}
 
 	@Override
 	public int getRecordLength() {
-		return table.getRecordBinary().getRecordLength().getValue();
+		return table.getRecordBinary().getRecordLength().getValue().intValueExact();
 	}
 
 }

@@ -30,6 +30,9 @@
       <action dev="mcayanan" type="fix" issue="PDS-556">
         Fixed to support validation of Arrays greater than 2GB.
       </action>
+      <action dev="mcayanan" type="update" issue="PDS-566">
+        Updated to support new start_bit_location/stop_bit_location elements.
+      </action>      
     </release>
 
     <release version="0.10.0" date="2018-03-30" description="This release of the PDS4 Tools software is a component of the integrated release 8.1.0 of the PDS4 System. This is an operational release of the system components to date.">

@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -35,6 +35,7 @@ import gov.nasa.pds.objectAccess.DataType.NumericDataType;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
@@ -75,8 +76,8 @@ public class TableReaderTest {
 		TableCharacter table = oa.getTableCharacters(fileArea).get(0);
 		File dataFile = new File(FileUtils.toFile(oa.getRoot()), fileArea.getFile().getFileName());
 		RecordCharacter record = table.getRecordCharacter();
-		int rows = table.getRecords();
-		int cols = record.getFields();
+		int rows = table.getRecords().intValueExact();
+		int cols = record.getFields().intValueExact();
 
 		// Create the data file
 		createDataFile(table, dataFile, rows, cols, false, false);
@@ -124,8 +125,8 @@ public class TableReaderTest {
 		TableBinary table = oa.getTableBinaries(fileArea).get(0);
 		File dataFile = new File(FileUtils.toFile(oa.getRoot()), fileArea.getFile().getFileName());
 		RecordBinary record = table.getRecordBinary();
-		int rows = table.getRecords();
-		int cols = record.getFields();
+		int rows = table.getRecords().intValueExact();
+		int cols = record.getFields().intValueExact();
 
 		// Create the data file
 		createDataFile(table, dataFile, rows, cols, true, false);
@@ -195,8 +196,8 @@ public class TableReaderTest {
 		TableBinary table = oa.getTableBinaries(fileArea).get(0);
 		File dataFile = new File(FileUtils.toFile(oa.getRoot()), fileArea.getFile().getFileName());
 		RecordBinary record = table.getRecordBinary();
-		int rows = table.getRecords();
-		int cols = record.getFields();
+		int rows = table.getRecords().intValueExact();
+		int cols = record.getFields().intValueExact();
 
 		// Create the data file
 		createDataFile(table, dataFile, rows, cols, true, true);
@@ -229,9 +230,9 @@ public class TableReaderTest {
 
 		RecordCharacter record = new RecordCharacter();
 		RecordLength recLength = new RecordLength();
-		recLength.setValue(length);
+		recLength.setValue(BigInteger.valueOf(length));
 		record.setRecordLength(recLength);
-		record.setFields(cols);
+		record.setFields(BigInteger.valueOf(cols));
 
 		for (int i = 0; i < cols; i++) {
 			String[] data = charData[0][i];
@@ -240,23 +241,23 @@ public class TableReaderTest {
 			field.setName(data[5]);
 
 			FieldLength len = new FieldLength();
-			len.setValue(Integer.parseInt(data[1]));
+			len.setValue(new BigInteger(data[1]));
 			field.setFieldLength(len);
 
 			FieldLocation loc = new FieldLocation();
-			loc.setValue(Integer.parseInt(data[0]));
+			loc.setValue(new BigInteger(data[0]));
 			field.setFieldLocation(loc);
 
-			field.setFieldNumber(Integer.parseInt(data[6]));
+			field.setFieldNumber(new BigInteger(data[6]));
 			record.getFieldCharactersAndGroupFieldCharacters().add(field);
 		}
 
 		Offset offset = new Offset();
-		offset.setValue(0);
+		offset.setValue(BigInteger.ZERO);
 
 		TableCharacter table = new TableCharacter();
 		table.setRecordCharacter(record);
-		table.setRecords(2);
+		table.setRecords(BigInteger.valueOf(2));
 		table.setOffset(offset);
 
 		FileAreaObservational fileArea = new FileAreaObservational();
@@ -278,9 +279,9 @@ public class TableReaderTest {
 
 		RecordBinary record = new RecordBinary();
 		RecordLength recLength = new RecordLength();
-		recLength.setValue(28);
+		recLength.setValue(BigInteger.valueOf(28));
 		record.setRecordLength(recLength);
-		record.setFields(cols);
+		record.setFields(BigInteger.valueOf(cols));
 
 		for (int i = 0; i < cols; i++) {
 			String[] data = binData[0][i];
@@ -289,23 +290,23 @@ public class TableReaderTest {
 			field.setName(data[4]);
 
 			FieldLength len = new FieldLength();
-			len.setValue(Integer.parseInt(data[1]));
+			len.setValue(new BigInteger(data[1]));
 			field.setFieldLength(len);
 
 			FieldLocation loc = new FieldLocation();
-			loc.setValue(Integer.parseInt(data[0]));
+			loc.setValue(new BigInteger(data[0]));
 			field.setFieldLocation(loc);
 
-			field.setFieldNumber(i+1);
+			field.setFieldNumber(BigInteger.valueOf(i+1));
 			record.getFieldBinariesAndGroupFieldBinaries().add(field);
 		}
 
 		Offset offset = new Offset();
-		offset.setValue(0);
+		offset.setValue(BigInteger.ZERO);
 
 		TableBinary table = new TableBinary();
 		table.setRecordBinary(record);
-		table.setRecords(2);
+		table.setRecords(BigInteger.valueOf(2));
 		table.setOffset(offset);
 
 		FileAreaObservational fileArea = new FileAreaObservational();
@@ -326,25 +327,25 @@ public class TableReaderTest {
 
 		RecordBinary record = new RecordBinary();
 		RecordLength recLength = new RecordLength();
-		recLength.setValue(2);
+		recLength.setValue(BigInteger.valueOf(2));
 		record.setRecordLength(recLength);
-		record.setFields(cols);
+		record.setFields(BigInteger.valueOf(cols));
 
 		FieldBinary field = new FieldBinary();
 		field.setDataType("UnsignedByte");
 		field.setName("REVOLVE_MOTOR_CONTROLLER_STATUS");
 		FieldLength len = new FieldLength();
-		len.setValue(1);
+		len.setValue(BigInteger.valueOf(1));
 		field.setFieldLength(len);
 		FieldLocation loc = new FieldLocation();
-		loc.setValue(1);
+		loc.setValue(BigInteger.valueOf(1));
 		field.setFieldLocation(loc);
 
 		PackedDataFields dataFields = new PackedDataFields();
 		for (int j = 0; j < 8; j++) {
 			FieldBit bit = new FieldBit();
-			bit.setStartBit(j + 1);
-			bit.setStopBit(j + 1);
+			bit.setStartBitLocation(BigInteger.valueOf(j + 1));
+			bit.setStopBitLocation(BigInteger.valueOf(j + 1));
 			bit.setName("BIT " + j);
 			bit.setDataType(FieldType.UNSIGNEDBITSTRING.getXMLType());
 			dataFields.getFieldBits().add(bit);
@@ -354,10 +355,10 @@ public class TableReaderTest {
 		record.getFieldBinariesAndGroupFieldBinaries().add(field);
 
 		Offset offset = new Offset();
-		offset.setValue(0);
+		offset.setValue(BigInteger.valueOf(0));
 		TableBinary table = new TableBinary();
 		table.setRecordBinary(record);
-		table.setRecords(2);
+		table.setRecords(BigInteger.valueOf(2));
 		table.setOffset(offset);
 
 		FileAreaObservational fileArea = new FileAreaObservational();

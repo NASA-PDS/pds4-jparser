@@ -1,4 +1,4 @@
-// Copyright 2006-2017, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -143,9 +143,9 @@ implements Exporter<Array2DImage> {
 			for (AxisArray axis : array2DImage.getAxisArraies()) {
 				//TODO axis ordering -- how does axis order related to index order?
 				if (axis.getSequenceNumber() == 2) {
-					samples = axis.getElements();
+					samples = axis.getElements().intValueExact();
 				} else {
-					lines = axis.getElements();
+					lines = axis.getElements().intValueExact();
 				}
 			}
 		}
@@ -153,7 +153,7 @@ implements Exporter<Array2DImage> {
     BufferedInputStream bufferedInputStream = new BufferedInputStream(
         new URL(getObjectProvider().getRoot(),
     getObservationalFileArea().getFile().getFileName()).openStream());
-		bufferedInputStream.skip(Long.valueOf(array2DImage.getOffset().getValue()));
+		bufferedInputStream.skip(array2DImage.getOffset().getValue().longValueExact());
 		
     int scanline_stride = samples;
     int[] band_offsets = new int[1];
@@ -544,9 +544,9 @@ implements Exporter<Array2DImage> {
 				for (AxisArray axis : pdsImage.getAxisArraies()) {
 					//TODO axis ordering -- how does axis order related to index order?
 					if (axis.getSequenceNumber() == 2) {
-						cols = axis.getElements();
+						cols = axis.getElements().intValueExact();
 					} else {
-						rows = axis.getElements();
+						rows = axis.getElements().intValueExact();
 					}
 				}
 			}

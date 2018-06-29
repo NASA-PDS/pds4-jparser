@@ -55,7 +55,7 @@ public class TableDelimitedAdapter implements TableAdapter {
 		desc.setName(field.getName());
 		desc.setType(FieldType.getFieldType(field.getDataType()));
 		if (field.getMaximumFieldLength() != null) {
-		  desc.setMaxLength(field.getMaximumFieldLength().getValue());
+		  desc.setMaxLength(field.getMaximumFieldLength().getValue().intValueExact());
 		}
 		if (field.getFieldFormat() != null) {
 		  desc.setFormat(field.getFieldFormat());
@@ -72,7 +72,7 @@ public class TableDelimitedAdapter implements TableAdapter {
 	}
 	
 	private void expandGroupField(GroupFieldDelimited group) {
-		for (int i=0; i < group.getRepetitions(); ++i) {
+		for (int i=0; i < group.getRepetitions().intValueExact(); ++i) {
 			// Have to copy the fields to a new array, because of element type.
 			List<Object> fields = new ArrayList<Object>();
 			for (Object field : group.getFieldDelimitedsAndGroupFieldDelimiteds()) {
@@ -84,7 +84,7 @@ public class TableDelimitedAdapter implements TableAdapter {
 
 	@Override
 	public int getRecordCount() {
-		return table.getRecords();
+		return table.getRecords().intValueExact();
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class TableDelimitedAdapter implements TableAdapter {
 
 	@Override
 	public long getOffset() {
-		return table.getOffset().getValue();
+		return table.getOffset().getValue().longValueExact();
 	}
 
 	@Override

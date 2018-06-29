@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -27,6 +27,7 @@ import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.testng.annotations.Test;
@@ -73,14 +74,14 @@ public class TableBinaryAdapterTest {
 
 		FieldBit f2 = new FieldBit();
 		f2.setName("field2");
-		f2.setStartBit(1);
-		f2.setStopBit(4);
+		f2.setStartBitLocation(BigInteger.valueOf(1));
+		f2.setStopBitLocation(BigInteger.valueOf(4));
 		f2.setDataType(FieldType.UNSIGNEDBITSTRING.getXMLType());
 
 		FieldBit f3 = new FieldBit();
 		f3.setName("field3");
-		f3.setStartBit(5);
-		f3.setStopBit(8);
+    f3.setStartBitLocation(BigInteger.valueOf(5));
+    f3.setStopBitLocation(BigInteger.valueOf(8));
 		f3.setDataType(FieldType.UNSIGNEDBITSTRING.getXMLType());
 
 		PackedDataFields packedFields = new PackedDataFields();
@@ -102,7 +103,7 @@ public class TableBinaryAdapterTest {
 		f4.setFieldLength(getLength(4));
 
 		GroupFieldBinary group = new GroupFieldBinary();
-		group.setRepetitions(2);
+		group.setRepetitions(BigInteger.valueOf(2));
 		group.setGroupLocation(getGroupLocation(8));
 		group.setGroupLength(getGroupLength(8));
 
@@ -117,32 +118,32 @@ public class TableBinaryAdapterTest {
 
 		TableBinary tbl = new TableBinary();
 		tbl.setRecordBinary(rec);
-		tbl.setRecords(1000);
+		tbl.setRecords(BigInteger.valueOf(1000));
 
 		return tbl;
 	}
 
 	private FieldLocation getLocation(int offset) {
 		FieldLocation loc = new FieldLocation();
-		loc.setValue(offset + 1);
+		loc.setValue(BigInteger.valueOf(offset + 1));
 		return loc;
 	}
 
 	private FieldLength getLength(int length) {
 		FieldLength len = new FieldLength();
-		len.setValue(length);
+		len.setValue(BigInteger.valueOf(length));
 		return len;
 	}
 
 	private GroupLocation getGroupLocation(int offset) {
 		GroupLocation loc = new GroupLocation();
-		loc.setValue(offset + 1);
+		loc.setValue(BigInteger.valueOf(offset + 1));
 		return loc;
 	}
 
 	private GroupLength getGroupLength(int length) {
 		GroupLength len = new GroupLength();
-		len.setValue(length);
+		len.setValue(BigInteger.valueOf(length));
 		return len;
 	}
 

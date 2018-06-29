@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -201,14 +201,14 @@ public class ArrayObjectTest {
 		Array arrayObj = clazz.newInstance();
 		arrayObj.setAxes(dimensions.length);
 		Offset offset = new Offset();
-		offset.setValue(0);
+		offset.setValue(BigInteger.valueOf(0));
 		arrayObj.setOffset(offset);
 
 		List<AxisArray> axes = new ArrayList<AxisArray>();
 		for (int i=0; i < dimensions.length; ++i) {
 			AxisArray axis = new AxisArray();
 			axis.setAxisName("Axis" + (i+1));
-			axis.setElements(dimensions[i]);
+			axis.setElements(BigInteger.valueOf(dimensions[i]));
 			axes.add(axis);
 		}
 
