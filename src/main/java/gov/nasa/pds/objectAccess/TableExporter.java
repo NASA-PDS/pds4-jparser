@@ -1,4 +1,4 @@
-// Copyright 2006-2017, by the California Institute of Technology.
+// Copyright 2006-2018, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -273,8 +273,8 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 */
 	private void exportDelimitedTableToCSV(URL dataFile, Writer writer, TableDelimited table, Charset charset) throws FileNotFoundException, IOException {
 		TableAdapter adapter = AdapterFactory.INSTANCE.getTableAdapter(table);		
-		int records = table.getRecords();
-		long tableOffset = (long) table.getOffset().getValue();
+		int records = table.getRecords().intValueExact();
+		long tableOffset = table.getOffset().getValue().longValueExact();
 		InputStream is = null;
 		try {
 			CSVWriter csvWriter = new CSVWriter(writer);
