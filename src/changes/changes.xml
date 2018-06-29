@@ -30,6 +30,9 @@
       <action dev="mcayanan" type="fix" issue="PDS-556">
         Fixed to support validation of Arrays greater than 2GB.
       </action>
+      <action dev="mcayanan" type="update" issue="PDS-561">
+        Updated to support Product_Metadata_Supplemental products.
+      </action>
       <action dev="mcayanan" type="update" issue="PDS-566">
         Updated to support new start_bit_location/stop_bit_location elements.
       </action>      
