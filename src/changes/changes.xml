@@ -23,7 +23,7 @@
   </properties>
 
   <body>
-    <release version="0.11.0" date="TBD" description="TBD">
+    <release version="0.10.1" date="2018-08-01" description="This release of the PDS4 Tools software is an interim point build of the component. This is an operational release of the system components to date.">
       <action dev="mcayanan" type="update" issue="PDS-549">
         Minor update to the APIs in the RecordLocation class. 
       </action>
@@ -125,7 +125,7 @@
       </action>
     </release>
 
-    <release version="0.4.1" date="2014-11-18" description="This release of the PDS4 Tools software is a component of the integrated release 5.0.0 of the PDS4 System. This is an operational release of the system components to date.">
+    <release version="0.4.1" date="2014-11-18" description="This release of the PDS4 Tools software is an interim point build of the component. This is an operational release of the system components to date.">
       <action dev="mrose" type="fix" issue="PDS-295">
         Resolved an issue where commas found in field names result in additional column headings during transformation.
       </action>
