@@ -162,7 +162,6 @@ public abstract class DataObject {
   		try {
   		  channel = createChannel(u, offset, datasize);
   		} catch (IOException io) { 
-  		  io.printStackTrace();
   			throw new IOException("Error reading data file '"
   			    + u.toString() + "': " + io.getMessage());
   		}
