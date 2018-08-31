@@ -101,7 +101,7 @@ implements Exporter<Array2DImage> {
 
 	TwoDImageExporter(File label, int fileAreaIndex) throws Exception {
 	  this(label.toURI().toURL(), fileAreaIndex);
-	}
+	} 
 	
 	TwoDImageExporter(URL label, int fileAreaIndex) throws Exception {
 		super(label, fileAreaIndex);
@@ -512,7 +512,8 @@ implements Exporter<Array2DImage> {
 			if (!lineDirectionDown) {
 				// Flip the image vertically
 				AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-				tx.translate(0, -bi.getHeight());
+				//PDS-573
+				tx.translate(0, -bi.getWidth());
 				//TODO should be no interpolation on a simple vertical flip
 				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 				bi = op.filter(bi, null);
@@ -520,8 +521,9 @@ implements Exporter<Array2DImage> {
 			// TODO What order does raster return data....by columns then rows?
 			ImageHDU hdu = (ImageHDU) FitsFactory.HDUFactory(bi.getData().getDataElements(0, 0, bi.getWidth(), bi.getHeight(), null));
 			hdu.addValue("NAXIS", 2, "NUMBER OF AXES");
-			hdu.addValue("NAXIS1", bi.getHeight(), "NUMBER OF COLUMNS");
-			hdu.addValue("NAXIS2", bi.getWidth(), "NUMBER OF ROWS");
+		  // PDS-573
+			hdu.addValue("NAXIS1", bi.getWidth(), "NUMBER OF COLUMNS");
+			hdu.addValue("NAXIS2", bi.getHeight(), "NUMBER OF ROWS");
 			f.addHDU(hdu);
 			BufferedDataOutputStream bdos = new BufferedDataOutputStream(outputStream);
 			f.write(bdos);
