@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <!-- PDS4 XML/Schema for Name Space Id:pds  Version:1.11.0.0 - Thu Aug 30 21:25:21 PDT 2018 -->
+  <!-- PDS4 XML/Schema for Name Space Id:pds  Version:1.11.0.0 - Sun Sep 23 16:29:35 PDT 2018 -->
   <!-- Generated from the PDS4 Information Model Version 1.11.0.0 - System Build 9a -->
   <!-- *** This PDS4 product schema is an operational deliverable. *** -->
   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -1755,22 +1755,6 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="Instrument2">
-    <xs:annotation>
-      <xs:documentation>The Instrument class provides a description of a
-        physical object that collects data.</xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element name="name" type="pds:name" minOccurs="0" maxOccurs="1"> </xs:element>
-      <xs:element name="type" type="pds:type" minOccurs="1" maxOccurs="unbounded"> </xs:element>
-      <xs:element name="type_list_identifer" type="pds:type_list_identifer" minOccurs="1" maxOccurs="1"> </xs:element>
-      <xs:element name="model_id" type="pds:model_id" minOccurs="0" maxOccurs="1"> </xs:element>
-      <xs:element name="naif_instrument_id" type="pds:naif_instrument_id" minOccurs="0" maxOccurs="1"> </xs:element>
-      <xs:element name="serial_number" type="pds:serial_number" minOccurs="0" maxOccurs="1"> </xs:element>
-      <xs:element name="description" type="pds:description" minOccurs="1" maxOccurs="1"> </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="Instrument_Host">
     <xs:annotation>
       <xs:documentation>The Instrument Host class provides a description
@@ -3429,31 +3413,6 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="Type_List">
-    <xs:annotation>
-      <xs:documentation>The Type_List class provides a list of values
-        and their value meanings.</xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element name="identifier" type="pds:identifier" minOccurs="1" maxOccurs="1"> </xs:element>
-      <xs:element name="title" type="pds:title" minOccurs="1" maxOccurs="1"> </xs:element>
-      <xs:element name="type" type="pds:type" minOccurs="1" maxOccurs="1"> </xs:element>
-      <xs:element name="description" type="pds:description" minOccurs="1" maxOccurs="1"> </xs:element>
-      <xs:element name="Type_List_Entry" type="pds:Type_List_Entry" minOccurs="1" maxOccurs="unbounded"> </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="Type_List_Entry">
-    <xs:annotation>
-      <xs:documentation>The Type_List_Entry class provides a single
-        value and its value meaning.</xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element name="value" type="pds:value" minOccurs="1" maxOccurs="1"> </xs:element>
-      <xs:element name="value_meaning" type="pds:value_meaning" minOccurs="1" maxOccurs="1"> </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="Uniformly_Sampled">
     <xs:annotation>
       <xs:documentation>The Uniformly_Sampled class provides parameters
@@ -3820,7 +3779,6 @@
 
   <xs:simpleType name="altitude_WO_Units">
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -3840,7 +3798,6 @@
 
   <xs:simpleType name="aperture_WO_Units">
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="0"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -3970,7 +3927,6 @@
 
   <xs:simpleType name="band_width_WO_Units">
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="0"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -4040,7 +3996,6 @@
 
   <xs:simpleType name="center_wavelength_WO_Units">
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="0"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -4230,7 +4185,7 @@
         and time when the object was created.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Date_Time_YMD">
-  <!-- format="YYYY-MM-DDTHH:MM:SS.SSS(Z)" -->
+  <!-- format="YYYY-MM-DDTHH:MM:SS.SSSSSS(Z)" -->
 	   </xs:restriction>
   </xs:simpleType>
 
@@ -4354,7 +4309,7 @@
         time of an event.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Date_Time_YMD">
-  <!-- format="YYYY-MM-DDTHH:MM:SS.SSS(Z)" -->
+  <!-- format="YYYY-MM-DDTHH:MM:SS.SSSSSS(Z)" -->
 	   </xs:restriction>
   </xs:simpleType>
 
@@ -4790,7 +4745,6 @@
         sampled.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -5248,7 +5202,7 @@
         made.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Date_Time_YMD">
-  <!-- format="YYYY-MM-DDTHH:MM:SS.SSS(Z)" -->
+  <!-- format="YYYY-MM-DDTHH:MM:SS.SSSSSS(Z)" -->
 	   </xs:restriction>
   </xs:simpleType>
 
@@ -5260,7 +5214,6 @@
         sampled.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -5462,7 +5415,6 @@
         excluded).</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -5543,7 +5495,6 @@
         maximum of Ov).</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -5583,7 +5534,6 @@
         from both the sum and the count).</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -5598,7 +5548,6 @@
         sort).</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -5637,7 +5586,6 @@
         excluded).</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -5675,7 +5623,6 @@
         minimum of Ov).</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -6494,7 +6441,6 @@
         sampling_parameter_interval.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="0"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -6515,7 +6461,6 @@
         sampling_parameter_scale = Exponential).</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -6595,7 +6540,6 @@
         value_offset. The default value is 1.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -6716,7 +6660,6 @@
 
   <xs:simpleType name="solar_longitude_WO_Units">
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="0"/>
      <xs:maxInclusive value="360"/>
 	   </xs:restriction>
@@ -6767,7 +6710,6 @@
         Special_Constants values are excluded.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="0"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -7069,7 +7011,6 @@
 
   <xs:simpleType name="telescope_altitude_WO_Units">
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -7090,7 +7031,6 @@
 
   <xs:simpleType name="telescope_latitude_WO_Units">
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-90"/>
      <xs:maxInclusive value="90"/>
 	   </xs:restriction>
@@ -7112,7 +7052,6 @@
 
   <xs:simpleType name="telescope_longitude_WO_Units">
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="0"/>
      <xs:maxInclusive value="360"/>
 	   </xs:restriction>
@@ -7174,18 +7113,6 @@
     <xs:annotation>
       <xs:documentation>The type_description attribute provides a
         description of the object's type.</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="pds:ASCII_Short_String_Collapsed">
-     <xs:minLength value="1"/>
-     <xs:maxLength value="255"/>
-	   </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="type_list_identifer">
-    <xs:annotation>
-      <xs:documentation>The type_list_identifier attribute identifies
-        the list from which the values in the type_list were
-        selected.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Short_String_Collapsed">
      <xs:minLength value="1"/>
@@ -7311,7 +7238,7 @@
         effect.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Date_Time_YMD">
-  <!-- format="YYYY-MM-DDTHH:MM:SS.SSS(Z)" -->
+  <!-- format="YYYY-MM-DDTHH:MM:SS.SSSSSS(Z)" -->
 	   </xs:restriction>
   </xs:simpleType>
 
@@ -7334,7 +7261,7 @@
         effect.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Date_Time_YMD">
-  <!-- format="YYYY-MM-DDTHH:MM:SS.SSS(Z)" -->
+  <!-- format="YYYY-MM-DDTHH:MM:SS.SSSSSS(Z)" -->
 	   </xs:restriction>
   </xs:simpleType>
 
@@ -7358,7 +7285,6 @@
         default value is 0.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -7531,7 +7457,6 @@
         coordinate in a position vector.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -7543,7 +7468,6 @@
         coordinate in a position vector.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -7555,7 +7479,6 @@
         coordinate in a position vector.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="pds:ASCII_Real">
-    	<xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
      <xs:minInclusive value="-1.7976931348623157e308"/>
      <xs:maxInclusive value="1.7976931348623157e308"/>
 	   </xs:restriction>
@@ -7808,6 +7731,7 @@
         <xs:minInclusive value="-1.7976931348623157e308"/>
         <xs:maxInclusive value="1.7976931348623157e308"/>
         <xs:pattern value='(\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([Ee](\+|-)?[0-9]+)?'/>
+        <xs:pattern value='[^aFIN,]* '/>
       </xs:restriction>
     </xs:simpleType>
 
