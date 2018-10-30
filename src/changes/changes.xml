@@ -30,6 +30,9 @@
       <action dev="hyunlee" type="add" issue="PDS-573">
         Add support for Array_2D_Image to FITS transformation. 
       </action>
+      <action dev="mcayanan" type="fix">
+        Fixed detection of image display settings.
+      </action>
     </release>
 
     <release version="0.10.1" date="2018-08-01" description="This release of the PDS4 Tools software is an interim point build of the component. This is an operational release of the system components to date.">

@@ -228,6 +228,8 @@ implements Exporter<Array2DImage> {
             ds.getDisplayDirection().getVerticalDisplayDirection());
           if (lineDir.equals(DisplayDirection.BOTTOM_TO_TOP)) {
             lineDirectionDown = false;
+          } else if (lineDir.equals(DisplayDirection.TOP_TO_BOTTOM)) {
+            lineDirectionDown = true;
           }
         } catch (NullPointerException ignore) {
           logger.error("Cannot find vertical_display_direction element "
@@ -241,6 +243,8 @@ implements Exporter<Array2DImage> {
             ds.getDisplayDirection().getHorizontalDisplayDirection());
           if (sampleDir.equals(DisplayDirection.RIGHT_TO_LEFT)) {
             setSampleDirectionRight(false);
+          } else if (sampleDir.equals(DisplayDirection.LEFT_TO_RIGHT)) {
+            setSampleDirectionRight(true);
           }
         } catch (NullPointerException ignore) {
           logger.error("Cannot find horizontal_display_direction element "
@@ -509,15 +513,16 @@ implements Exporter<Array2DImage> {
 		Fits f = new Fits();
 		try {
 			// FITS is defined with line direction up, opposite of java and other formats
-			if (!lineDirectionDown) {
-				// Flip the image vertically
-				AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-				//PDS-573
-				tx.translate(0, -bi.getWidth());
-				//TODO should be no interpolation on a simple vertical flip
-				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-				bi = op.filter(bi, null);
-			}
+		    
+			// Flip the image vertically
+			AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+			//PDS-573
+			tx.translate(0, -bi.getHeight());
+			//TODO should be no interpolation on a simple vertical flip
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			bi = op.filter(bi, null);
+			
+			
 			// TODO What order does raster return data....by columns then rows?
 			ImageHDU hdu = (ImageHDU) FitsFactory.HDUFactory(bi.getData().getDataElements(0, 0, bi.getWidth(), bi.getHeight(), null));
 			hdu.addValue("NAXIS", 2, "NUMBER OF AXES");

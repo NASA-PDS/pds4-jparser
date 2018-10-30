@@ -276,6 +276,8 @@ public class ThreeDImageExporter extends ImageExporter implements Exporter<Array
             ds.getDisplayDirection().getVerticalDisplayDirection());
           if (lineDir.equals(DisplayDirection.BOTTOM_TO_TOP)) {
             lineDirectionDown = false;
+          } else if (lineDir.equals(DisplayDirection.TOP_TO_BOTTOM)) {
+            lineDirectionDown = true;
           }
         } catch (NullPointerException ignore) {
           logger.error("Cannot find vertical_display_direction element "
@@ -289,6 +291,8 @@ public class ThreeDImageExporter extends ImageExporter implements Exporter<Array
             ds.getDisplayDirection().getHorizontalDisplayDirection());
           if (sampleDir.equals(DisplayDirection.RIGHT_TO_LEFT)) {
             setSampleDirectionRight(false);
+          } else if (sampleDir.equals(DisplayDirection.LEFT_TO_RIGHT)) {
+            setSampleDirectionRight(true);
           }
         } catch (NullPointerException ignore) {
           logger.error("Cannot find horizontal_display_direction element "

@@ -20,9 +20,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.DisciplineArea;
 import gov.nasa.arc.pds.xml.generated.DisplaySettings;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
+import gov.nasa.arc.pds.xml.generated.LocalInternalReference;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
 
 /**
@@ -225,9 +227,13 @@ public abstract class ImageExporter extends ObjectExporter {
   public DisplaySettings getDisplaySettings(String id) {
     for(DisplaySettings ds : displaySettings) {
       if (ds.getLocalInternalReference() != null) {
-        if (id.equals(ds.getLocalInternalReference()
-            .getLocalIdentifierReference())) {
-          return ds;
+        LocalInternalReference lir = ds.getLocalInternalReference();
+        if (lir.getLocalIdentifierReference() != null && 
+            lir.getLocalIdentifierReference() instanceof Array) {
+          Array array = (Array) lir.getLocalIdentifierReference();
+          if (id.equals(array.getLocalIdentifier())) {
+            return ds;
+          }
         }
       }
     }
