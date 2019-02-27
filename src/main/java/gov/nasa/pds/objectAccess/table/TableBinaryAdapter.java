@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2019, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -66,7 +66,7 @@ public class TableBinaryAdapter implements TableAdapter {
 		desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
 		desc.setLength(field.getFieldLength().getValue().intValueExact());
     if (field.getFieldFormat() != null) {
-      desc.setFormat(field.getFieldFormat());
+      desc.setFieldFormat(field.getFieldFormat());
     }
     if (field.getFieldStatistics() != null) {
       if (field.getFieldStatistics().getMinimum() != null) {

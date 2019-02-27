@@ -1,4 +1,4 @@
-// Copyright 2006-2016, by the California Institute of Technology.
+// Copyright 2006-2019, by the California Institute of Technology.
 // ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
 // Any commercial use must be negotiated with the Office of Technology Transfer
 // at the California Institute of Technology.
@@ -26,7 +26,8 @@ public class FieldDescription {
 	private int maxLength;
 	private int startBit;
 	private int stopBit;
-	private String format;
+	private String fieldFormat;
+	private String validationFormat;
 	private Double minimum;
 	private Double maximum;
 	
@@ -38,7 +39,8 @@ public class FieldDescription {
 	  maxLength = -1;
 	  startBit = -1;
 	  stopBit = -1;
-	  format = "";
+	  fieldFormat = "";
+	  validationFormat = "";
 	  minimum = null;
 	  maximum = null;
 	}
@@ -178,13 +180,21 @@ public class FieldDescription {
 		this.stopBit = stopBit;
 	}
 	
-	public String getFormat() {
-	  return format;
+	public String getFieldFormat() {
+	  return fieldFormat;
 	}
 	
-	public void setFormat(String format) {
-	  this.format = format;
+	public void setFieldFormat(String format) {
+	  this.fieldFormat = format;
 	}
+	
+  public String getValidationFormat() {
+    return validationFormat;
+  }
+  
+  public void setValidationFormat(String format) {
+    this.validationFormat = format;
+  }	
 	
 	public void setMinimum(Double min) {
 	  this.minimum = min;

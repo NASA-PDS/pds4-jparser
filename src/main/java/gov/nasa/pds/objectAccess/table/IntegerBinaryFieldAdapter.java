@@ -10,7 +10,7 @@
 // may be required before exporting such information to foreign countries or
 // providing access to foreign nationals.
 //
-// $Id$
+// $Id: IntegerBinaryFieldAdapter.java 14829 2016-04-27 20:55:04Z mcayanan $
 package gov.nasa.pds.objectAccess.table;
 
 import java.math.BigInteger;
@@ -148,6 +148,12 @@ public class IntegerBinaryFieldAdapter implements FieldAdapter {
 		if (dataLength != length) {
 			throw new IllegalArgumentException("Declared field length does not match data type length "
 					+ "(" + length + "!=" + this.dataLength + ")");
+		} else if (offset > b.length) {
+		  throw new IllegalArgumentException("Field offset '" + offset
+		      + "' is greater than the number of bytes in the record '" + b.length + "'");
+		} else if ((offset + length) > b.length) {
+		  throw new IllegalArgumentException("Field length '" + length
+		      + "' with offset '" + offset + "' exceeds the number of bytes in the record '" + b.length + "'");
 		}
 
 		if (isBigEndian) {
@@ -191,7 +197,13 @@ public class IntegerBinaryFieldAdapter implements FieldAdapter {
 		if (dataLength != length) {
 			throw new IllegalArgumentException("Declared field length does not match data type length "
 					+ "(" + length + "!=" + this.dataLength + ")");
-		}
+		} else if (offset > b.length) {
+      throw new IllegalArgumentException("Field offset '" + offset
+          + "' is greater than the number of bytes in the record '" + b.length + "'");
+    } else if ((offset + length) > b.length) {
+      throw new IllegalArgumentException("Field length '" + length
+          + "' with offset '" + offset + "' exceeds the number of bytes in the record '" + b.length + "'");
+    }
 
 		if (isBigEndian) {
 			return getBigIntegerFieldValueBigEndian(b, offset, length);
