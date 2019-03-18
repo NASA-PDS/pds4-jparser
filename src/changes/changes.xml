@@ -24,14 +24,17 @@
 
   <body>
     <release version="0.12.0" date="2019-03-29" description="This release of the PDS4 Tools software is a component of the integrated release 9.1.0 of the PDS4 System. This is an operational release of the system components to date.">
+      <action dev="hyunlee" type="update" issue="PDS-602">
+         Updated to support Array_3D_Image to FITS transformation.
+      </action>    
       <action dev="mcayanan" type="update" issue="PDS-701">
         Updated to support the new validation_format field attribute in Field_Character areas due to CCB-214.
       </action>
+      <action dev="mcayanan" type="add" issue="PDS-793">
+        Added support for ASCII_BibCode data types due to CCB-235.
+      </action>
       <action dev="mcayanan" type="update">
         Updated to support model 1C00 (1.12.0.0) of the Information Model.
-      </action>  
-      <action dev="hyunlee" type="update" issue="PDS-602">
-         Updated to support Array_3D_Image to FITS transformation.
       </action>
     </release>
       

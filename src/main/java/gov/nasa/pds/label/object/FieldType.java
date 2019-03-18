@@ -36,6 +36,9 @@ public enum FieldType {
 	/** Any URI. */
 	ASCII_ANYURI("ASCII_AnyURI"),
 
+	/** Bibcode data type. */
+	ASCII_BIBCODE("ASCII_BibCode"),
+	
 	/** Boolean true or false. */
 	ASCII_BOOLEAN("ASCII_Boolean", new DefaultFieldAdapter(), true),
 
