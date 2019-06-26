@@ -75,7 +75,7 @@
   
   <files>
     <file>
-      <source>LICENSE.txt</source>
+      <source>LICENSE</source>
       <outputDirectory>/</outputDirectory>
       <fileMode>644</fileMode>
       <lineEnding>crlf</lineEnding>
@@ -83,7 +83,7 @@
     <file>
       <source>README-PACKAGE.txt</source>
       <outputDirectory>/</outputDirectory>
-      <destName>README.txt</destName>
+      <destName>README.md</destName>
       <fileMode>644</fileMode>
       <lineEnding>crlf</lineEnding>
       <filtered>true</filtered>
