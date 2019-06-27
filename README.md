@@ -1,4 +1,4 @@
-# PDS4 Parser
+# PDS4 JParser
 Java library providing APIs for parsing and exporting information
 on PDS4 table and image objects to various formats including CSV, PNG, Vicar, 
 Fits, etc. The software is packaged in a JAR file.
@@ -10,7 +10,7 @@ to create the JAR file, you must execute the "mvn compile jar:jar" command.
 # Documentation
 The documentation including release notes, installation and operation of the 
 software should be online at 
-https://pds-engineering.jpl.nasa.gov/development/pds4/current/preparation/pds4-parser/index.html.
+https://pds-engineering.jpl.nasa.gov/development/pds4/current/preparation/pds4-jparser/index.html.
 If it is not  accessible, you can execute the `mvn site:run` command and view the 
 documentation locally at http://localhost:8080.
 
