@@ -46,7 +46,7 @@
 
   <body>
     <links>
-      <item name="PDS4 Tools" href="https://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-tools/index.html" />
+      <item name="PDS4 Tools" href="https://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-parser/index.html" />
     </links>
 
     <menu name="Software Documentation">
