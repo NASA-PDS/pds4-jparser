@@ -100,7 +100,7 @@
     <dependencySet>
       <outputDirectory>examples/src</outputDirectory>
       <includes>
-        <include>gov.nasa.pds.2010.preparation:pds4-tools:*:sources</include>
+        <include>gov.nasa.pds.preparation:pds4-parser:*:sources</include>
       </includes>
       <unpack>true</unpack>
       <unpackOptions>
