@@ -37,7 +37,7 @@
 
   <groupId>gov.nasa.pds</groupId>
   <artifactId>pds4-jparser</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDS4 JParser</name>
@@ -459,7 +459,7 @@
     <dependency>
       <groupId>gov.nasa.pds</groupId>
       <artifactId>pds3-product-tools</artifactId>
-      <version>4.0.0</version>
+      <version>4.0.1</version>
       <scope>test</scope>
     </dependency>
     <!-- Temporary local lib jars until available on Maven central -->
