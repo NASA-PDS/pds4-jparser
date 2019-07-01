@@ -80,6 +80,28 @@ mvn versions:set -DnewVersion=1.3.0-SNAPSHOT
 mvn clean site deploy
 ```
 
-# Maven JAR Dependency
+# JAR Dependency Reference
 
+## Official Releases
 https://search.maven.org/search?q=g:gov.nasa.pds%20AND%20a:pds4-jparser&core=gav
+
+## Snapshots
+https://oss.sonatype.org/content/repositories/snapshots/gov/nasa/pds/pds4-jparser
+
+If you want to access snapshots, add the following to your `~/.m2/settings.xml`:
+```
+<profiles>
+  <profile>
+     <id>allow-snapshots</id>
+     <activation><activeByDefault>true</activeByDefault></activation>
+     <repositories>
+       <repository>
+         <id>snapshots-repo</id>
+         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+         <releases><enabled>false</enabled></releases>
+         <snapshots><enabled>true</enabled></snapshots>
+       </repository>
+     </repositories>
+   </profile>
+</profiles>
+```
