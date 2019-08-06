@@ -32,33 +32,33 @@
   POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<project name="PDS4 Tools">
+<project name="PDS4 JParser">
   <bannerLeft>
     <src>images/pds4_logo.png</src>
-    <href>https://pds-cm.jpl.nasa.gov/pds4/</href>
+    <href>https://nasa-pds-incubator.github.io/${project.artifactId}/</href>
   </bannerLeft>
 
   <bannerRight>
-    <name>PDS4 Tools</name>
+    <name>PDS4 JParser</name>
   </bannerRight>
 
   <version/>
 
   <body>
     <links>
-      <item name="PDS4 Tools" href="https://pds-cm.jpl.nasa.gov/pds4/preparation/pds4-parser/index.html" />
+      <item name="PDS4 JParser" href="https://nasa-pds-incubator.github.io/${project.artifactId}/index.html" />
     </links>
 
     <menu name="Software Documentation">
-      <item name="About PDS4 Tools" href="index.html"/>
+      <item name="About PDS4 JParser" href="index.html"/>
       <item name="Installation" href="install/index.html"/>
       <item name="Development" href="develop/index.html"/>
       <item name="Operation" href="operate/index.html"/>
     </menu>
 
     <menu name="Download">
-      <item name="Binary Package (tar.gz)" href="ftp://pds.nasa.gov/pub/toplevel/2010/preparation/${project.artifactId}-${project.version}-bin.tar.gz"/>
-      <item name="Binary Package (zip)" href="ftp://pds.nasa.gov/pub/toplevel/2010/preparation/${project.artifactId}-${project.version}-bin.zip"/>
+      <item name="Binary Package (tar.gz)" href="https://github.com/NASA-PDS-Incubator/${project.artifactId}/releases/download/v${project.version}/${project.artifactId}-${project.version}-bin.tar.gz"/>
+      <item name="Binary Package (zip)" href="https://github.com/NASA-PDS-Incubator/${project.artifactId}/releases/download/v${project.version}/${project.artifactId}-${project.version}-bin.zip"/>
     </menu>
 
     <menu ref="reports"/>
