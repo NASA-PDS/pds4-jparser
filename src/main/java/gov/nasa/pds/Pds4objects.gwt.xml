@@ -1,9 +1,0 @@
-
-
-<module rename-to="pds4objects">
-  <inherits name='com.google.gwt.user.User' />
-  
-  <!-- Specify the paths for translatable code -->
-  <source path='domain'/>
-  
-</module>
