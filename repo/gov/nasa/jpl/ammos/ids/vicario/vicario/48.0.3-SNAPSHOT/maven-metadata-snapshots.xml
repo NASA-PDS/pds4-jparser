@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>gov.nasa.jpl.ammos.ids.vicario</groupId>
+  <artifactId>vicario</artifactId>
+  <version>48.0.3-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20190717.211029</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20190717211030</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>48.0.3-20190717.210448-5</value>
+        <updated>20190717210448</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>48.0.3-20190717.210448-5</value>
+        <updated>20190717210448</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
