@@ -84,6 +84,7 @@ From cloned repo:
 ```
 git checkout gh-pages
 rsync -av target/site/* .
+rm -fr target
 git add .
 git commit -m "Deploy v$VERSION docs"
 git push origin gh-pages
@@ -93,7 +94,11 @@ git push origin gh-pages
 
 Update `pom.xml` with the next SNAPSHOT version either manually or using Github Versions Plugin, e.g.:
 ```
-mvn versions:set -DnewVersion=1.16.0-SNAPSHOT
+VERSION=1.16.0-SNAPSHOT
+mvn versions:set -DnewVersion=$VERSION
+git add pom.xml
+git commit -m "Update version for $VERSION development"
+git push -u origin master
 ```
 
 ## Complete Release in Github
