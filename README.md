@@ -83,8 +83,13 @@ git push --tags
 From cloned repo:
 ```
 git checkout gh-pages
-rsync -av target/site/* .
+
+# Create specific version site
+mv target/site $VERSION
 rm -fr target
+
+# Sync latest version to ops 
+rsync -av $VERSION/* .
 git add .
 git commit -m "Deploy v$VERSION docs"
 git push origin gh-pages
