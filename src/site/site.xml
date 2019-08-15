@@ -35,7 +35,7 @@
 <project name="PDS4 JParser">
   <bannerLeft>
     <src>images/pds4_logo.png</src>
-    <href>https://nasa-pds-incubator.github.io/${project.artifactId}/</href>
+    <href>https://github.com/NASA-PDS-Incubator/pds4-jparser</href>
   </bannerLeft>
 
   <bannerRight>
@@ -46,7 +46,7 @@
 
   <body>
     <links>
-      <item name="PDS4 JParser" href="https://nasa-pds-incubator.github.io/${project.artifactId}/index.html" />
+      <item name="PDS4 JParser Github Repo" href="https://github.com/NASA-PDS-Incubator/pds4-jparser" />
     </links>
 
     <menu name="Software Documentation">
