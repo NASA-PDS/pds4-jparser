@@ -29,6 +29,7 @@
 
 # Temporary files
 *~
+src/test/temp/
 
 # other stuff
 *.xpr
@@ -37,6 +38,7 @@
 .*.swp
 *.sublime-*
 *.DS_Store
+pom.xml.versionsBackup
 
 # Java stuff
 *.javac
