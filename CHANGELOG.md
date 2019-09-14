@@ -1,7 +1,11 @@
 # Change Log
 
-## [v1.1.0](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.1.0) (2019-08-14)
-[Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.0.1...v1.1.0)
+## [v1.2.0](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.2.0) (2019-09-14)
+[Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.0.1...v1.2.0)
+
+**Implemented enhancements:**
+
+- Ingest IM 1D00 release candidate for Build 10a [\#11](https://github.com/NASA-PDS-Incubator/pds4-jparser/issues/11)
 
 **Closed issues:**
 
@@ -9,6 +13,7 @@
 
 **Merged pull requests:**
 
+- Ingest IM 1D00 release candidate [\#13](https://github.com/NASA-PDS-Incubator/pds4-jparser/pull/13) ([jordanpadams](https://github.com/jordanpadams))
 - Merge dev into master [\#9](https://github.com/NASA-PDS-Incubator/pds4-jparser/pull/9) ([jordanpadams](https://github.com/jordanpadams))
 
 ## [v1.0.1](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.0.1) (2019-06-29)
