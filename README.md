@@ -79,9 +79,8 @@ git push origin master
 
 ## Update Version Numbers
 
-Update pom.xml for the release version or use the Maven Versions Plugin. The version number to use should be dependent upon whether or not this is a release candidate or operational release.
+Update pom.xml for the release version or use the Maven Versions Plugin using [semantic versioning](https://semver.org/). For IM release candidates and operational releases, PDS4 JParser will be built and deployed as an operational release and versioned and re-build if needed.
 
-For release candidates (e.g. for beta testing of a new Information Model), version numbers should be like `1.1.0-rc1`, otherwise follow [semantic versioning](https://semver.org/):
 ```
 VERSION=1.1.0
 mvn versions:set -DnewVersion=$VERSION
