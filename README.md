@@ -6,7 +6,7 @@ Fits, etc. The software is packaged in a JAR file.
 # System Requirements
 Current software requires:
 * Java 1.8 - the Ant build does not appear to complete succcessfully in later versions of Java
-* Maven 2 - EN builds have not yet migrated to Maven 3, so unknown if the software will build correctly
+* Maven 3
 
 # Documentation
 The documentation including release notes, installation and operation of the 
@@ -30,10 +30,60 @@ mvn package
 
 A release candidate should be created after the community has determined that a release should occur. These steps should be followed when generating a release candidate and when completing the release.
 
+## Ingest Latest Information Model
+
+If this release is part of a new build of the [PDS4 Information Model](https://github.com/NASA-PDS-Incubator/pds4-information-model/), we must ingest the latest model into PDS4 JParser to re-generate the Java classes as needed for validation.
+
+1. [Create 2 tickets](https://github.com/NASA-PDS-Incubator/pds4-jparser/issues/new/choose) to ingest candidate and released IM, e.g. :
+```
+1. Ingest IM 1D00 release candidate for Build 10a
+2. Ingest IM 1D00 operational release for Build 10a
+```
+
+2. Create new directory under build resources, e.g. `src/build/resources/schema/1D00`.
+
+3. Copy the new IM and Display Dictionary into this directory:
+```
+$ ls src/build/resources/schema/1D00/
+PDS4_DISP_1D00.xsd
+PDS4_PDS_1D00.xsd
+```
+
+4. Update `model-version` property to the new IM version:
+```
+<project>
+...
+  <properties>
+    <model-version>1D00</model-version>
+    ...
+  <properties>
+</project>
+```
+
+5. Commit the updates to Github:
+```
+ISSUE=11
+
+ga pom.xml src/build/resources/schema/1D00
+
+# For release candidate
+gcm "Ingest IM 1D00 release candidate. resolves #${ISSUE}"
+
+# For final release
+gcm "Ingest IM 1D00 operational release. resolves #${ISSUE}"
+
+git push origin master
+```
+
+4, Continue on with build and release to generate the new package.
+
 ## Update Version Numbers
 
-Update pom.xml for the release version or use the Maven Versions Plugin, e.g.:
+Update pom.xml for the release version or use the Maven Versions Plugin. The version number to use should be dependent upon whether or not this is a release candidate or operational release.
+
+For release candidates (e.g. for beta testing of a new Information Model), version numbers should be like `1.1.0-rc1`, otherwise follow [semantic versioning](https://semver.org/):
 ```
+VERSION=1.1.0
 mvn versions:set -DnewVersion=$VERSION
 ```
 
