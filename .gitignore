@@ -44,3 +44,5 @@ pom.xml.versionsBackup
 *.javac
 .gwt/
 target/
+
+src/test/resources/dph_example_products/product_array_2d_image/i943630r.PNG
