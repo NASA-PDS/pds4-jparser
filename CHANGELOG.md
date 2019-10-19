@@ -1,5 +1,8 @@
 # Change Log
 
+## [v1.3.1](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.3.1) (2019-10-19)
+[Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.3.0...v1.3.1)
+
 ## [v1.3.0](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.3.0) (2019-10-11)
 [Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.2.0...v1.3.0)
 
