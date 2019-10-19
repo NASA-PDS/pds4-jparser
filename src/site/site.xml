@@ -64,7 +64,7 @@
     <menu name="Downloads">
       <item name="Current Release (tar.gz)" href="https://github.com/NASA-PDS-Incubator/${project.artifactId}/releases/download/v${project.version}/${project.artifactId}-${project.version}-bin.tar.gz"/>
       <item name="Current Release (zip)" href="https://github.com/NASA-PDS-Incubator/${project.artifactId}/releases/download/v${project.version}/${project.artifactId}-${project.version}-bin.zip"/>
-      <item name="Past Releases" href="https://pds-engineering.jpl.nasa.gov/content/pds4-software"/>
+      <item name="Past Releases" href="https://pds-engineering.jpl.nasa.gov/development/pds4/current/release/rdd.html" />
     </menu>
 
     <menu name="Change Log">
