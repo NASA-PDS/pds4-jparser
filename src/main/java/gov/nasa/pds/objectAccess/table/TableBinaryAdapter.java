@@ -141,11 +141,18 @@ public class TableBinaryAdapter implements TableAdapter {
 		int actualGroupLength = getGroupExtent(group);
 
 		if (groupLength < actualGroupLength) {
-			System.err.println("WARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
+			System.err.println("\nWARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
 					+ (groupLength * group.getRepetitions().intValueExact())
 					+ "<"
-					+ (actualGroupLength * group.getRepetitions().intValueExact()));
+					+ (actualGroupLength * group.getRepetitions().intValueExact()) + "\n");
 			groupLength = actualGroupLength;
+		}
+		else if (groupLength > actualGroupLength) {
+			System.err.println("\nWARNING: GroupFieldBinary attribute group_length is larger than size of contained fields: "
+					+ (groupLength * group.getRepetitions().intValueExact())
+					+ ">"
+					+ (actualGroupLength * group.getRepetitions().intValueExact()) + "\n");
+			//groupLength = actualGroupLength;
 		}
 
 		for (int i=0; i < group.getRepetitions().intValueExact(); ++i) {

@@ -99,17 +99,24 @@ public class TableCharacterAdapter implements TableAdapter {
 		int actualGroupLength = getGroupExtent(group);
 
 		if (groupLength < actualGroupLength) {
-			System.err.println("WARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
+			System.err.println("\nWARNING: GroupFieldCharacter attribute group_length is smaller than size of contained fields: "
 					+ (groupLength * group.getRepetitions().intValueExact())
 					+ "<"
-					+ (actualGroupLength * group.getRepetitions().intValueExact()));
+					+ (actualGroupLength * group.getRepetitions().intValueExact()) + "\n");
 			groupLength = actualGroupLength;
+		}
+		else if (groupLength > actualGroupLength) {
+			System.err.println("\nWARNING: GroupFieldCharacter attribute group_length is larger than size of contained fields: "
+					+ (groupLength * group.getRepetitions().intValueExact())
+					+ ">"
+					+ (actualGroupLength * group.getRepetitions().intValueExact()) + "\n");
+			//groupLength = actualGroupLength;
 		}
 
 		for (int i=0; i < group.getRepetitions().intValueExact(); ++i) {
 			expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset);
 			baseOffset += groupLength;
-		}
+		}	
 	}
 
 	private int getGroupExtent(GroupFieldCharacter group) {
@@ -125,7 +132,7 @@ public class TableCharacterAdapter implements TableAdapter {
 				FieldCharacter field = (FieldCharacter) o;
 				int fieldEnd = field.getFieldLocation().getValue().intValueExact() + field.getFieldLength().getValue().intValueExact() - 1;
 				groupExtent = Math.max(groupExtent,  fieldEnd);
-			}
+			}		
 		}
 
 		return groupExtent;
