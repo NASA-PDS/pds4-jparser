@@ -31,6 +31,7 @@
 package gov.nasa.pds.objectAccess;
 
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
+import gov.nasa.pds.objectAccess.InvalidTableException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -71,7 +72,7 @@ public interface Exporter<T> {
 	 * @param outputStream the output stream for the output object
 	 * @throws IOException
 	 */
-	void convert(T object, OutputStream outputStream) throws IOException;
+	void convert(T object, OutputStream outputStream) throws IOException, InvalidTableException;
 
 	/**
 	 * Converts the object at index objectIndex into the desired export type.
@@ -81,6 +82,6 @@ public interface Exporter<T> {
 	 * 		  observational file area
 	 * @throws IOException
 	 */
-	void convert(OutputStream outputStream, int objectIndex) throws IOException;
+	void convert(OutputStream outputStream, int objectIndex) throws IOException, InvalidTableException;
 
 }

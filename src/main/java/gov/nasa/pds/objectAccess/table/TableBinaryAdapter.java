@@ -36,6 +36,7 @@ import gov.nasa.arc.pds.xml.generated.GroupFieldBinary;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
+import gov.nasa.pds.objectAccess.InvalidTableException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,14 +51,14 @@ public class TableBinaryAdapter implements TableAdapter {
 	 *
 	 * @param table the table
 	 */
-	public TableBinaryAdapter(TableBinary table) {
+	public TableBinaryAdapter(TableBinary table) throws InvalidTableException {
 		this.table = table;
 
 		fields = new ArrayList<FieldDescription>();
 		expandFields(table.getRecordBinary().getFieldBinariesAndGroupFieldBinaries(), 0);
 	}
 
-	private void expandFields(List<Object> fields, int baseOffset) {
+	private void expandFields(List<Object> fields, int baseOffset) throws InvalidTableException {
 		for (Object field : fields) {
 			if (field instanceof FieldBinary) {
 				expandField((FieldBinary) field, baseOffset);
@@ -132,7 +133,7 @@ public class TableBinaryAdapter implements TableAdapter {
 		fields.add(desc);
 	}
 
-	private void expandGroupField(GroupFieldBinary group, int outerOffset) {
+	private void expandGroupField(GroupFieldBinary group, int outerOffset) throws InvalidTableException {
 		int baseOffset = outerOffset + group.getGroupLocation().getValue().intValueExact() - 1;
 
 		int groupLength = group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
@@ -141,11 +142,20 @@ public class TableBinaryAdapter implements TableAdapter {
 		int actualGroupLength = getGroupExtent(group);
 
 		if (groupLength < actualGroupLength) {
-			System.err.println("WARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
-					+ (groupLength * group.getRepetitions().intValueExact())
-					+ "<"
-					+ (actualGroupLength * group.getRepetitions().intValueExact()));
 			groupLength = actualGroupLength;
+			String msg = "ERROR: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
+                    + (groupLength * group.getRepetitions().intValueExact())
+                    + "<"
+                    + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
+			throw new InvalidTableException(msg);
+		}
+		else if (groupLength > actualGroupLength) {
+			groupLength = actualGroupLength;
+			String msg = "ERROR: GroupFieldBinary attribute group_length is larger than size of contained fields: "
+                    + (groupLength * group.getRepetitions().intValueExact())
+                    + ">"
+                    + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
+			throw new InvalidTableException(msg);
 		}
 
 		for (int i=0; i < group.getRepetitions().intValueExact(); ++i) {

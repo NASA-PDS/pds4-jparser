@@ -36,6 +36,7 @@ import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.objectAccess.table.AdapterFactory;
 import gov.nasa.pds.objectAccess.table.TableAdapter;
 import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
+import gov.nasa.pds.objectAccess.InvalidTableException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -135,7 +136,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 * @param object the table object
 	 * @return an array of field descriptions for the table
 	 */
-	public FieldDescription[] getTableFields(Object object) {
+	public FieldDescription[] getTableFields(Object object) throws InvalidTableException {
 		return AdapterFactory.INSTANCE.getTableAdapter(object).getFields();
 	}
 	
@@ -148,7 +149,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 * @param outputStream  the output stream for the output file
 	 * @throws IOException If an I/O error occurs
 	 */
-	public void convert(Object object, OutputStream outputStream) throws IOException {		
+	public void convert(Object object, OutputStream outputStream) throws IOException, InvalidTableException {		
 		URL dataFile = new URL(getObjectProvider().getRoot(), getObservationalFileArea().getFile().getFileName());		
 		Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, getEncoder()));
 				
@@ -166,7 +167,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 *                      	 
 	 * @throws IOException If an I/O error occurs
 	 */
-	public void convert(OutputStream outputStream, int objectIndex) throws IOException {
+	public void convert(OutputStream outputStream, int objectIndex) throws IOException, InvalidTableException {
 		List<Object> list = getObjectProvider().getTableObjects(getObservationalFileArea());		
 		convert(list.get(objectIndex), outputStream);		
 	}
@@ -242,7 +243,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	/*
 	 * Exports a table object into a CSV file.
 	 */
-	private void exportToCSV(URL dataFile, Writer writer, Object table) throws FileNotFoundException, IOException {
+	private void exportToCSV(URL dataFile, Writer writer, Object table) throws FileNotFoundException, IOException, InvalidTableException {
 		if (table instanceof TableDelimited) {
 			exportDelimitedTableToCSV(dataFile, writer, (TableDelimited) table, getDecoder());
 		} else {
@@ -250,7 +251,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 		}
 	}
 	
-	private void exportFixedWidthTableToCSV(URL dataFile, Writer writer, Object table, Charset decoder) throws IOException {
+	private void exportFixedWidthTableToCSV(URL dataFile, Writer writer, Object table, Charset decoder) throws IOException, InvalidTableException {
 		TableAdapter adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
 		FieldDescription[] fields = adapter.getFields();
 		
@@ -288,7 +289,8 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	/*
 	 * Exports a delimited table object into a CSV file.
 	 */
-	private void exportDelimitedTableToCSV(URL dataFile, Writer writer, TableDelimited table, Charset charset) throws FileNotFoundException, IOException {
+	private void exportDelimitedTableToCSV(URL dataFile, Writer writer, TableDelimited table, Charset charset) 
+		throws FileNotFoundException, IOException, InvalidTableException {
 		TableAdapter adapter = AdapterFactory.INSTANCE.getTableAdapter(table);		
 		int records = table.getRecords().intValueExact();
 		long tableOffset = table.getOffset().getValue().longValueExact();

@@ -79,7 +79,7 @@ public class TableWriterTest {
 	};
 		
 	@Test
-	public void testCharacterTableWriter() throws IOException, URISyntaxException {
+	public void testCharacterTableWriter() throws IOException, URISyntaxException, Exception {
 		Object[] data;		
 		TableRecord record;
 		ObjectAccess objectAccess = new ObjectAccess(CHAR_TABLE_LABEL_PATH);			
@@ -134,7 +134,7 @@ public class TableWriterTest {
 	}	
 		
 	@Test
-	public void testBinaryTableWriter() throws IOException, URISyntaxException {				
+	public void testBinaryTableWriter() throws IOException, URISyntaxException, Exception {				
 		Object[] data;
 		TableRecord record;
 		TableWriter writer = null;
@@ -203,7 +203,7 @@ public class TableWriterTest {
 	}
 		
 	@Test
-	public void testDelimitedTableWriter()  throws IOException, URISyntaxException {									
+	public void testDelimitedTableWriter()  throws IOException, URISyntaxException, Exception {									
 		TableRecord record;
 		TableWriter tableWriter = null;
 		String path = "./src/test/resources/1000";
@@ -254,7 +254,7 @@ public class TableWriterTest {
 	}
 	
 	@Test(expectedExceptions={UnsupportedCharsetException.class})
-	public void testBadCharset() throws IOException, URISyntaxException {		
+	public void testBadCharset() throws IOException, URISyntaxException, Exception {		
 		ObjectAccess objectAccess = new ObjectAccess(CHAR_TABLE_LABEL_PATH);				
 		ProductObservational product = getProduct(objectAccess, charLabelFile);			
 		FileAreaObservational fileArea = getFileArea(product);		
@@ -264,7 +264,7 @@ public class TableWriterTest {
     	new TableWriter(table, os, "BAD_CHARSET_NAME");
 	}
 	
-	private TableAdapter getTableAdapter(Object table) {
+	private TableAdapter getTableAdapter(Object table) throws Exception {
 		 return AdapterFactory.INSTANCE.getTableAdapter(table);
 	}
 	

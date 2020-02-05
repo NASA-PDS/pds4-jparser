@@ -38,6 +38,7 @@ import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
 import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
+import gov.nasa.pds.objectAccess.InvalidTableException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -98,8 +99,9 @@ public class TableExporterTest {
 		exportToCSV(label, outputFile, list.get(0), 5, 10, dataObject, false);	
 	}	
 	
-	@Test
-	public void testExportGoupedFieldCharacterTableToCSV() throws Exception {
+	//@Test
+	@Test(expectedExceptions=InvalidTableException.class)
+	public void testExportGoupedFieldCharacterTableToCSV() throws Exception, InvalidTableException {
 		String fileName = "Product_Table_Character_Grouped.xml";
 		ObjectProvider objectAccess = new ObjectAccess(new File("./src/test/resources/1000/"));
 		ProductObservational product = objectAccess.getObservationalProduct(fileName);
@@ -170,7 +172,7 @@ public class TableExporterTest {
 		ObjectProvider provider = new ObjectAccess(new File(DELIMITED_LABEL_PATH));
 		File label = new File(FileUtils.toFile(provider.getRoot()), DELIMITED_LABEL_NAME);
 		TableExporter exporter = ExporterFactory.getTableExporter(label, 0);		
-		exporter.setDecoder("BAD-CHARSET-NAME");
+	 	exporter.setDecoder("BAD-CHARSET-NAME");
 	}
 	
 	@Test(expectedExceptions=UnsupportedCharsetException.class)

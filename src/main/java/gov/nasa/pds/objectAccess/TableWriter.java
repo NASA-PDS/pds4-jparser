@@ -37,6 +37,8 @@ import gov.nasa.pds.objectAccess.table.DelimiterType;
 import gov.nasa.pds.objectAccess.table.TableAdapter;
 import gov.nasa.pds.objectAccess.table.TableBinaryAdapter;
 import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
+import gov.nasa.pds.objectAccess.InvalidTableException;
+
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -76,7 +78,7 @@ public class TableWriter {
 	 * @param charsetName the charset name to use for encoding the bytes.
 	 * @throws UnsupportedCharsetException
 	 */
-	public TableWriter(Object table, OutputStream outputStream, String charsetName)	throws UnsupportedCharsetException {
+	public TableWriter(Object table, OutputStream outputStream, String charsetName)	throws UnsupportedCharsetException, InvalidTableException {
 		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);		
 		this.outputStream = outputStream;										
 		setEncoding(charsetName);		
@@ -92,7 +94,7 @@ public class TableWriter {
 	 * @param table a table object
 	 * @param outputStream an output stream
 	 */
-	public TableWriter(Object table, OutputStream outputStream) {
+	public TableWriter(Object table, OutputStream outputStream) throws InvalidTableException {
 		this(table, outputStream, US_ASCII);
 	}	
 	
@@ -104,7 +106,7 @@ public class TableWriter {
 	 * @param table  a table object
 	 * @param writer a writer object
 	 */
-	public TableWriter(Object table, Writer writer) {
+	public TableWriter(Object table, Writer writer) throws InvalidTableException {
 		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
 		createFieldMap();
 		// TODO: What should quotchar be set to? CSVWriter.NO_QUOTE_CHARACTER?
