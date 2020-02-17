@@ -43,6 +43,7 @@ import gov.nasa.arc.pds.xml.generated.RecordBinary;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
+import gov.nasa.pds.objectAccess.InvalidTableException;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -52,7 +53,7 @@ import org.testng.annotations.Test;
 public class TableBinaryAdapterTest {
 
 	@Test
-	public void testTableDefinition() {
+	public void testTableDefinition() throws InvalidTableException {
 		TableBinary table = createTable();
 		TableBinaryAdapter adapter = new TableBinaryAdapter(table);
 

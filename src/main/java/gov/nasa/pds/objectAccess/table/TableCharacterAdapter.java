@@ -35,6 +35,7 @@ import gov.nasa.arc.pds.xml.generated.GroupFieldCharacter;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
+import gov.nasa.pds.objectAccess.InvalidTableException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,14 +50,14 @@ public class TableCharacterAdapter implements TableAdapter {
 	 *
 	 * @param table the table
 	 */
-	public TableCharacterAdapter(TableCharacter table) {
+	public TableCharacterAdapter(TableCharacter table) throws InvalidTableException {
 		this.table = table;
 
 		fields = new ArrayList<FieldDescription>();
 		expandFields(table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters(), 0);
 	}
 
-	private void expandFields(List<Object> fields, int baseOffset) {
+	private void expandFields(List<Object> fields, int baseOffset) throws InvalidTableException {
 		for (Object field : fields) {
 			if (field instanceof FieldCharacter) {
 				expandField((FieldCharacter) field, baseOffset);
@@ -90,20 +91,34 @@ public class TableCharacterAdapter implements TableAdapter {
 		fields.add(desc);
 	}
 
-	private void expandGroupField(GroupFieldCharacter group, int outerOffset) {
+	private void expandGroupField(GroupFieldCharacter group, int outerOffset) throws InvalidTableException {
 		int baseOffset = outerOffset + group.getGroupLocation().getValue().intValueExact() - 1;
 
 		int groupLength = group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
 
 		// Check that the group length is large enough for the contained fields.
 		int actualGroupLength = getGroupExtent(group);
-
+		
+		//int totalGroupLength = groupLength * group.getRepetitions().intValueExact();
+		//int actualTotalGroupLength = actualGroupLength * group.getRepetitions().intValueExact();
 		if (groupLength < actualGroupLength) {
-			System.err.println("WARNING: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
-					+ (groupLength * group.getRepetitions().intValueExact())
-					+ "<"
-					+ (actualGroupLength * group.getRepetitions().intValueExact()));
+		//if (totalGroupLength < actualTotalGroupLength) {
+			String msg = "ERROR: GroupFieldCharacter attribute group_length is smaller than size of contained fields: "
+                    + (groupLength * group.getRepetitions().intValueExact())
+                    + "<"
+                    + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
 			groupLength = actualGroupLength;
+			throw new InvalidTableException(msg);
+		}
+		else if (groupLength > actualGroupLength) {
+		//else if (totalGroupLength > actualTotalGroupLength) {
+			String msg = "ERROR: GroupFieldCharacter attribute group_length is larger than size of contained fields: "
+                    + (groupLength * group.getRepetitions().intValueExact())
+                    + ">"
+                    + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
+			groupLength = actualGroupLength;
+			throw new InvalidTableException(msg);
+			
 		}
 
 		for (int i=0; i < group.getRepetitions().intValueExact(); ++i) {
