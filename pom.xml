@@ -37,6 +37,13 @@
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <!-- Inherit release profile, reporting, SNAPSHOT repo, etc. from parent repo -->
+  <parent>
+    <groupId>gov.nasa</groupId>
+    <artifactId>pds</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
   <groupId>gov.nasa.pds</groupId>
   <artifactId>pds4-jparser</artifactId>
   <version>1.4.0-SNAPSHOT</version>
@@ -46,7 +53,7 @@
   <description>
     This is the parser library for the PDS4 planetary data standard.
   </description>
-  <url>https://pds-engineering.jpl.nasa.gov/development/pds4/current/preparation/pds4-jparser/index.html</url>
+  <url>https://nasa-pds-incubator.github.io/pds4-jparser/</url>
 
   <licenses>
     <license>
@@ -54,83 +61,6 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
-
-  <developers>
-    <developer>
-      <name>Jordan Padams</name>
-      <id>jpadams</id>
-      <email>Jordan.H.Padams@jpl.nasa.gov</email>
-      <organization>NASA Jet Propulsion Laboratory</organization>
-      <roles>
-        <role>PDS Engineering Node Manager</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Galen Hollins</name>
-      <id>ghollins</id>
-      <email>Galen.Hollins@jpl.nasa.gov</email>
-      <organization>NASA Jet Propulsion Laboratory</organization>
-      <roles>
-        <role>PDS Engineering Node Development Lead</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Hyun Lee</name>
-      <id>hyunlee</id>
-      <email>Hyun.Lee@jpl.nasa.gov</email>
-      <organization>NASA Jet Propulsion Laboratory</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Sean Hardman</name>
-      <id>shardman</id>
-      <email>Sean.Hardman@jpl.nasa.gov</email>
-      <organization>NASA Jet Propulsion Laboratory</organization>
-      <roles>
-        <role>Former Development Lead</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Michael Cayanan</name>
-      <id>mcayanan</id>
-      <email>Michael.Cayanan@jpl.nasa.gov</email>
-      <organization>NASA Jet Propulsion Laboratory</organization>
-      <roles>
-        <role>Former Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Mark Rose</name>
-      <id>mrose</id>
-      <email>Mark.Rose@nasa.gov</email>
-      <organization>NASA Ames Research Center</organization>
-      <roles>
-        <role>Former Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Pegah Sarram</name>
-      <id>psarram</id>
-      <email>Pegah.Sarram@nasa.gov</email>
-      <organization>NASA Ames Research Center</organization>
-      <roles>
-        <role>Former Developer</role>
-      </roles>
-    </developer>
-  </developers>
-
-  <contributors>
-    <contributor>
-      <name>Paul Ramirez</name>
-      <email>Paul.Ramirez@jpl.nasa.gov</email>
-      <organization>NASA Jet Propulsion Laboratory</organization>
-      <roles>
-        <role>Former Developer</role>
-      </roles>
-    </contributor>
-  </contributors>
 
   <build> 
     <resources>
@@ -144,44 +74,6 @@
       </resource>
     </resources>  
     <plugins>
-      <!--plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-install-plugin</artifactId>
-         <version>2.5.1</version>
-         <configuration>
-            <groupId>gov.nasa.jpl.ammos.ids.vicario</groupId>
-            <artifactId>vicario</artifactId>
-            <version>48.0.3-SNAPSHOT</version>
-            <packaging>jar</packaging>
-            <file>${project.basedir}/src/main/resources/lib/vicario-48.0.3-SNAPSHOT.jar</file>
-            <generatePom>true</generatePom>
-         </configuration>
-         <executions>
-            <execution>
-               <id>install-jar-lib</id>
-               <goals>
-                  <goal>install-file</goal>
-               </goals>
-               <phase>validate</phase>
-            </execution>
-         </executions>
-      </plugin-->
-      <plugin>
-	    <groupId>org.sonatype.plugins</groupId>
-	    <artifactId>nexus-staging-maven-plugin</artifactId>
-	    <version>1.6.7</version>
-	    <extensions>true</extensions>
-	    <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-	    </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.8.2</version>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -266,12 +158,12 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M3</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.0.0-M3</version>
       </plugin>
     </plugins>
     <pluginManagement>
@@ -352,82 +244,11 @@
     </pluginManagement>
   </build>
   
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-  
   <scm>
     <url>https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/master</url>
     <connection>scm:git:git://github.com/NASA-PDS-Incubator/pds4-jparser.git</connection>
     <developerConnection>scm:git:ssh://github.com:NASA-PDS-Incubator/pds4-jparser.git</developerConnection>
   </scm>
-
-  <profiles>
-    <profile> 
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <phase>prepare-package</phase>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                  <goal>test-jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-              <source>1.8</source>
-            <failOnError>false</failOnError>
-            </configuration>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
-            <executions>
-                <execution>
-                    <id>sign-artifacts</id>
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>sign</goal>
-                    </goals>
-                    <configuration>
-                        <gpgArguments>
-                            <arg>--pinentry-mode</arg>
-                            <arg>loopback</arg>
-                        </gpgArguments>
-                    </configuration>
-                </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <repositories>
     <repository>
@@ -452,16 +273,6 @@
       <url>http://download.osgeo.org/webdav/geotools/</url>
       <snapshots>
 	<enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>snapshots-repo</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
@@ -622,49 +433,6 @@
     </dependency>
   </dependencies>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <reportSets>
-	  <reportSet>
-            <reports>
-              <report>dependencies</report>
-              <report>issue-management</report>
-              <report>licenses</report>
-              <report>mailing-lists</report>
-              <report>team</report>
-              <report>summary</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>changes-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <failOnError>false</failOnError>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </reporting>
   <properties>
     <model-version>1D00</model-version>
     <pds3-product-tools.version>4.0.1</pds3-product-tools.version>
@@ -675,5 +443,10 @@
     <ant.commons.net.version>1.8.1</ant.commons.net.version>
     <ant-nodeps.version>1.8.1</ant-nodeps.version>
     <checkstyle.version>2.9.1</checkstyle.version>
-  </properties>	
+  </properties>
+  
+  <developers />
+  <profiles />
+  <distributionManagement />
+  <reporting />
 </project>
