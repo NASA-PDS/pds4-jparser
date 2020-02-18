@@ -46,3 +46,4 @@ pom.xml.versionsBackup
 target/
 
 src/test/resources/dph_example_products/product_array_2d_image/i943630r.PNG
+src/test/resources/1000/char_table_grouped.csv
