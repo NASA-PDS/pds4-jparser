@@ -1,5 +1,19 @@
 # Change Log
 
+## [v1.4.0](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.4.0) (2020-02-17)
+[Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.3.2...v1.4.0)
+
+**Closed issues:**
+
+- Update POM to use PDS Parent POM [\#17](https://github.com/NASA-PDS-Incubator/pds4-jparser/issues/17)
+
+**Merged pull requests:**
+
+- Validate Table\_Character groups and length with the group\_length [\#19](https://github.com/NASA-PDS-Incubator/pds4-jparser/pull/19) ([hhlee445](https://github.com/hhlee445))
+
+## [v1.3.2](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.3.2) (2019-10-19)
+[Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.3.1...v1.3.2)
+
 ## [v1.3.1](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.3.1) (2019-10-19)
 [Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.3.0...v1.3.1)
 
