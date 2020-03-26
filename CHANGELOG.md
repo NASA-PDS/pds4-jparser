@@ -1,5 +1,15 @@
 # Change Log
 
+## [v1.5.0](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.5.0) (2020-03-26)
+[Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.4.2...v1.5.0)
+
+**Merged pull requests:**
+
+- Bump commons-compress from 1.16 to 1.19 [\#20](https://github.com/NASA-PDS-Incubator/pds4-jparser/pull/20) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [v1.4.2](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.4.2) (2020-02-18)
+[Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.4.1...v1.4.2)
+
 ## [v1.4.1](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.4.1) (2020-02-18)
 [Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.4.0...v1.4.1)
 
