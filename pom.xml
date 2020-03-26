@@ -41,7 +41,7 @@
   <parent>
     <groupId>gov.nasa</groupId>
     <artifactId>pds</artifactId>
-    <version>1.0.0</version>
+    <version>1.3.0</version>
   </parent>
 
   <groupId>gov.nasa.pds</groupId>
@@ -434,7 +434,7 @@
   </dependencies>
 
   <properties>
-    <model-version>1D00</model-version>
+    <model-version>1E00</model-version>
     <pds3-product-tools.version>4.0.1</pds3-product-tools.version>
     <checkstyle.version>2.10</checkstyle.version>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
