@@ -15,6 +15,7 @@ accessible, you can execute the "mvn site:run" command and view the
 documentation locally at http://localhost:8080.
 
 # Build
+
 The software can be compiled and built with the "mvn compile" command but in order 
 to create the JAR file, you must execute the "mvn compile jar:jar" command. 
 
@@ -28,54 +29,24 @@ mvn package
 
 # Operational Release
 
-A release candidate should be created after the community has determined that a release should occur. These steps should be followed when generating a release candidate and when completing the release.
+# Release with new PDS4 Information Model
 
-## Ingest Latest Information Model
+When new PDS4 Information Model is available, run the following script to download the latest IM and 
+push to git.
 
-If this release is part of a new build of the [PDS4 Information Model](https://github.com/NASA-PDS-Incubator/pds4-information-model/), we must ingest the latest model into PDS4 JParser to re-generate the Java classes as needed for validation.
-
-1. [Create 2 tickets](https://github.com/NASA-PDS-Incubator/pds4-jparser/issues/new/choose) to ingest candidate and released IM, e.g. :
 ```
-1. Ingest IM 1D00 release candidate for Build 10a
-2. Ingest IM 1D00 operational release for Build 10a
-```
+# For dev release of IM
+build/pre-build.sh dev 1E00
 
-2. Create new directory under build resources, e.g. `src/build/resources/schema/1D00`.
-
-3. Copy the new IM and Display Dictionary into this directory:
-```
-$ ls src/build/resources/schema/1D00/
-PDS4_DISP_1D00.xsd
-PDS4_PDS_1D00.xsd
+For operation release of IM
+build/pre-build.sh ops 1E00
 ```
 
-4. Update `model-version` property to the new IM version:
-```
-<project>
-...
-  <properties>
-    <model-version>1D00</model-version>
-    ...
-  <properties>
-</project>
-```
 
-5. Commit the updates to Github:
-```
-ISSUE=11
+## Release with ConMan
 
-ga pom.xml src/build/resources/schema/1D00
+For internal JPL use, the ConMan software package can be used for releasing software, otherwise the following sections outline how to complete these steps manually.
 
-# For release candidate
-gcm "Ingest IM 1D00 release candidate. resolves #${ISSUE}"
-
-# For final release
-gcm "Ingest IM 1D00 operational release. resolves #${ISSUE}"
-
-git push origin master
-```
-
-4, Continue on with build and release to generate the new package.
 
 ## Update Version Numbers
 
