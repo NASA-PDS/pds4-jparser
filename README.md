@@ -29,7 +29,7 @@ mvn package
 
 # Operational Release
 
-# Release with new PDS4 Information Model
+# Run pre-build software
 
 When new PDS4 Information Model is available, run the following script to download the latest IM and 
 push to git.
