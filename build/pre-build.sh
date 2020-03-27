@@ -8,7 +8,6 @@ usage() {
     exit 1
 }
 
-echo $#
 if [ $# -ne 2 ]; then
     usage
 fi
