@@ -35,6 +35,7 @@ import gov.nasa.pds.label.object.TableRecord;
 import gov.nasa.pds.objectAccess.table.AdapterFactory;
 import gov.nasa.pds.objectAccess.table.TableAdapter;
 import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
+import gov.nasa.pds.objectAccess.table.TableCharacterAdapter;
 import gov.nasa.pds.objectAccess.utility.Utility;
 
 import java.io.BufferedReader;
@@ -67,6 +68,7 @@ public class TableReader {
 	private CSVReader csvReader = null;
 	private List<String[]> delimitedRecordList;
 	private BufferedReader bufferedReader = null;
+	private int recordSize = 0;
 
 	public TableReader(Object table, File dataFile) throws Exception {
 	  this(table, dataFile.toURI().toURL());
@@ -118,12 +120,19 @@ public class TableReader {
 			accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
 			csvReader = new CSVReader(bufferedReader, tda.getFieldDelimiter());
 			delimitedRecordList = csvReader.readAll();
+			recordSize = delimitedRecordList.size();
 		} else {
 		  if (readEntireFile) {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());
 		  } else {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength(),
 			    adapter.getRecordCount(), checkSize);
+		  }
+		  if (adapter instanceof TableCharacterAdapter) {
+		     InputStream is = Utility.openConnection(dataFile.openConnection());
+		     is.skip(offset);
+			 bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
+		     recordSize = getNumberOfLines(bufferedReader);
 		  }
 		}
 
@@ -227,6 +236,18 @@ public class TableReader {
 	}
 	
 	/**
+	 * 
+	 * @return the number of lines in the file.
+	 */
+	private int getNumberOfLines(BufferedReader reader) throws IOException {
+	  int numLines = 0;
+	  while (reader.readLine()!=null) {
+         numLines++;
+      }
+	  return numLines;
+	}
+	
+	/**
 	 * Sets the current row.
 	 * 
 	 * @param row The row to set.
@@ -245,5 +266,12 @@ public class TableReader {
 	
 	public ByteWiseFileAccessor getAccessor() {
 	  return this.accessor;
+	}
+	
+	/**
+	 * @return the size of record (i.e. number of lines)
+	 */
+	public int getRecordSize() {
+	  return this.recordSize;
 	}
 }

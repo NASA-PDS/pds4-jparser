@@ -97,12 +97,8 @@ public class TableCharacterAdapter implements TableAdapter {
 		int groupLength = group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
 
 		// Check that the group length is large enough for the contained fields.
-		int actualGroupLength = getGroupExtent(group);
-		
-		//int totalGroupLength = groupLength * group.getRepetitions().intValueExact();
-		//int actualTotalGroupLength = actualGroupLength * group.getRepetitions().intValueExact();
+		int actualGroupLength = getGroupExtent(group);	
 		if (groupLength < actualGroupLength) {
-		//if (totalGroupLength < actualTotalGroupLength) {
 			String msg = "ERROR: GroupFieldCharacter attribute group_length is smaller than size of contained fields: "
                     + (groupLength * group.getRepetitions().intValueExact())
                     + "<"
@@ -111,7 +107,6 @@ public class TableCharacterAdapter implements TableAdapter {
 			throw new InvalidTableException(msg);
 		}
 		else if (groupLength > actualGroupLength) {
-		//else if (totalGroupLength > actualTotalGroupLength) {
 			String msg = "ERROR: GroupFieldCharacter attribute group_length is larger than size of contained fields: "
                     + (groupLength * group.getRepetitions().intValueExact())
                     + ">"

@@ -38,6 +38,7 @@ import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.FieldDelimited;
 import gov.nasa.arc.pds.xml.generated.FileArea;
+import gov.nasa.arc.pds.xml.generated.FileAreaAncillary;
 import gov.nasa.arc.pds.xml.generated.FileAreaBrowse;
 import gov.nasa.arc.pds.xml.generated.FileAreaInventory;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
@@ -379,6 +380,21 @@ public class ObjectAccess implements ObjectProvider {
 	}
 	
 	@Override
+	public List<Object> getTableObjects(FileAreaAncillary anciilaryFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<Object>();
+    for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray2Ds()) {
+      clazz = obj.getClass();
+      if (clazz.equals(TableCharacter.class)
+          || clazz.equals(TableBinary.class)
+          || clazz.equals(TableDelimited.class)) {
+        list.add(obj);
+      }
+    }
+    return list;	  
+	}
+
+	@Override
 	public List<Object> getTableObjects(FileArea fileArea) {
 	  List<Object> list = new ArrayList<Object>();
 	  if (fileArea instanceof FileAreaObservational) {
@@ -391,6 +407,8 @@ public class ObjectAccess implements ObjectProvider {
 	    list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
 	  } else if (fileArea instanceof FileAreaBrowse) {
 	    list.addAll(getTableObjects((FileAreaBrowse) fileArea));
+	  } else if (fileArea instanceof FileAreaAncillary) {
+		list.addAll(getTableObjects((FileAreaAncillary) fileArea));
 	  }
 	  return list;
 	}
@@ -407,7 +425,9 @@ public class ObjectAccess implements ObjectProvider {
 	      list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
 	    } else if (fileArea instanceof FileAreaBrowse) {
 	      list.addAll(getTablesAndImages((FileAreaBrowse) fileArea));
-	    }
+	    } else if (fileArea instanceof FileAreaAncillary) {
+	      list.addAll(getTableObjects((FileAreaAncillary) fileArea));
+		}
 	    return list;
 	}
 
