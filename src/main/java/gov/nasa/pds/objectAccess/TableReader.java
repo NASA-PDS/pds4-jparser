@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -134,8 +135,15 @@ public class TableReader {
 			 bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
 		     recordSize = getNumberOfLines(bufferedReader);
 		  }
+		  else {
+			 InputStream is = Utility.openConnection(dataFile.openConnection());
+			 ByteArrayOutputStream os = new ByteArrayOutputStream();
+			 int b;
+			 while ((b = is.read()) != -1)
+			   os.write(b);
+			 recordSize = os.size();
+		  }
 		}
-
 		createFieldMap();
 	}
 
