@@ -4,9 +4,8 @@
 name: Maven Build
 
 on:
-  push:
-    branches:
-    - master
+   schedule:
+      - cron: '0 7 * * *'
 
 jobs:
   build:
