@@ -1,5 +1,16 @@
 # Change Log
 
+## [v1.6.0](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.6.0) (2020-04-17)
+[Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.5.0...v1.6.0)
+
+**Implemented enhancements:**
+
+- Upgrade PDS4 Information Model for Build 10.1 [\#22](https://github.com/NASA-PDS-Incubator/pds4-jparser/issues/22)
+
+**Merged pull requests:**
+
+- Update to check number of records specified in label w/ the records in the table [\#23](https://github.com/NASA-PDS-Incubator/pds4-jparser/pull/23) ([hhlee445](https://github.com/hhlee445))
+
 ## [v1.5.0](https://github.com/NASA-PDS-Incubator/pds4-jparser/tree/v1.5.0) (2020-03-26)
 [Full Changelog](https://github.com/NASA-PDS-Incubator/pds4-jparser/compare/v1.4.2...v1.5.0)
 
