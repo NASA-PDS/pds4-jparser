@@ -1,6 +1,16 @@
 # Change Log
 
-## [v1.6.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.6.0) (2020-04-17)
+## [v1.7.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.0) (2020-05-08)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.7.0-SNAPSHOT...v1.7.0)
+
+**Merged pull requests:**
+
+- Fix for large performance degradation on products with many tables [\#24](https://github.com/NASA-PDS/pds4-jparser/pull/24) ([hhlee445](https://github.com/hhlee445))
+
+## [1.7.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.7.0-SNAPSHOT) (2020-04-18)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.6.0...1.7.0-SNAPSHOT)
+
+## [v1.6.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.6.0) (2020-04-18)
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.5.0...v1.6.0)
 
 **Implemented enhancements:**
