@@ -10,7 +10,7 @@ Current software requires:
 
 # Documentation
 The documentation including release notes, installation and operation of the 
-software should be online at https://nasa-pds-incubator.github.io/pds4-jparser/. If it is not 
+software should be online at https://NASA-PDS.github.io/pds4-jparser/. If it is not 
 accessible, you can execute the "mvn site:run" command and view the 
 documentation locally at http://localhost:8080.
 
@@ -128,7 +128,7 @@ git push -u origin master
 ```
 
 ## Complete Release in Github
-Currently the process to create more formal release notes and attach Assets is done manually through the [Github UI](https://github.com/NASA-PDS-Incubator/pds4-jparser/releases/new) but should eventually be automated via script.
+Currently the process to create more formal release notes and attach Assets is done manually through the [Github UI](https://github.com/NASA-PDS/pds4-jparser/releases/new) but should eventually be automated via script.
 
 # Snapshot Release
 1. Checkout the master branch.
