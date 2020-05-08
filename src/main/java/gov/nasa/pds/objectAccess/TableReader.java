@@ -45,9 +45,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.net.URLConnection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +71,7 @@ public class TableReader {
 	private CSVReader csvReader = null;
 	private List<String[]> delimitedRecordList;
 	private BufferedReader bufferedReader = null;
-	private int recordSize = 0;
+	private long recordSize = 0;
 
 	public TableReader(Object table, File dataFile) throws Exception {
 	  this(table, dataFile.toURI().toURL());
@@ -112,7 +114,6 @@ public class TableReader {
 			LOGGER.error("The table offset cannot be null.");
 			throw ex;
 		}
-
 		if (adapter instanceof TableDelimitedAdapter) {
 		  TableDelimitedAdapter tda = (TableDelimitedAdapter) adapter;
 		  InputStream is = Utility.openConnection(dataFile.openConnection());
@@ -121,27 +122,13 @@ public class TableReader {
 			accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
 			csvReader = new CSVReader(bufferedReader, tda.getFieldDelimiter());
 			delimitedRecordList = csvReader.readAll();
-			recordSize = delimitedRecordList.size();
 		} else {
 		  if (readEntireFile) {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());
+		    
 		  } else {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength(),
 			    adapter.getRecordCount(), checkSize);
-		  }
-		  if (adapter instanceof TableCharacterAdapter) {
-		     InputStream is = Utility.openConnection(dataFile.openConnection());
-		     is.skip(offset);
-			 bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
-		     recordSize = getNumberOfLines(bufferedReader);
-		  }
-		  else {
-			 InputStream is = Utility.openConnection(dataFile.openConnection());
-			 ByteArrayOutputStream os = new ByteArrayOutputStream();
-			 int b;
-			 while ((b = is.read()) != -1)
-			   os.write(b);
-			 recordSize = os.size();
 		  }
 		}
 		createFieldMap();
@@ -244,18 +231,6 @@ public class TableReader {
 	}
 	
 	/**
-	 * 
-	 * @return the number of lines in the file.
-	 */
-	private int getNumberOfLines(BufferedReader reader) throws IOException {
-	  int numLines = 0;
-	  while (reader.readLine()!=null) {
-         numLines++;
-      }
-	  return numLines;
-	}
-	
-	/**
 	 * Sets the current row.
 	 * 
 	 * @param row The row to set.
@@ -279,7 +254,35 @@ public class TableReader {
 	/**
 	 * @return the size of record (i.e. number of lines)
 	 */
-	public int getRecordSize() {
-	  return this.recordSize;
+	public long getRecordSize(URL dataFile, Object table) throws Exception {
+		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
+		InputStream is = Utility.openConnection(dataFile.openConnection());
+		try {
+			offset = adapter.getOffset();
+		} catch (NullPointerException ex) {
+			LOGGER.error("The table offset cannot be null.");
+			throw ex;
+		}
+		if (adapter instanceof TableDelimitedAdapter) {
+			this.recordSize = delimitedRecordList.size();
+		} else {
+			is.skip(offset);
+			bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
+			if (adapter instanceof TableCharacterAdapter) {
+				int numLines = 0;
+				while (bufferedReader.readLine()!=null) {
+					numLines++;
+				}
+				this.recordSize = numLines;
+			}
+			else {
+				this.recordSize = is.available();	
+			}
+		}	
+		return this.recordSize;
+	}
+	
+	public long getOffset() {
+		return this.offset;
 	}
 }
