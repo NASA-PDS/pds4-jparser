@@ -34,6 +34,7 @@ import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.TableRecord;
 import gov.nasa.pds.objectAccess.table.AdapterFactory;
 import gov.nasa.pds.objectAccess.table.TableAdapter;
+import gov.nasa.pds.objectAccess.table.TableBinaryAdapter;
 import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
 import gov.nasa.pds.objectAccess.table.TableCharacterAdapter;
 import gov.nasa.pds.objectAccess.utility.Utility;
@@ -266,6 +267,9 @@ public class TableReader {
 		if (adapter instanceof TableDelimitedAdapter) {
 			this.recordSize = delimitedRecordList.size();
 		} else {
+			if (adapter instanceof TableBinaryAdapter)
+				offset = 0;
+			
 			is.skip(offset);
 			bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
 			if (adapter instanceof TableCharacterAdapter) {
