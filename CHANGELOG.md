@@ -1,5 +1,15 @@
 # Change Log
 
+## [v1.7.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.1) (2020-05-16)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.8.0-SNAPSHOT...v1.7.1)
+
+**Merged pull requests:**
+
+- Fix for Table\_Binary record size \(NASA-PDS/validate\#220\) [\#25](https://github.com/NASA-PDS/pds4-jparser/pull/25) ([hhlee445](https://github.com/hhlee445))
+
+## [1.8.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.8.0-SNAPSHOT) (2020-05-08)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.7.0...1.8.0-SNAPSHOT)
+
 ## [v1.7.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.0) (2020-05-08)
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.7.0-SNAPSHOT...v1.7.0)
 
