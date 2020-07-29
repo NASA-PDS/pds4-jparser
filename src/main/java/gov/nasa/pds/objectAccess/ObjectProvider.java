@@ -133,6 +133,8 @@ public interface ObjectProvider {
 	
 	public List<Object> getTableObjects(FileAreaAncillary anciilaryFileArea);
 	
+	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental);
+	
 	public List<Object> getTableObjects(FileArea fileArea);
 
 	public List<Object> getTablesAndImages(FileAreaObservational observationalFileArea);
@@ -140,6 +142,20 @@ public interface ObjectProvider {
 	public List<Object> getTablesAndImages(FileAreaBrowse browseFileArea);
 	  
 	public List<Object> getTablesAndImages(FileArea fileArea);
+	
+	/**
+	 * Returns a list of Header objects
+	 * 
+	 * @param observationalFileArea
+	 * @return a list of Header objects
+	 */
+	public List<Object> getHeaderObjects(FileAreaObservational observationalFileArea);
+
+	public List<Object> getHeaderObjects(FileAreaBrowse browseFileArea);
+	
+	public List<Object> getHeaderObjects(FileAreaAncillary anciilaryFileArea);
+	
+	public List<Object> getHeaderObjects(FileArea fileArea);
 	
 	/**
 	 * Returns a list of TableCharacter objects given an observation file area object.
@@ -223,15 +239,7 @@ public interface ObjectProvider {
 	 * @return list of FieldBinary and GroupFieldBinary objects
 	 */
 	List<Object> getFieldBinaryAndGroupFieldBinaries(TableBinary table);
-
-	/**
-	 * Returns a list of table objects.
-	 *
-	 * @param observationalFileAreaSupplemental
-	 * @return list of observationalFileAreaSupplemental objects
-	 */
-	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental);
-
+	
 	/**
 	 * Gets an instance of ProductObservational.
 	 *

@@ -54,6 +54,7 @@ public class ByteWiseFileAccessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ByteWiseFileAccessor.class);
 	private int recordLength;
 	private ByteBuffer buffer = null;
+	private long fileContentSize;
 
 	 /**
    * Constructs a <code>ByteWiseFileAccessor</code> object
@@ -112,14 +113,15 @@ public class ByteWiseFileAccessor {
 		  conn = url.openConnection();
 	    is = Utility.openConnection(conn);
 	    int size = length * records;
+    	this.fileContentSize = conn.getContentLengthLong();
 	    if (checkSize) {
-  	    if (conn.getContentLengthLong() < offset + size) {
-  	      throw new IllegalArgumentException(
-  	        "The file '" + url.toString()
-  	        + "' is shorter than the end of the table specified in the label ("
-  	        + conn.getContentLength() + " < " + (offset+size) + ")"
-  	      );
-  	    }
+	    	if (this.fileContentSize < offset + size) {
+	    		throw new IllegalArgumentException(
+	    				"The file '" + url.toString()
+	    				+ "' is shorter than the end of the table specified in the label ("
+	    				+ this.fileContentSize + " < " + (offset+size) + ")"
+	    				);
+	    	}
 	    }
 	    is.skip(offset);
 	    channel = Channels.newChannel(is);
@@ -237,4 +239,8 @@ public class ByteWiseFileAccessor {
   public boolean hasRemaining() {
 	  return buffer.hasRemaining();
 	}
+  
+  public long getFileContentSize() {
+	  return this.fileContentSize;
+  }
 }
