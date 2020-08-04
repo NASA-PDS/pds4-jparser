@@ -46,6 +46,7 @@ import gov.nasa.arc.pds.xml.generated.FileAreaObservationalSupplemental;
 import gov.nasa.arc.pds.xml.generated.FileAreaSIPDeepArchive;
 import gov.nasa.arc.pds.xml.generated.FileAreaTransferManifest;
 import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
+import gov.nasa.arc.pds.xml.generated.Header;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
@@ -348,6 +349,66 @@ public class ObjectAccess implements ObjectProvider {
     }
     return list;	  
 	}
+	
+	public List<Object> getHeaderObjects(FileAreaAncillary anciilaryFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<Object>();
+    for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray2Ds()) {
+      clazz = obj.getClass();
+      if (clazz.equals(Header.class)) {
+        list.add(obj);
+      }
+    }
+    return list;	  
+	}
+	
+	public List<Object> getHeaderObjects(FileAreaObservational observationalFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<Object>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(Header.class)) {
+        list.add(obj);
+      }
+    }
+    return list;	  
+	}
+	
+	public List<Object> getHeaderObjects(FileAreaBrowse browseFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<Object>();
+    for (Object obj : browseFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(Header.class)) {
+        list.add(obj);
+      }
+    }
+    return list;	  
+	}
+	
+	public List<Object> getHeaderObjects(FileArea fileArea) {
+		List<Object> list = new ArrayList<Object>();
+		if (fileArea instanceof FileAreaObservational) {
+			list.addAll(getHeaderObjects((FileAreaObservational) fileArea));
+		} 
+		/*else if (fileArea instanceof FileAreaInventory) {
+		    list.add(((FileAreaInventory) fileArea).getInventory());
+		  } else if (fileArea instanceof FileAreaSIPDeepArchive) {
+		    list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive());
+		  } else if (fileArea instanceof FileAreaTransferManifest) {
+		    list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
+		  } */
+		else if (fileArea instanceof FileAreaBrowse) {
+			list.addAll(getHeaderObjects((FileAreaBrowse) fileArea));
+		} else if (fileArea instanceof FileAreaAncillary) {
+			list.addAll(getHeaderObjects((FileAreaAncillary) fileArea));
+		}
+		// FileAreaObservationalSupplemental
+		// FileAreaMetadata.java
+		// FileAreaUpdate
+		// 
+		return list;
+	}
 
 	@Override
 	public List<Object> getTableObjects(FileAreaObservational observationalFileArea) {
@@ -393,6 +454,21 @@ public class ObjectAccess implements ObjectProvider {
     }
     return list;	  
 	}
+	
+	@Override
+	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental) {
+		Class<?> clazz;
+		ArrayList<Object> list = new ArrayList<Object>();
+		for (Object obj : observationalFileAreaSupplemental.getDataObjects()) {
+			clazz = obj.getClass();
+			if (clazz.equals(TableCharacter.class)
+					|| clazz.equals(TableBinary.class)
+					|| clazz.equals(TableDelimited.class)) {
+				list.add(obj);
+			}
+		}
+		return list;
+	}
 
 	@Override
 	public List<Object> getTableObjects(FileArea fileArea) {
@@ -409,7 +485,12 @@ public class ObjectAccess implements ObjectProvider {
 	    list.addAll(getTableObjects((FileAreaBrowse) fileArea));
 	  } else if (fileArea instanceof FileAreaAncillary) {
 		list.addAll(getTableObjects((FileAreaAncillary) fileArea));
+	  } else if (fileArea instanceof FileAreaObservationalSupplemental) {
+		list.add(getTableObjects((FileAreaObservationalSupplemental) fileArea));
 	  }
+	  // how to get these???
+	  // FileAreaMetadata
+	  // FileAreaUpdate
 	  return list;
 	}
 	
@@ -554,21 +635,6 @@ public class ObjectAccess implements ObjectProvider {
 		ArrayList<Object> list = new ArrayList<Object>();
 		for (Object obj : table.getRecordBinary().getFieldBinariesAndGroupFieldBinaries()) {
 				list.add(obj);
-		}
-		return list;
-	}
-
-	@Override
-	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental) {
-		Class<?> clazz;
-		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : observationalFileAreaSupplemental.getDataObjects()) {
-			clazz = obj.getClass();
-			if (clazz.equals(TableCharacter.class)
-					|| clazz.equals(TableBinary.class)
-					|| clazz.equals(TableDelimited.class)) {
-				list.add(obj);
-			}
 		}
 		return list;
 	}

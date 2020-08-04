@@ -123,10 +123,9 @@ public class TableReader {
 			accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
 			csvReader = new CSVReader(bufferedReader, tda.getFieldDelimiter());
 			delimitedRecordList = csvReader.readAll();
-		} else {
+		} else {  // TableCharacterAdapter or TableBinaryAdapter
 		  if (readEntireFile) {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());
-		    
 		  } else {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength(),
 			    adapter.getRecordCount(), checkSize);
@@ -275,7 +274,7 @@ public class TableReader {
 			if (adapter instanceof TableCharacterAdapter) {
 				int numLines = 0;
 				while (bufferedReader.readLine()!=null) {
-					numLines++;
+					++numLines;
 				}
 				this.recordSize = numLines;
 			}
