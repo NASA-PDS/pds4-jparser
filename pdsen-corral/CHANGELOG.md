@@ -6,6 +6,7 @@
 
 **Closed issues:**
 
+- \[SECURITY\] Update string comparisons to use .equals instead of == [\#29](https://github.com/NASA-PDS/pds4-jparser/issues/29)
 - \[SECURITY\] Update constants to use proper types [\#28](https://github.com/NASA-PDS/pds4-jparser/issues/28)
 
 ## [v1.8.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.8.1) (2020-08-04)
