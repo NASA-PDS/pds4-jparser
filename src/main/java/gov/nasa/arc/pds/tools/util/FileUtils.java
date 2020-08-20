@@ -283,7 +283,7 @@ public class FileUtils {
 
 		// if directory or doesn't exist and can't tell if directory, return
 		// file
-		if (file.isDirectory() || getExtension(file) == "") { //$NON-NLS-1$
+		if (file.isDirectory() || getExtension(file).equals("")) { //$NON-NLS-1$
 			return file;
 		}
 

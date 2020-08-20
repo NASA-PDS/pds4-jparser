@@ -34,7 +34,7 @@ public class FileMirror implements Serializable, BaseContainerInterface {
 		this.name = file.getName();
 		this.isDirectory = file.isDirectory();
 		this.relativePath = FileUtils.getRelativePath(root, file);
-		if (this.relativePath != "") { //$NON-NLS-1$
+		if (! this.relativePath.equals("")) { //$NON-NLS-1$
 			this.parent = FileUtils.getRelativePath(root, file.getParentFile());
 		} else {
 			this.parent = null;
