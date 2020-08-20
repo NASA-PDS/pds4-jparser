@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased](https://github.com/NASA-PDS/pds4-jparser/tree/HEAD)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.1...HEAD)
+
+**Closed issues:**
+
+- \[SECURITY\] Update constants to use proper types [\#28](https://github.com/NASA-PDS/pds4-jparser/issues/28)
+
 ## [v1.8.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.8.1) (2020-08-04)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0-SNAPSHOT...v1.8.1)
