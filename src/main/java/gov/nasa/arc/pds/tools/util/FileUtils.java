@@ -30,7 +30,7 @@ public class FileUtils {
 	/**
 	 * The number of bytes in a kilobyte.
 	 */
-	public static final long ONE_KB = 1024;
+	public static final long ONE_KB = Long.valueOf(1024);
 
 	/**
 	 * The number of bytes in a megabyte.
@@ -42,9 +42,9 @@ public class FileUtils {
 	 */
 	public static final long ONE_GB = ONE_KB * ONE_MB;
 
-	final static double ONE_TB = 1024 * ONE_GB;
+	public static final long ONE_TB = ONE_KB * ONE_GB;
 
-	final static double ONE_PB = 1024 * ONE_TB;
+	public static final long ONE_PB = ONE_KB * ONE_TB;
 
 	public final static String OPPOSITE_SEP_CHAR = File.separator.equals("/") ? "\\\\" //$NON-NLS-1$ //$NON-NLS-2$
 			: "/"; //$NON-NLS-1$
