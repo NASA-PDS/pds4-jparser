@@ -1,8 +1,12 @@
 # Changelog
 
-## [Unreleased](https://github.com/NASA-PDS/pds4-jparser/tree/HEAD)
+## [1.10.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.10.0-SNAPSHOT) (2020-09-09)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.1...HEAD)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0...1.10.0-SNAPSHOT)
+
+## [1.9.0](https://github.com/NASA-PDS/pds4-jparser/tree/1.9.0) (2020-09-09)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.1...1.9.0)
 
 **Closed issues:**
 
