@@ -1,110 +1,116 @@
-# Change Log
+# Changelog
+
+## [1.10.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.10.0-SNAPSHOT) (2020-09-09)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0...1.10.0-SNAPSHOT)
+
+## [1.9.0](https://github.com/NASA-PDS/pds4-jparser/tree/1.9.0) (2020-09-09)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.1...1.9.0)
+
+**Other closed issues:**
+
+- \[SECURITY\] Update string comparisons to use .equals instead of == [\#29](https://github.com/NASA-PDS/pds4-jparser/issues/29) [[low](https://github.com/NASA-PDS/pds4-jparser/labels/low)]
+- \[SECURITY\] Update constants to use proper types [\#28](https://github.com/NASA-PDS/pds4-jparser/issues/28) [[low](https://github.com/NASA-PDS/pds4-jparser/labels/low)]
+
+## [v1.8.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.8.1) (2020-08-04)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0-SNAPSHOT...v1.8.1)
+
+## [1.9.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.9.0-SNAPSHOT) (2020-05-16)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.0...1.9.0-SNAPSHOT)
+
+## [v1.8.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.8.0) (2020-05-16)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.7.1...v1.8.0)
 
 ## [v1.7.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.1) (2020-05-16)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.8.0-SNAPSHOT...v1.7.1)
 
-**Merged pull requests:**
-
-- Fix for Table\_Binary record size \(NASA-PDS/validate\#220\) [\#25](https://github.com/NASA-PDS/pds4-jparser/pull/25) ([hhlee445](https://github.com/hhlee445))
-
 ## [1.8.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.8.0-SNAPSHOT) (2020-05-08)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.7.0...1.8.0-SNAPSHOT)
 
 ## [v1.7.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.0) (2020-05-08)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.7.0-SNAPSHOT...v1.7.0)
 
-**Merged pull requests:**
-
-- Fix for large performance degradation on products with many tables [\#24](https://github.com/NASA-PDS/pds4-jparser/pull/24) ([hhlee445](https://github.com/hhlee445))
-
 ## [1.7.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.7.0-SNAPSHOT) (2020-04-18)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.6.0...1.7.0-SNAPSHOT)
 
 ## [v1.6.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.6.0) (2020-04-18)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.5.0...v1.6.0)
 
-**Implemented enhancements:**
+**Other closed issues:**
 
 - Upgrade PDS4 Information Model for Build 10.1 [\#22](https://github.com/NASA-PDS/pds4-jparser/issues/22)
 
-**Merged pull requests:**
-
-- Update to check number of records specified in label w/ the records in the table [\#23](https://github.com/NASA-PDS/pds4-jparser/pull/23) ([hhlee445](https://github.com/hhlee445))
-
 ## [v1.5.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.5.0) (2020-03-26)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.4.2...v1.5.0)
 
-**Merged pull requests:**
-
-- Bump commons-compress from 1.16 to 1.19 [\#20](https://github.com/NASA-PDS/pds4-jparser/pull/20) ([dependabot[bot]](https://github.com/apps/dependabot))
-
 ## [v1.4.2](https://github.com/NASA-PDS/pds4-jparser/tree/v1.4.2) (2020-02-18)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.4.1...v1.4.2)
 
 ## [v1.4.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.4.1) (2020-02-18)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.4.0...v1.4.1)
 
 ## [v1.4.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.4.0) (2020-02-18)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.3.2...v1.4.0)
 
-**Closed issues:**
+**Other closed issues:**
 
 - Update POM to use PDS Parent POM [\#17](https://github.com/NASA-PDS/pds4-jparser/issues/17)
 
-**Merged pull requests:**
-
-- Validate Table\_Character groups and length with the group\_length [\#19](https://github.com/NASA-PDS/pds4-jparser/pull/19) ([hhlee445](https://github.com/hhlee445))
-
 ## [v1.3.2](https://github.com/NASA-PDS/pds4-jparser/tree/v1.3.2) (2019-10-19)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.3.1...v1.3.2)
 
 ## [v1.3.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.3.1) (2019-10-19)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.3.0...v1.3.1)
 
 ## [v1.3.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.3.0) (2019-10-11)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.2.0...v1.3.0)
 
-**Implemented enhancements:**
+**Other closed issues:**
 
 - Ingest IM 1D00 operational release for Build 10a [\#12](https://github.com/NASA-PDS/pds4-jparser/issues/12)
 
 ## [v1.2.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.2.0) (2019-09-14)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.0.1...v1.2.0)
 
-**Closed issues:**
+**Other closed issues:**
 
 - Ingest IM 1D00 release candidate for Build 10a [\#11](https://github.com/NASA-PDS/pds4-jparser/issues/11)
 - Update Maven docs to refer to Github release assets [\#10](https://github.com/NASA-PDS/pds4-jparser/issues/10)
 
-**Merged pull requests:**
-
-- Ingest IM 1D00 release candidate [\#13](https://github.com/NASA-PDS/pds4-jparser/pull/13) ([jordanpadams](https://github.com/jordanpadams))
-- Merge dev into master [\#9](https://github.com/NASA-PDS/pds4-jparser/pull/9) ([jordanpadams](https://github.com/jordanpadams))
-
 ## [v1.0.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.0.1) (2019-06-29)
+
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.0.0...v1.0.1)
 
-**Closed issues:**
+**Other closed issues:**
 
 - Prepare repository for Maven Central JAR deployment [\#6](https://github.com/NASA-PDS/pds4-jparser/issues/6)
 
-**Merged pull requests:**
-
-- Release v1.0.1 [\#8](https://github.com/NASA-PDS/pds4-jparser/pull/8) ([jordanpadams](https://github.com/jordanpadams))
-- Issue \#6: POM and README updates for Maven deployment [\#7](https://github.com/NASA-PDS/pds4-jparser/pull/7) ([jordanpadams](https://github.com/jordanpadams))
-
 ## [v1.0.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.0.0) (2019-06-27)
-**Closed issues:**
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/94f50b01a34611730c57d48e0029650627c65825...v1.0.0)
+
+**Other closed issues:**
 
 - Add classes from pds-utils dependency [\#2](https://github.com/NASA-PDS/pds4-jparser/issues/2)
 - Update repo with licensing and complete open source [\#1](https://github.com/NASA-PDS/pds4-jparser/issues/1)
 
-**Merged pull requests:**
-
-- Prep for v1.0.0 [\#5](https://github.com/NASA-PDS/pds4-jparser/pull/5) ([jordanpadams](https://github.com/jordanpadams))
-- Issue \#2: Update pom to include all necessary dependencies [\#4](https://github.com/NASA-PDS/pds4-jparser/pull/4) ([jordanpadams](https://github.com/jordanpadams))
-- Issue \#2: Add pds-utils packages and classes [\#3](https://github.com/NASA-PDS/pds4-jparser/pull/3) ([jordanpadams](https://github.com/jordanpadams))
 
 
-
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+\* *This Changelog was automatically generated       by [github_changelog_generator]      (https://github.com/github-changelog-generator/github-changelog-generator)*
