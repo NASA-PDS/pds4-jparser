@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.10.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.10.0-SNAPSHOT) (2020-09-09)
+## [1.10.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.10.0-SNAPSHOT) (2020-09-17)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0...1.10.0-SNAPSHOT)
 
@@ -15,11 +15,7 @@
 
 ## [v1.8.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.8.1) (2020-08-04)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0-SNAPSHOT...v1.8.1)
-
-## [1.9.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.9.0-SNAPSHOT) (2020-05-16)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.0...1.9.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.0...v1.8.1)
 
 ## [v1.8.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.8.0) (2020-05-16)
 
@@ -27,19 +23,11 @@
 
 ## [v1.7.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.1) (2020-05-16)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.8.0-SNAPSHOT...v1.7.1)
-
-## [1.8.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.8.0-SNAPSHOT) (2020-05-08)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.7.0...1.8.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.7.0...v1.7.1)
 
 ## [v1.7.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.0) (2020-05-08)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.7.0-SNAPSHOT...v1.7.0)
-
-## [1.7.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.7.0-SNAPSHOT) (2020-04-18)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.6.0...1.7.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.6.0...v1.7.0)
 
 ## [v1.6.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.6.0) (2020-04-18)
 
