@@ -45,17 +45,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.net.URLConnection;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.util.stream.Collectors;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVParser;
 
 /**
  * The <code>TableReader</code> class defines methods for reading table records.
@@ -72,7 +81,9 @@ public class TableReader {
 	private CSVReader csvReader = null;
 	private List<String[]> delimitedRecordList;
 	private BufferedReader bufferedReader = null;
+	private InputStream inputStream = null;
 	private long recordSize = 0;
+	private char delimitedChar = ',';
 
 	public TableReader(Object table, File dataFile) throws Exception {
 	  this(table, dataFile.toURI().toURL());
@@ -117,15 +128,25 @@ public class TableReader {
 		}
 		if (adapter instanceof TableDelimitedAdapter) {
 		  TableDelimitedAdapter tda = (TableDelimitedAdapter) adapter;
-		  InputStream is = Utility.openConnection(dataFile.openConnection());
-			is.skip(offset);
-			bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
-			accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
-			csvReader = new CSVReader(bufferedReader, tda.getFieldDelimiter());
-			delimitedRecordList = csvReader.readAll();
-		} else {  // TableCharacterAdapter or TableBinaryAdapter
+		  this.inputStream = Utility.openConnection(dataFile.openConnection());
+		  this.inputStream.skip(offset);
+		  this.inputStream.mark(0);
+		  bufferedReader = new BufferedReader(new InputStreamReader(this.inputStream, "US-ASCII"));
+		  accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
+		  this.delimitedChar = tda.getFieldDelimiter();
+		  
+		  this.csvReader = new CSVReader(bufferedReader, this.delimitedChar);  
+		} else {		
+			/*
+			if (adapter instanceof TableBinaryAdapter) 
+                System.out.print("\nTableReader.......TableBinaryAdapeter...");
+			else 
+                System.out.print("\nTableReader.......TableCharacterAdapter...");						
+            System.out.println("....adapter.getRecordLength() = " + adapter.getRecordLength() + 
+		        "     adapter.getRecordCount() = " + adapter.getRecordCount() + "      offset = " + offset + "    checkSize = " + checkSize);
+		    */
 		  if (readEntireFile) {
-		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());
+		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());    
 		  } else {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength(),
 			    adapter.getRecordCount(), checkSize);
@@ -133,7 +154,7 @@ public class TableReader {
 		}
 		createFieldMap();
 	}
-
+	
 	public TableAdapter getAdapter() {
 	  return this.adapter;
 	}
@@ -165,7 +186,7 @@ public class TableReader {
 		if (currentRow > adapter.getRecordCount()) {
 			return null;
 		}
-
+		
 		return getTableRecord();
 	}
 	
@@ -179,32 +200,43 @@ public class TableReader {
 	 * @throws IllegalArgumentException if index is greater than the record number
 	 */
 	public TableRecord getRecord(int index) throws IllegalArgumentException, IOException {
-		int recordCount = adapter.getRecordCount();
+		int recordCount = adapter.getRecordCount();		
 		if (index < 1 || index > recordCount) {
 			String msg = "The index is out of range 1 - " + recordCount;
 			LOGGER.error(msg);
 			throw new IllegalArgumentException(msg);
 		}
-
-		currentRow = index;
+		// issue 189  - to handle large delimited file
+		// instread of using the array list, re-position to the line after reset the inputstream
+		if (currentRow>index) {
+			this.inputStream.reset();
+			this.bufferedReader = new BufferedReader(new InputStreamReader(this.inputStream, "US-ASCII"));
+			// skip 'index-1' lines
+			// check this again
+			for (int i = 0; i < (index-1); i++) {
+                this.bufferedReader.readLine();
+            }
+			this.csvReader = new CSVReader(this.bufferedReader, this.delimitedChar);	
+		}
+		currentRow = index;	
 		return getTableRecord();
 	}
 
 	private TableRecord getTableRecord() throws IOException {
-		if (adapter instanceof TableDelimitedAdapter) {
-			String[] recordValue = delimitedRecordList.get(currentRow-1);
-			if (recordValue.length != adapter.getFieldCount()) {
+		if (adapter instanceof TableDelimitedAdapter) {			
+			//String[] recordValue = delimitedRecordList.get(currentRow-1);
+
+			String[] recordValue = this.csvReader.readNext();
+			if (recordValue!=null && (recordValue.length != adapter.getFieldCount())) {
 				throw new IOException("Record " + currentRow + " has wrong number of fields "
 						+ "(expected " + adapter.getFieldCount() + ", got " + recordValue.length + ")"
-				);
+						);
 			}
-
 			if (record != null) {
 				((DelimitedTableRecord) record).setRecordValue(recordValue);
 			} else {
 				record = new DelimitedTableRecord(map, adapter.getFieldCount(), recordValue);
-			}
-
+			} 
 		} else {
 			byte[] recordValue = accessor.readRecordBytes(currentRow, 0, adapter.getRecordLength());
 			if (record != null) {
@@ -213,7 +245,6 @@ public class TableReader {
 				record = new FixedTableRecord(recordValue, map, adapter.getFields());
 			}
 		}
-
 		return record;
 	}
 
@@ -263,8 +294,15 @@ public class TableReader {
 			LOGGER.error("The table offset cannot be null.");
 			throw ex;
 		}
-		if (adapter instanceof TableDelimitedAdapter) {
-			this.recordSize = delimitedRecordList.size();
+		if (adapter instanceof TableDelimitedAdapter) {			
+			// chek this again
+			is.skip(offset);
+			bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
+			int numLines = 0;
+			while (bufferedReader.readLine()!=null) {
+			   ++numLines;
+			}
+			this.recordSize = numLines;
 		} else {
 			if (adapter instanceof TableBinaryAdapter)
 				offset = 0;
@@ -274,14 +312,24 @@ public class TableReader {
 			if (adapter instanceof TableCharacterAdapter) {
 				int numLines = 0;
 				while (bufferedReader.readLine()!=null) {
-					++numLines;
+				   ++numLines;
 				}
 				this.recordSize = numLines;
 			}
 			else {
 				this.recordSize = is.available();	
+			
+				// need to change to get filesize larger than 2gb
+				File aFile = new File(dataFile.toURI());
+				RandomAccessFile raf = new RandomAccessFile(aFile, "r");
+				raf.seek(offset);
+	
+				FileChannel inChannel = raf.getChannel();
+				long fileSize = inChannel.size();
+				this.recordSize = fileSize;
+				raf.close();
 			}
-		}	
+		}			
 		return this.recordSize;
 	}
 	
