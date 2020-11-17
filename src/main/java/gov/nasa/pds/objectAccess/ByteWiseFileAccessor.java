@@ -34,12 +34,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -55,6 +61,13 @@ public class ByteWiseFileAccessor {
 	private int recordLength;
 	private ByteBuffer buffer = null;
 	private long fileContentSize;
+	
+	//https://vanillajava.blogspot.com/2011/12/using-memory-mapped-file-for-huge.html
+	private static final int MAPPING_SIZE = 1 << 30;  
+	private final List<ByteBuffer> mappings = new ArrayList<>();
+	private long curPosition = 0;
+	private long curListIndex = 0;
+	private long totalBytesRead = 0;
 
 	 /**
    * Constructs a <code>ByteWiseFileAccessor</code> object
@@ -105,51 +118,56 @@ public class ByteWiseFileAccessor {
 	 */
   public ByteWiseFileAccessor(URL url, long offset, int length, int records, boolean checkSize)
 	    throws FileNotFoundException, IOException {
-		this.recordLength = length;
-		URLConnection conn = null;
-		InputStream is = null;
-		ReadableByteChannel channel = null;
-		try {
-		  conn = url.openConnection();
-	    is = Utility.openConnection(conn);
-	    int size = length * records;
-    	this.fileContentSize = conn.getContentLengthLong();
-	    if (checkSize) {
-	    	if (this.fileContentSize < offset + size) {
-	    		throw new IllegalArgumentException(
-	    				"The file '" + url.toString()
-	    				+ "' is shorter than the end of the table specified in the label ("
-	    				+ this.fileContentSize + " < " + (offset+size) + ")"
-	    				);
-	    	}
-	    }
-	    is.skip(offset);
-	    channel = Channels.newChannel(is);
-      this.buffer = ByteBuffer.allocate(size);
-      int totalBytesRead = 0;
-      int bytesRead = 0;
-      do {
-        bytesRead = channel.read(this.buffer);
-        totalBytesRead += bytesRead;
-      } while (bytesRead > 0);
-			this.buffer.flip();
-			if (checkSize) {
-  			if (totalBytesRead < size) {
-  			  throw new IllegalArgumentException("Expected to read in " + size
-  			      + " bytes but only " + totalBytesRead + " bytes were read for "
-  			      + url.toString());
-  			}
-			}
-		} catch (IOException ex) {
-			LOGGER.error("I/O error.", ex);
-			throw ex;
-		} finally {
-		  IOUtils.closeQuietly(is);
-		  if (channel != null) {
-		    channel.close();
-		  }
-		}
-	}
+    this.recordLength = length;
+    long lsize = (long)length * (long)records;
+    this.totalBytesRead = 0;
+    int bytesRead = 0;
+    try {
+      //issue_189: handle the buffer size > 2GB to read a huge file
+      File dataFile = new File(url.toURI());
+      RandomAccessFile raf = new RandomAccessFile(dataFile, "r");
+      FileChannel inChannel = raf.getChannel();    
+      long fileSize = this.fileContentSize = inChannel.size();
+      long sizeToRead = lsize;
+      // check this again
+      if (sizeToRead>(fileSize-offset)) 
+      	  sizeToRead = (fileSize-offset);
+      
+      //https://stackoverflow.com/questions/55300976/memory-mapping-huge-files-in-java
+      long tmpSize = sizeToRead;
+      for (long offset2 = 0; offset2 < sizeToRead; offset2 += MAPPING_SIZE) {
+    	long size2 = Math.min(tmpSize, MAPPING_SIZE);
+        mappings.add(inChannel.map(FileChannel.MapMode.READ_ONLY, (offset2+offset), size2));
+        tmpSize -= size2;
+      }   
+      raf.close();
+      for (int i=0; i<mappings.size(); i++) {
+          bytesRead = mappings.get(i).capacity();
+          totalBytesRead += bytesRead;
+      }
+      this.curPosition = 0;      
+      if (checkSize) {
+         if (totalBytesRead < lsize) {
+    	    throw new IllegalArgumentException("Expected to read in " + lsize
+    			      + " bytes but only " + totalBytesRead + " bytes were read for "
+    			      + url.toString());
+    	}
+      }
+    } catch (java.nio.channels.NonWritableChannelException ex) {
+       // don't do anything
+       //ex.printStackTrace();
+    } catch (FileNotFoundException ex) {
+    	LOGGER.error("The file '" + url.toString() + "' is not found. ", ex);
+    	throw ex;
+    } catch (IOException ex) {
+  	  LOGGER.error("I/O error.", ex);
+  	  throw ex;
+  	} catch (java.net.URISyntaxException ex) {
+  	  LOGGER.error("URI Syntax Error.", ex);
+  	  //ex.printStackTrace();
+      //throw ex;
+  	}
+  }
 
 	/**
 	 * Constructor.
@@ -159,31 +177,37 @@ public class ByteWiseFileAccessor {
 	 * @throws IOException If an I/O error occurs.
 	 */
   public ByteWiseFileAccessor(URL url, long offset, int length) throws IOException {
-    this.recordLength = length;
-    URLConnection conn = null;
-    InputStream is = null;
-    ReadableByteChannel channel = null;
-    try {
-      conn = url.openConnection();
-      is = Utility.openConnection(conn);
-      long size = conn.getContentLengthLong() - offset;
-      is.skip(offset);
-      channel = Channels.newChannel(is);
-      this.buffer = ByteBuffer.allocate(Long.valueOf(size).intValue());
-      int bytesRead = 0;
-      do {
-        bytesRead = channel.read(this.buffer);
-      } while (bytesRead > 0);
-      this.buffer.flip();
-    } catch (IOException ex) {
-      LOGGER.error("I/O error.", ex);
-      throw ex;
-    } finally {
-      IOUtils.closeQuietly(is);
-      if (channel != null) {
-        channel.close();
-      }
-    }	  
+	  this.recordLength = length;
+	  int bytesRead = 0;
+	  this.totalBytesRead = 0;
+	  try {
+		  File dataFile = new File(url.toURI());
+		  RandomAccessFile raf = new RandomAccessFile(dataFile, "r");
+		  FileChannel inChannel = raf.getChannel();    
+		  long fileSize = this.fileContentSize = inChannel.size();
+		  long size = (fileSize - offset);		  
+		  long tmpSize = size;
+		  for (long offset2 = 0; offset2 < size; offset2 += MAPPING_SIZE) {
+			  long size2 = Math.min(tmpSize, MAPPING_SIZE);
+			  mappings.add(inChannel.map(FileChannel.MapMode.READ_ONLY, (offset2+offset), size2));
+			  tmpSize -= size2;
+		  }   
+		  raf.close();
+		  for (int i=0; i<mappings.size(); i++) {
+			 //Get the size based on content size of file
+			 bytesRead = mappings.get(i).capacity();
+			 totalBytesRead += bytesRead;
+		  }
+		  this.curPosition = 0;
+	  } catch (java.nio.channels.NonWritableChannelException ex) {
+		  // don't do anything
+		  //ex.printStackTrace();
+	  } catch (IOException ex) {
+		  LOGGER.error("I/O error.", ex);
+		  throw ex;
+	  } catch (java.net.URISyntaxException ex) {
+		  LOGGER.error("URI Syntax Error.", ex);
+	  }
 	}
 	
 	/**
@@ -195,16 +219,27 @@ public class ByteWiseFileAccessor {
 	 * @return an array of bytes
 	 */
   public byte[] readRecordBytes(int recordNum, int offset, int length) {
-		assert recordNum > 0;
+	  assert recordNum > 0;
+	  // The offset within the mapped buffer
+	  long fileOffset = (long)(recordNum-1)*this.recordLength;
+	  byte[] buf = new byte[this.recordLength];
+	  // CHECK this again with big file
+	  int mapN = (int) (fileOffset / MAPPING_SIZE);
+	  int offN = (int) (fileOffset % MAPPING_SIZE);
 
-		// The offset within the mapped buffer
-		int fileOffset = (recordNum - 1) * this.recordLength;
-		byte[] buf = new byte[this.recordLength];
-		buffer.position(fileOffset);
-		buffer.get(buf);
+	  if (fileOffset<0 || mapN<0) {
+		  LOGGER.error("Negative fileOffset or index of mappings list.");
+		  return null;
+	  }
 
-		return Arrays.copyOfRange(buf, offset, (offset + length));
-	}
+	  ByteBuffer aBuf = mappings.get(mapN);
+	  aBuf.position(offN);   // need to check this
+	  aBuf.get(buf);
+
+	  // need to check the offset of the bytes?
+	  byte[] bytesToReturn = Arrays.copyOfRange(buf, offset, (offset + length));
+	  return bytesToReturn;
+  }
 	
 	/**
 	 * Reads a byte from the buffer.
@@ -212,7 +247,10 @@ public class ByteWiseFileAccessor {
 	 * @return A byte.
 	 */
   public byte readByte() {
-	  return buffer.get();
+	  int mapN = (int)(this.curPosition / MAPPING_SIZE);
+	  int offN = (int)(this.curPosition % MAPPING_SIZE);
+	  this.curPosition++;
+	  return mappings.get(mapN).get(offN);
 	}
 	
 	/**
@@ -220,7 +258,8 @@ public class ByteWiseFileAccessor {
 	 * 
 	 */
   public void mark() {
-	  buffer.mark();
+	  int mapN = (int)(this.curPosition/MAPPING_SIZE);
+	  mappings.get(mapN).mark();
 	}
 	
 	/**
@@ -228,7 +267,9 @@ public class ByteWiseFileAccessor {
 	 * 
 	 */
   public void reset() {
-	  buffer.reset();
+	  // reset all buffer??
+	  for (int i=0; i<mappings.size(); i++)
+	    mappings.get(i).reset();
 	}
 	
 	/**
@@ -237,8 +278,15 @@ public class ByteWiseFileAccessor {
 	 * @return 'true' if there are more bytes to be read. 'false' otherwise.
 	 */
   public boolean hasRemaining() {
-	  return buffer.hasRemaining();
+	  if ((this.totalBytesRead-this.curPosition)==0)
+		  return false;
+	  else
+		  return true;
 	}
+  
+  public long getCurrentPosition() {
+	  return this.curPosition;
+  }
   
   public long getFileContentSize() {
 	  return this.fileContentSize;
