@@ -137,14 +137,6 @@ public class TableReader {
 		  
 		  this.csvReader = new CSVReader(bufferedReader, this.delimitedChar);  
 		} else {		
-			/*
-			if (adapter instanceof TableBinaryAdapter) 
-                System.out.print("\nTableReader.......TableBinaryAdapeter...");
-			else 
-                System.out.print("\nTableReader.......TableCharacterAdapter...");						
-            System.out.println("....adapter.getRecordLength() = " + adapter.getRecordLength() + 
-		        "     adapter.getRecordCount() = " + adapter.getRecordCount() + "      offset = " + offset + "    checkSize = " + checkSize);
-		    */
 		  if (readEntireFile) {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());    
 		  } else {
