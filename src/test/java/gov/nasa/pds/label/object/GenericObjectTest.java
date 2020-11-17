@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.Buffer;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
@@ -137,7 +138,7 @@ public class GenericObjectTest {
 	private String readBuffer(SeekableByteChannel ch, int length) throws IOException {
 	  ByteBuffer buf = ByteBuffer.allocate(length);
 	  int bytesRead = ch.read(buf);
-	  buf.flip();
+	  ((Buffer) buf).flip();
 		byte[] b = new byte[length];
 		buf.get(b);
 		try {
