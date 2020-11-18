@@ -73,21 +73,22 @@ jobs:
       run: mvn -B deploy --file pom.xml
       env:
          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-         MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-    - name: Clean previous dev/snapsoht tags
+         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+    - name: Clean previous dev/snapshot tags
       run: |
         git fetch --prune --unshallow --tags
         git tag -l | grep 'SNAPSHOT' | xargs -t -I arg sh -c 'git tag -d arg;git push --delete origin arg;'
     - name: Publish new snapshot release
       run: |
          pip install pds-github-util
-         maven-snapshot-release --token ${{ secrets.GITHUB_TOKEN }}
+         maven-snapshot-release --token ${{ secrets.ADMIN_GITHUB_TOKEN }}
 
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-        branch: ${{ env.GITHUB_REF }}
+        branch: master
+
     - name: Ping pdsen-corral
       run: |
         pip install pds-github-util
