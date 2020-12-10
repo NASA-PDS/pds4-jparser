@@ -139,11 +139,14 @@ public class ByteWiseFileAccessor {
     	long size2 = Math.min(tmpSize, MAPPING_SIZE);
         mappings.add(inChannel.map(FileChannel.MapMode.READ_ONLY, (offset2+offset), size2));
         tmpSize -= size2;
+        LOGGER.debug("ByteWiseFileAccessor: mappings.add: offset2,offset {},{}",offset2,offset);
+        LOGGER.debug("ByteWiseFileAccessor: mappings.add: size2,mappings.size {},{}",size2,mappings.size());
       }   
       raf.close();
       for (int i=0; i<mappings.size(); i++) {
           bytesRead = mappings.get(i).capacity();
           totalBytesRead += bytesRead;
+          LOGGER.debug("ByteWiseFileAccessor: i,bytesRead,totalBytesRead " + Integer.toString(i) + "," + Long.toString(bytesRead) + "," + Long.toString(totalBytesRead));
       }
       this.curPosition = 0;      
       if (checkSize) {
@@ -153,6 +156,11 @@ public class ByteWiseFileAccessor {
     			      + url.toString());
     	}
       }
+
+      LOGGER.debug("ByteWiseFileAccessor: url {}",url);
+      LOGGER.debug("ByteWiseFileAccessor: fileSize,sizeToRead {},{}",url,sizeToRead);
+      LOGGER.debug("ByteWiseFileAccessor: totalBytesRead {}",totalBytesRead);
+      LOGGER.debug("ByteWiseFileAccessor: mappings.size() {}",mappings.size());
     } catch (java.nio.channels.NonWritableChannelException ex) {
        // don't do anything
        //ex.printStackTrace();
@@ -234,10 +242,66 @@ public class ByteWiseFileAccessor {
 
 	  ByteBuffer aBuf = mappings.get(mapN);
 	  aBuf.position(offN);   // need to check this
-	  aBuf.get(buf);
+
+      // It is possible to read pass the buffer in variable 'buf'.  Perform a check before the get() function.
+      // If not enough bytes left in the buffer, that means that the record we are reading is spanning the boundary of two
+      // mappings.  So that means the first part of the record is in mappings.get(mapN) and 2nd part of the record is in
+      // mappings.get(mapN+1).
+      //
+      // The value of MAPPING_SIZE on linux is 1073741824
+
+      LOGGER.debug("readRecordBytes:aBuf.remaining(),buf.length {},{}",aBuf.remaining(),buf.length);
+      if (aBuf.remaining() >= buf.length) {
+          aBuf.get(buf);
+      } else {
+          LOGGER.debug("readRecordBytes:recordNum,buf.length {},{}",recordNum,buf.length);
+          LOGGER.debug("readRecordBytes: aBuf.remaining(),aBuf.hasRemaining() {},{}",aBuf.remaining(),aBuf.hasRemaining());
+          LOGGER.debug("readRecordBytes: aBuf.isDirect() {}",aBuf.isDirect());
+          LOGGER.debug("readRecordBytes: length,fileOffset {},{}",length,fileOffset);
+          LOGGER.debug("readRecordBytes: mapN,offN {},{}",mapN,offN);
+          LOGGER.debug("readRecordBytes: this.recordLength {}",this.recordLength);
+          LOGGER.debug("Record number " + Integer.toString(recordNum) + " spanning over two mappings.  Will perform an extra read.");
+
+          // Get the first part of the record from aBuf.remaining() bytes and 
+          // get the second part of the record in mappings.get(mapN+1).
+	      byte[] buf_portion_1 = new byte[aBuf.remaining()];
+          aBuf.get(buf_portion_1);
+          aBuf = mappings.get(mapN+1);                                             // Get the next mapping.
+          aBuf.position(0);                                                        // Point the position to the beginning.
+          byte[] buf_portion_2 = new byte[this.recordLength-buf_portion_1.length]; // The second portion size is the difference.
+          aBuf.get(buf_portion_2);                                                 // Get the 2nd portion of record from next mapping.
+
+          LOGGER.debug("readRecordBytes:buf_portion_1 [{}]",buf_portion_1);
+          LOGGER.debug("readRecordBytes:buf_portion_2 [{}]",buf_portion_2);
+          LOGGER.debug("readRecordBytes:buf_portion_1 + buf_portion_2 [{}][{}]",new String(buf_portion_1),new String(buf_portion_2));
+          LOGGER.debug("readRecordBytes: buf_portion_1.length,buf_portion_2.length {},{}",buf_portion_1.length,buf_portion_2.length);
+          LOGGER.debug("readRecordBytes: this.recordLength {}",this.recordLength);
+
+          // Copy buf_portion_1 and buf_portion_2 to buf so it can be returned.
+          System.arraycopy(buf_portion_1, 0, buf, 0, buf_portion_1.length);
+          System.arraycopy(buf_portion_2, 0, buf, buf_portion_1.length, buf_portion_2.length);
+
+          LOGGER.debug("readRecordBytes: buf [{}]",new String(buf));
+          LOGGER.debug("readRecordBytes: buf.length [{}]",buf.length);
+
+          // Because the original input value of length does not know that the record span over two mappings,
+          // reset it to the default length of the record.
+ 
+          length = this.recordLength;
+      }
 
 	  // need to check the offset of the bytes?
 	  byte[] bytesToReturn = Arrays.copyOfRange(buf, offset, (offset + length));
+
+      LOGGER.debug("readRecordBytes:recordNum,buf.length {},{}",recordNum,buf.length);
+      LOGGER.debug("readRecordBytes: aBuf.remaining(),aBuf.hasRemaining() {},{}",aBuf.remaining(),aBuf.hasRemaining());
+      LOGGER.debug("readRecordBytes: aBuf.isDirect() {}",aBuf.isDirect());
+      LOGGER.debug("readRecordBytes: length,fileOffset {},{}",length,fileOffset);
+      LOGGER.debug("readRecordBytes: mapN,offN {},{}",mapN,offN);
+      LOGGER.debug("readRecordBytes: this.recordLength {}",this.recordLength);
+      LOGGER.debug("readRecordBytes: bytesToReturn.length {}",bytesToReturn.length);
+      LOGGER.debug("readRecordBytes: bytesToReturn {}",new String(bytesToReturn));
+
 	  return bytesToReturn;
   }
 	

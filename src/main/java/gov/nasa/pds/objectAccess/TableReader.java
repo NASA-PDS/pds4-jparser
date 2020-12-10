@@ -215,6 +215,7 @@ public class TableReader {
 	}
 
 	private TableRecord getTableRecord() throws IOException {
+        // DEBUG statements can be time consuming.  Should be uncommented by developer only.
 		if (adapter instanceof TableDelimitedAdapter) {			
 			//String[] recordValue = delimitedRecordList.get(currentRow-1);
 
@@ -230,7 +231,11 @@ public class TableReader {
 				record = new DelimitedTableRecord(map, adapter.getFieldCount(), recordValue);
 			} 
 		} else {
+            //LOGGER.debug("getTableRecord: currentRow,adapter.getRecordLength() {},{}",currentRow,adapter.getRecordLength());
 			byte[] recordValue = accessor.readRecordBytes(currentRow, 0, adapter.getRecordLength());
+            //LOGGER.debug("getTableRecord: recordValue.length,currentRow {},{}",recordValue.length,currentRow);
+            //System.out.println("getTableRecord:early#exit#0001");
+            //System.exit(0);
 			if (record != null) {
 				((FixedTableRecord) record).setRecordValue(recordValue);
 			} else {
