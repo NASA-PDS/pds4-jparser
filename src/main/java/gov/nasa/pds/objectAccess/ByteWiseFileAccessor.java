@@ -64,6 +64,10 @@ public class ByteWiseFileAccessor {
 	
 	//https://vanillajava.blogspot.com/2011/12/using-memory-mapped-file-for-huge.html
 	private static final int MAPPING_SIZE = 1 << 30;  
+	// The below setting is used by developer to split small files into multiple chunks. Do not remove.
+    // Having smaller chunks will force the function handleTooSmallMapping() to be called.
+    // If uncommented, do not run validate on large files as you will run out of memory.
+	//private static final int MAPPING_SIZE = 317;  // TODO: Uncomment by developer only to split small files into multiple chunks.
 	private final List<ByteBuffer> mappings = new ArrayList<>();
 	private long curPosition = 0;
 	private long curListIndex = 0;
@@ -217,7 +221,64 @@ public class ByteWiseFileAccessor {
 		  LOGGER.error("URI Syntax Error.", ex);
 	  }
 	}
-	
+
+    private byte[] handleTooSmallMapping(int recordNum, int offset, int length, ByteBuffer aBuf, int mapN, int offN, long fileOffset, byte[] buf) {
+          // This function handle a special case when the remaining content of a chunk (mapping) is smaller than the requested length to read.
+          // Because large files are splitted into multiple chunks (called mappings), some records may span over two chunks.
+          // If a record span over two chunks, the first part of the record is extracted from the 1st chunk and the
+          // part of the record is extracted from the 2nd chunk.
+          // Special note: buf is the input and output (will be modified)
+
+          LOGGER.debug("handleTooSmallBuffer:recordNum,buf.length {},{}",recordNum,buf.length);
+          LOGGER.debug("handleTooSmallBuffer: aBuf.remaining(),aBuf.hasRemaining() {},{}",aBuf.remaining(),aBuf.hasRemaining());
+          LOGGER.debug("handleTooSmallBuffer: aBuf.isDirect() {}",aBuf.isDirect());
+          LOGGER.debug("handleTooSmallBuffer: length,fileOffset {},{}",length,fileOffset);
+          LOGGER.debug("handleTooSmallBuffer: mapN,offN {},{}",mapN,offN);
+          LOGGER.debug("handleTooSmallBuffer: this.recordLength {}",this.recordLength);
+          LOGGER.debug("handleTooSmallBuffer:Record number " + Integer.toString(recordNum) + " spanning over two mappings.  Will perform an extra read.");
+
+          LOGGER.info("Record number " + Integer.toString(recordNum) + " spanning over two mappings.  Will perform an extra read.");
+
+          //Printout used by developer to debug
+          //System.out.println("handleTooSmallMapping:  mapN+1,this.mappings.size() " + Integer.toString(mapN+1) + "," + Integer.toString(this.mappings.size()));
+          //System.out.println("handleTooSmallMapping:early#exit001");
+          //System.exit(0);
+
+          // Do a sanity check if there are actually another mapping to get.
+          if ((mapN+1) >= this.mappings.size()) {
+              LOGGER.error("Expecting another mapping of file content while reading record " + Integer.toString(recordNum));
+              //System.exit(1);
+	          return(buf);
+          }
+
+          // Get the first part of the record from aBuf.remaining() bytes and 
+          // get the second part of the record in this.mappings.get(mapN+1).
+	      byte[] bufPortion1 = new byte[aBuf.remaining()];
+          aBuf.get(bufPortion1);
+          aBuf = this.mappings.get(mapN+1);                                             // Get the next mapping.
+          aBuf.position(0);                                                        // Point the position to the beginning.
+          byte[] bufPortion2 = new byte[this.recordLength-bufPortion1.length]; // The second portion size is the difference.
+          aBuf.get(bufPortion2);                                                 // Get the 2nd portion of record from next mapping.
+
+          LOGGER.debug("handleTooSmallBuffer:bufPortion1 {}",bufPortion1);
+          LOGGER.debug("handleTooSmallBuffer:bufPortion2 {}",bufPortion2);
+          LOGGER.debug("handleTooSmallBuffer:bufPortion1 + bufPortion2 {}{}",new String(bufPortion1),new String(bufPortion2));
+          LOGGER.debug("handleTooSmallBuffer: bufPortion1.length,bufPortion2.length {},{}",bufPortion1.length,bufPortion2.length);
+          LOGGER.debug("handleTooSmallBuffer: this.recordLength {}",this.recordLength);
+
+          // Copy bufPortion1 and bufPortion2 to buf so it can be returned.
+          System.arraycopy(bufPortion1, 0, buf, 0, bufPortion1.length);
+          System.arraycopy(bufPortion2, 0, buf, bufPortion1.length, bufPortion2.length);
+
+          LOGGER.debug("handleTooSmallBuffer: buf [{}]",new String(buf));
+          LOGGER.debug("handleTooSmallBuffer: buf.length [{}]",buf.length);
+
+          // Because the original input value of length does not know that the record span over two mappings,
+          // reset it to the default length of the record.
+          //length = this.recordLength;
+          return(buf);  // Variable buf is both input and output.
+    }
+
 	/**
 	 * Reads <code>length</code> bytes of data from a specified record at the given offset.
 	 *
@@ -250,44 +311,14 @@ public class ByteWiseFileAccessor {
       //
       // The value of MAPPING_SIZE on linux is 1073741824
 
+      LOGGER.debug("readRecordBytes:recordNum,offset {},{}",recordNum,offset);
+      LOGGER.debug("readRecordBytes:recordNum,length {},{}",recordNum,length);
       LOGGER.debug("readRecordBytes:aBuf.remaining(),buf.length {},{}",aBuf.remaining(),buf.length);
+
       if (aBuf.remaining() >= buf.length) {
           aBuf.get(buf);
       } else {
-          LOGGER.debug("readRecordBytes:recordNum,buf.length {},{}",recordNum,buf.length);
-          LOGGER.debug("readRecordBytes: aBuf.remaining(),aBuf.hasRemaining() {},{}",aBuf.remaining(),aBuf.hasRemaining());
-          LOGGER.debug("readRecordBytes: aBuf.isDirect() {}",aBuf.isDirect());
-          LOGGER.debug("readRecordBytes: length,fileOffset {},{}",length,fileOffset);
-          LOGGER.debug("readRecordBytes: mapN,offN {},{}",mapN,offN);
-          LOGGER.debug("readRecordBytes: this.recordLength {}",this.recordLength);
-          LOGGER.debug("Record number " + Integer.toString(recordNum) + " spanning over two mappings.  Will perform an extra read.");
-
-          // Get the first part of the record from aBuf.remaining() bytes and 
-          // get the second part of the record in mappings.get(mapN+1).
-	      byte[] buf_portion_1 = new byte[aBuf.remaining()];
-          aBuf.get(buf_portion_1);
-          aBuf = mappings.get(mapN+1);                                             // Get the next mapping.
-          aBuf.position(0);                                                        // Point the position to the beginning.
-          byte[] buf_portion_2 = new byte[this.recordLength-buf_portion_1.length]; // The second portion size is the difference.
-          aBuf.get(buf_portion_2);                                                 // Get the 2nd portion of record from next mapping.
-
-          LOGGER.debug("readRecordBytes:buf_portion_1 [{}]",buf_portion_1);
-          LOGGER.debug("readRecordBytes:buf_portion_2 [{}]",buf_portion_2);
-          LOGGER.debug("readRecordBytes:buf_portion_1 + buf_portion_2 [{}][{}]",new String(buf_portion_1),new String(buf_portion_2));
-          LOGGER.debug("readRecordBytes: buf_portion_1.length,buf_portion_2.length {},{}",buf_portion_1.length,buf_portion_2.length);
-          LOGGER.debug("readRecordBytes: this.recordLength {}",this.recordLength);
-
-          // Copy buf_portion_1 and buf_portion_2 to buf so it can be returned.
-          System.arraycopy(buf_portion_1, 0, buf, 0, buf_portion_1.length);
-          System.arraycopy(buf_portion_2, 0, buf, buf_portion_1.length, buf_portion_2.length);
-
-          LOGGER.debug("readRecordBytes: buf [{}]",new String(buf));
-          LOGGER.debug("readRecordBytes: buf.length [{}]",buf.length);
-
-          // Because the original input value of length does not know that the record span over two mappings,
-          // reset it to the default length of the record.
- 
-          length = this.recordLength;
+          buf = this.handleTooSmallMapping(recordNum, offset, length, aBuf, mapN, offN, fileOffset, buf);
       }
 
 	  // need to check the offset of the bytes?
