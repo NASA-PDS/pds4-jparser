@@ -115,6 +115,10 @@
             <phase>generate-sources</phase>
             <configuration>
               <target>
+                <property name="compile.classpath" refid="maven.compile.classpath"/>
+                <property name="runtime.classpath" refid="maven.runtime.classpath"/>
+                <property name="test.classpath" refid="maven.test.classpath"/>
+                <property name="plugin.classpath" refid="maven.plugin.classpath"/>
                 <ant dir="src/build/resources" target="generate-if-necessary" />
               </target>
             </configuration>
@@ -431,6 +435,12 @@
       <version>48.0.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-xjc</artifactId>
+      <version>2.2.4</version>
+    </dependency>
+    
   </dependencies>
 
   <properties>
