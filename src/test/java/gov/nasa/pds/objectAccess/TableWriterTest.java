@@ -56,7 +56,7 @@ import java.util.Arrays;
 
 import org.testng.annotations.Test;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class TableWriterTest {
 	private final static String CHAR_TABLE_LABEL_PATH ="./src/test/resources/1000";	
