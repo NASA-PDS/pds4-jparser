@@ -61,6 +61,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.opencsv.exceptions.CsvValidationException;
+
 /**
  * Implements a table extraction application. Uses the Apache
  * Jakarta Commons CLI library to parse the command line.
@@ -120,8 +122,9 @@ public class ExtractTable {
 	 * Runs the application with given command-line arguments.
 	 *
 	 * @param args the command-line arguments
+	 * @throws CsvValidationException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CsvValidationException {
 		(new ExtractTable()).run(args);
 	}
 
@@ -174,8 +177,9 @@ public class ExtractTable {
 	 * Runs the extractor.
 	 *
 	 * @param args the command-line arguments
+	 * @throws CsvValidationException 
 	 */
-	private void run(String[] args) {
+	private void run(String[] args) throws CsvValidationException {
 		parseArguments(args);
 
 		if (outputFile != null) {
@@ -284,8 +288,9 @@ public class ExtractTable {
 	 * Extracts a table to the output file.
 	 *
 	 * @param reader the table reader to use for reading data
+	 * @throws CsvValidationException 
 	 */
-	private void extractTable(TableReader reader) {
+	private void extractTable(TableReader reader) throws CsvValidationException {
 		FieldDescription[] fields = reader.getFields();
 		int[] displayFields = getSelectedFields(fields);
 
@@ -400,9 +405,10 @@ public class ExtractTable {
 	 * @param fields an array of field descriptions
 	 * @param displayFields an array of field indices to display
 	 * @param fieldLengths an array of field lengths to use for output
+	 * @throws CsvValidationException 
 	 * @throws IOException
 	 */
-	private void displayRows(TableReader reader, FieldDescription[] fields, int[] displayFields, int[] fieldLengths) {
+	private void displayRows(TableReader reader, FieldDescription[] fields, int[] displayFields, int[] fieldLengths) throws CsvValidationException {
 		TableRecord record;
 		try {
 			while ((record = reader.readNext()) != null) {

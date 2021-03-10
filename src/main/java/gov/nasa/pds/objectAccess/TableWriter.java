@@ -37,8 +37,6 @@ import gov.nasa.pds.objectAccess.table.DelimiterType;
 import gov.nasa.pds.objectAccess.table.TableAdapter;
 import gov.nasa.pds.objectAccess.table.TableBinaryAdapter;
 import gov.nasa.pds.objectAccess.table.TableDelimitedAdapter;
-import gov.nasa.pds.objectAccess.InvalidTableException;
-
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -51,7 +49,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
 
 /**
  * The <code>TableWriter</code> class is used for writing
@@ -114,6 +112,7 @@ public class TableWriter {
 								writer,								
 								((TableDelimitedAdapter) adapter).getFieldDelimiter(),
 								'\\', 
+								CSVWriter.DEFAULT_QUOTE_CHARACTER,
 								DelimiterType.CARRIAGE_RETURN_LINE_FEED.getRecordDelimiter()
 							);
 	}	
