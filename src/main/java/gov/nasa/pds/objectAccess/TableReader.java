@@ -63,8 +63,12 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVParser;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 
 /**
  * The <code>TableReader</code> class defines methods for reading table records.
@@ -135,7 +139,8 @@ public class TableReader {
 		  accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
 		  this.delimitedChar = tda.getFieldDelimiter();
 		  
-		  this.csvReader = new CSVReader(bufferedReader, this.delimitedChar);  
+		  CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(true).build();
+		  this.csvReader = new CSVReaderBuilder(bufferedReader).withCSVParser(parser).build();
 		} else {		
 		  if (readEntireFile) {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());    
@@ -172,8 +177,9 @@ public class TableReader {
 	 * Reads the next record from the data file.
 	 *
 	 * @return the next record, or null if no further records.
+	 * @throws CsvValidationException 
 	 */
-	public TableRecord readNext() throws IOException {
+	public TableRecord readNext() throws IOException, CsvValidationException {
 		currentRow++;
 		if (currentRow > adapter.getRecordCount()) {
 			return null;
@@ -190,8 +196,9 @@ public class TableReader {
 	 * @param index the record index (1-relative)
 	 * @return an instance of <code>TableRecord</code>
 	 * @throws IllegalArgumentException if index is greater than the record number
+	 * @throws CsvValidationException 
 	 */
-	public TableRecord getRecord(int index) throws IllegalArgumentException, IOException {
+	public TableRecord getRecord(int index) throws IllegalArgumentException, IOException, CsvValidationException {
 		int recordCount = adapter.getRecordCount();		
 		if (index < 1 || index > recordCount) {
 			String msg = "The index is out of range 1 - " + recordCount;
@@ -208,13 +215,15 @@ public class TableReader {
 			for (int i = 0; i < (index-1); i++) {
                 this.bufferedReader.readLine();
             }
-			this.csvReader = new CSVReader(this.bufferedReader, this.delimitedChar);	
+
+			CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(true).build();
+	        this.csvReader = new CSVReaderBuilder(bufferedReader).withCSVParser(parser).build();	
 		}
 		currentRow = index;	
 		return getTableRecord();
 	}
 
-	private TableRecord getTableRecord() throws IOException {
+	private TableRecord getTableRecord() throws IOException, CsvValidationException {
         // DEBUG statements can be time consuming.  Should be uncommented by developer only.
 		if (adapter instanceof TableDelimitedAdapter) {			
 			//String[] recordValue = delimitedRecordList.get(currentRow-1);
