@@ -111,8 +111,8 @@ public class TableWriter {
 		csvWriter = new CSVWriter(
 								writer,								
 								((TableDelimitedAdapter) adapter).getFieldDelimiter(),
-								'\\', 
 								CSVWriter.DEFAULT_QUOTE_CHARACTER,
+								'\\',
 								DelimiterType.CARRIAGE_RETURN_LINE_FEED.getRecordDelimiter()
 							);
 	}	
