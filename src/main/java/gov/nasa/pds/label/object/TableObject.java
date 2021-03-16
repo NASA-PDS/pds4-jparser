@@ -132,8 +132,8 @@ public class TableObject extends DataObject {
 	 * @throws IOException if there is an error reading from the data file
 	 * @throws CsvValidationException 
 	 */
-	public TableRecord getRecord(int index) throws IllegalArgumentException, IOException, CsvValidationException {
-		return tableReader.getRecord(index);
+	public TableRecord getRecord(int index, boolean keepQuotationsFlag) throws IllegalArgumentException, IOException, CsvValidationException {
+		return tableReader.getRecord(index,keepQuotationsFlag);
 	}
 
 }

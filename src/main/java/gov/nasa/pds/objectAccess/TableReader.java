@@ -109,6 +109,10 @@ public class TableReader {
   public TableReader(Object table, URL dataFile, boolean checkSize) throws Exception {
     this(table, dataFile, checkSize, false);
   }
+
+  public TableReader(Object table, URL dataFile, boolean checkSize, boolean readEntireFile) throws Exception {
+    this(table, dataFile, checkSize, readEntireFile, false);
+  }
   
 	/**
 	 * Constructs a <code>TableReader</code> instance for reading records from a
@@ -118,11 +122,13 @@ public class TableReader {
 	 * @param dataFile an input data file
    * @param checkSize check that the size of the data file is equal to the 
    * size of the table (length * records) + offset.
+	 * @param readEntireFile flag to read an entire file
+	 * @param keepQuotationsFlag flag to keep the starting/ending quotes 
 	 *
 	 * @throws NullPointerException if table offset is null
 	 */
 	public TableReader(Object table, URL dataFile, boolean checkSize, 
-	    boolean readEntireFile) throws Exception {
+	    boolean readEntireFile, boolean keepQuotationsFlag) throws Exception {
 		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
 		try {
 			offset = adapter.getOffset();
@@ -139,7 +145,8 @@ public class TableReader {
 		  accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
 		  this.delimitedChar = tda.getFieldDelimiter();
 		  
-		  CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(true).build();
+          // Use the flag keepQuotationsFlag to tell the CSVParserBuilder that we wish to keep the starting/ending quotes.
+		  CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(keepQuotationsFlag).build();
 		  this.csvReader = new CSVReaderBuilder(bufferedReader).withCSVParser(parser).build();
 		} else {		
 		  if (readEntireFile) {
@@ -187,6 +194,20 @@ public class TableReader {
 		
 		return getTableRecord();
 	}
+
+    /**
+     * Gets access to the table record given the index. The current row is set to
+     * this index, thus, subsequent call to readNext() gets the next record from
+     * this position.
+     *
+     * @param index the record index (1-relative)
+     * @return an instance of <code>TableRecord</code>
+     * @throws IllegalArgumentException if index is greater than the record number
+     * @throws CsvValidationException 
+     */
+	public TableRecord getRecord(int index) throws IllegalArgumentException, IOException, CsvValidationException {
+	    return(getRecord(index, false));
+    }
 	
 	/**
 	 * Gets access to the table record given the index. The current row is set to
@@ -194,11 +215,12 @@ public class TableReader {
 	 * this position.
 	 *
 	 * @param index the record index (1-relative)
+	 * @param keepQuotationsFlag flag to keep the starting/ending quotes or not.
 	 * @return an instance of <code>TableRecord</code>
 	 * @throws IllegalArgumentException if index is greater than the record number
 	 * @throws CsvValidationException 
 	 */
-	public TableRecord getRecord(int index) throws IllegalArgumentException, IOException, CsvValidationException {
+	public TableRecord getRecord(int index, boolean keepQuotationsFlag) throws IllegalArgumentException, IOException, CsvValidationException {
 		int recordCount = adapter.getRecordCount();		
 		if (index < 1 || index > recordCount) {
 			String msg = "The index is out of range 1 - " + recordCount;
@@ -216,7 +238,7 @@ public class TableReader {
                 this.bufferedReader.readLine();
             }
 
-			CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(true).build();
+			CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(keepQuotationsFlag).build();
 	        this.csvReader = new CSVReaderBuilder(bufferedReader).withCSVParser(parser).build();	
 		}
 		currentRow = index;	
@@ -229,6 +251,8 @@ public class TableReader {
 			//String[] recordValue = delimitedRecordList.get(currentRow-1);
 
 			String[] recordValue = this.csvReader.readNext();
+            //LOGGER.debug("getTableRecord: RECORDVALUE,record  RECORDVALUE={}, record={}",recordValue,record);
+            //LOGGER.debug("getTableRecord: recordValue.length,currentRow {},{}",recordValue.length,currentRow);
 			if (recordValue!=null && (recordValue.length != adapter.getFieldCount())) {
 				throw new IOException("Record " + currentRow + " has wrong number of fields "
 						+ "(expected " + adapter.getFieldCount() + ", got " + recordValue.length + ")"
