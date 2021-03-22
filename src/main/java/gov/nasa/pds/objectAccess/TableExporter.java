@@ -59,8 +59,12 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
 
 /**
  * Defines methods for converting a table object to a desired export type. 
@@ -148,8 +152,9 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 * @param object        the table object to convert	 
 	 * @param outputStream  the output stream for the output file
 	 * @throws IOException If an I/O error occurs
+	 * @throws CsvValidationException 
 	 */
-	public void convert(Object object, OutputStream outputStream) throws IOException, InvalidTableException {		
+	public void convert(Object object, OutputStream outputStream) throws IOException, InvalidTableException, CsvValidationException {		
 		URL dataFile = new URL(getObjectProvider().getRoot(), getObservationalFileArea().getFile().getFileName());		
 		Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, getEncoder()));
 				
@@ -166,8 +171,9 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 * @param objectIndex  the index of the input table object  
 	 *                      	 
 	 * @throws IOException If an I/O error occurs
+	 * @throws CsvValidationException 
 	 */
-	public void convert(OutputStream outputStream, int objectIndex) throws IOException, InvalidTableException {
+	public void convert(OutputStream outputStream, int objectIndex) throws IOException, InvalidTableException, CsvValidationException {
 		List<Object> list = getObjectProvider().getTableObjects(getObservationalFileArea());		
 		convert(list.get(objectIndex), outputStream);		
 	}
@@ -243,7 +249,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	/*
 	 * Exports a table object into a CSV file.
 	 */
-	private void exportToCSV(URL dataFile, Writer writer, Object table) throws FileNotFoundException, IOException, InvalidTableException {
+	private void exportToCSV(URL dataFile, Writer writer, Object table) throws FileNotFoundException, IOException, InvalidTableException, CsvValidationException {
 		if (table instanceof TableDelimited) {
 			exportDelimitedTableToCSV(dataFile, writer, (TableDelimited) table, getDecoder());
 		} else {
@@ -290,7 +296,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 * Exports a delimited table object into a CSV file.
 	 */
 	private void exportDelimitedTableToCSV(URL dataFile, Writer writer, TableDelimited table, Charset charset) 
-		throws FileNotFoundException, IOException, InvalidTableException {
+		throws FileNotFoundException, IOException, InvalidTableException, CsvValidationException {
 		TableAdapter adapter = AdapterFactory.INSTANCE.getTableAdapter(table);		
 		int records = table.getRecords().intValueExact();
 		long tableOffset = table.getOffset().getValue().longValueExact();
@@ -305,7 +311,8 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 			is = dataFile.openStream();
 			is.skip(tableOffset);
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(is, charset));
-			CSVReader reader = new CSVReader(buffer, ((TableDelimitedAdapter) adapter).getFieldDelimiter());
+	        CSVParser parser = new CSVParserBuilder().withSeparator(((TableDelimitedAdapter) adapter).getFieldDelimiter()).build();
+	        CSVReader reader = new CSVReaderBuilder(buffer).withCSVParser(parser).build();    
 			 
 			for (int i = 0; i <records; i++) {
 				String[] line = reader.readNext();

@@ -39,13 +39,15 @@ import java.io.IOException;
 
 import org.testng.annotations.Test;
 
+import com.opencsv.exceptions.CsvValidationException;
+
 /**
  * Implements tests for PDS-339.
  */
 public class TestGroupFieldWithRepetitions {
 
 	@Test
-	public void testGroupFieldWithRepetitions() throws ParseException, IOException {
+	public void testGroupFieldWithRepetitions() throws ParseException, IOException, CsvValidationException {
 		File tempOutputFile = File.createTempFile("testPDS339", ".csv");
 		String[] args = {
 				"-c",

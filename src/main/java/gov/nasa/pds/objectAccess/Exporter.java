@@ -36,6 +36,8 @@ import gov.nasa.pds.objectAccess.InvalidTableException;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import com.opencsv.exceptions.CsvValidationException;
+
 /**
  * Interface for exporting objects of type T.
  *
@@ -71,8 +73,9 @@ public interface Exporter<T> {
 	 * @param object the input object of type T
 	 * @param outputStream the output stream for the output object
 	 * @throws IOException
+	 * @throws CsvValidationException 
 	 */
-	void convert(T object, OutputStream outputStream) throws IOException, InvalidTableException;
+	void convert(T object, OutputStream outputStream) throws IOException, InvalidTableException, CsvValidationException;
 
 	/**
 	 * Converts the object at index objectIndex into the desired export type.
@@ -81,7 +84,8 @@ public interface Exporter<T> {
 	 * @param objectIndex  the index of the input object of type T in the associated
 	 * 		  observational file area
 	 * @throws IOException
+	 * @throws CsvValidationException 
 	 */
-	void convert(OutputStream outputStream, int objectIndex) throws IOException, InvalidTableException;
+	void convert(OutputStream outputStream, int objectIndex) throws IOException, InvalidTableException, CsvValidationException;
 
 }

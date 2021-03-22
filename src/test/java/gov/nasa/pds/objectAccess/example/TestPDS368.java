@@ -37,13 +37,15 @@ import java.io.IOException;
 
 import org.testng.annotations.Test;
 
+import com.opencsv.exceptions.CsvValidationException;
+
 /**
  * Performs tests to verify that issue PDS-368 is fixed.
  */
 public class TestPDS368 {
 
 	@Test
-	public void testExtractTable() throws IOException {
+	public void testExtractTable() throws IOException, CsvValidationException {
 		File tempOutputFile = File.createTempFile("testPDS68", ".csv");
 		String[] args = {
 				"-c",

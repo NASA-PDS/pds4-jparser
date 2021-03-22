@@ -56,6 +56,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.opencsv.exceptions.CsvValidationException;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -231,7 +233,7 @@ public class ExtractTableTest {
 	}
 
 	@Test(dataProvider="TextAndDelimitedTypeTests")
-	public void testReadTableCharacterCSV(FieldType fieldType) throws IOException, TemplateException {
+	public void testReadTableCharacterCSV(FieldType fieldType) throws IOException, TemplateException, CsvValidationException {
 		writeLabel("TableCharacter-template.xml", getTableProperties(fieldType, true), labelFile);
 		writeTextData(dataFile, fieldType.getValues(), fieldType.getLength(), fieldType.getAccessor());
 
@@ -240,7 +242,7 @@ public class ExtractTableTest {
 	}
 
 	@Test(dataProvider="TextAndDelimitedTypeTests")
-	public void testReadTableCharacterFixed(FieldType fieldType) throws IOException, TemplateException {
+	public void testReadTableCharacterFixed(FieldType fieldType) throws IOException, TemplateException, CsvValidationException {
 		writeLabel("TableCharacter-template.xml", getTableProperties(fieldType, true), labelFile);
 		writeTextData(dataFile, fieldType.getValues(), fieldType.getLength(), fieldType.getAccessor());
 
@@ -249,7 +251,7 @@ public class ExtractTableTest {
 	}
 
 	@Test(dataProvider="TextAndDelimitedTypeTests")
-	public void testReadTableDelimitedCSV(FieldType fieldType) throws IOException, TemplateException {
+	public void testReadTableDelimitedCSV(FieldType fieldType) throws IOException, TemplateException, CsvValidationException {
 		writeLabel("TableDelimited-template.xml", getTableProperties(fieldType, true), labelFile);
 		writeDelimitedData(dataFile, fieldType.getValues(), fieldType.getAccessor());
 
@@ -267,7 +269,7 @@ public class ExtractTableTest {
 	}
 
 	@Test(dataProvider="BinaryTypeTests")
-	public void testReadTableBinaryCSV(FieldType fieldType) throws IOException, TemplateException {
+	public void testReadTableBinaryCSV(FieldType fieldType) throws IOException, TemplateException, CsvValidationException {
 		writeLabel("TableBinary-template.xml", getTableProperties(fieldType, false), labelFile);
 		writeBinaryData(dataFile, fieldType.getValues(), fieldType.getLength(), fieldType.getAccessor());
 

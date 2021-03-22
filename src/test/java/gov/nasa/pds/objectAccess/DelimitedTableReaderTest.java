@@ -52,7 +52,8 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
+import com.opencsv.ICSVWriter;
 
 public class DelimitedTableReaderTest {	
 	private TableDelimited table;
@@ -71,7 +72,7 @@ public class DelimitedTableReaderTest {
 		assertEquals(reader.getFields().length, 5);
 		
 		TableRecord record = reader.readNext();
-		assertEquals(record.findColumn("field1"), 1);	
+		assertEquals(record.findColumn("field1"), 1);
 		assertEquals(record.getInt("field1"), 1234);
 		assertEquals(record.getFloat("field2"), 1234.0, Float.MIN_VALUE);
 		assertEquals(record.getDouble("field3"), 123.40, Double.MIN_VALUE);				
@@ -157,6 +158,7 @@ public class DelimitedTableReaderTest {
 		Writer writer = new BufferedWriter(new OutputStreamWriter(os, "US-ASCII"));				
 		CSVWriter csvWriter = new CSVWriter(writer,
 											DelimiterType.COMMA.getFieldDelimiter(),
+											CSVWriter.DEFAULT_ESCAPE_CHARACTER,
 											CSVWriter.DEFAULT_QUOTE_CHARACTER,
 											DelimiterType.CARRIAGE_RETURN_LINE_FEED.getRecordDelimiter());
 		csvWriter.writeNext(line1);
