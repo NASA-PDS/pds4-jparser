@@ -157,6 +157,9 @@
                 <descriptor>src/main/assembly/tar-assembly.xml</descriptor>
                 <descriptor>src/main/assembly/zip-assembly.xml</descriptor>
               </descriptors>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
             </configuration>
           </execution>
         </executions>
