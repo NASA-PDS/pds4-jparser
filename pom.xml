@@ -447,7 +447,7 @@
   </dependencies>
 
   <properties>
-    <model-version>1F00</model-version>
+    <model-version>1G00</model-version>
     <pds3-product-tools.version>4.0.1</pds3-product-tools.version>
     <checkstyle.version>2.10</checkstyle.version>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
