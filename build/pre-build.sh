@@ -24,7 +24,7 @@ version=$2
 outdir=src/build/resources/schema/$version/
 
 mkdir -p $outdir
-wget --no-parent -P $outdir $BASE_URL/PDS4_PDS_${version}.xsd
+wget --no-parent -P $outdir $BASE_URL/PDS4_PDS_${version}.xsd -O PDS4_PDS_${version}.xsd
 
 sed "s/REPLACE_ME/$version/g" src/build/resources/schema/PDS4_DISP_template.xsd > src/build/resources/schema/$version/PDS4_DISP_${version}.xsd
 
