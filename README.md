@@ -29,12 +29,18 @@ mvn package
 
 # Operational Release
 
-# Run pre-build software
+## Run pre-build software
 
 When new PDS4 Information Model is available, run the following script to download the latest IM and 
 push to git.
 
 ```
+$ build/pre-build.sh
+
+pre-build.sh <dev_or_ops> <IM version>
+     dev_or_ops - still in dev or released
+     IM Version - e.g. 1D00
+
 # For dev release of IM
 build/pre-build.sh dev 1E00
 
@@ -47,8 +53,9 @@ build/pre-build.sh ops 1E00
 
 For internal JPL use, the ConMan software package can be used for releasing software, otherwise the following sections outline how to complete these steps manually.
 
+## Manual Release
 
-## Update Version Numbers
+### Update Version Numbers
 
 Update pom.xml for the release version or use the Maven Versions Plugin using [semantic versioning](https://semver.org/). For IM release candidates and operational releases, PDS4 JParser will be built and deployed as an operational release and versioned and re-build if needed.
 
@@ -57,19 +64,19 @@ VERSION=1.1.0
 mvn versions:set -DnewVersion=$VERSION
 ```
 
-## Update Changelog
+### Update Changelog
 Update Changelog using [ Changelog Generator](https://github.com/github-changelog-generator/github-changelog-generator). Note: Make sure you set `$CHANGELOG_GITHUB_TOKEN` in your `.bash_profile` or use the `--token` flag.
 ```
 github_changelog_generator --future-release v$VERSION
 ```
 
-## Commit Changes
+### Commit Changes
 Commit changes using following template commit message:
 ```
 [RELEASE] PDS4 Java Parser Library v$VERSION
 ```
 
-## Build and Deploy Software to [Sonatype Maven Repo](https://repo.maven.apache.org/maven2/gov/nasa/pds/).
+### Build and Deploy Software to [Sonatype Maven Repo](https://repo.maven.apache.org/maven2/gov/nasa/pds/).
 
 ```
 mvn clean site deploy -P release
@@ -92,13 +99,13 @@ Note: If you have issues with GPG, be sure to make sure you've created your GPG 
 
 ```
 
-## Push Tagged Release
+### Push Tagged Release
 ```
 git tag v$VERSION
 git push --tags
 ```
 
-## Deploy Site to Github Pages
+### Deploy Site to Github Pages
 
 From cloned repo:
 ```
@@ -115,7 +122,7 @@ git commit -m "Deploy v$VERSION docs"
 git push origin gh-pages
 ```
 
-## Update Versions For Development
+### Update Versions For Development
 
 Update `pom.xml` with the next SNAPSHOT version either manually or using Github Versions Plugin, e.g.:
 ```
@@ -127,10 +134,10 @@ git commit -m "Update version for $VERSION development"
 git push -u origin master
 ```
 
-## Complete Release in Github
+### Complete Release in Github
 Currently the process to create more formal release notes and attach Assets is done manually through the [Github UI](https://github.com/NASA-PDS/pds4-jparser/releases/new) but should eventually be automated via script.
 
-# Snapshot Release
+## Snapshot Release
 1. Checkout the master branch.
 
 2. Deploy software to Sonatype Maven repo:
