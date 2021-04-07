@@ -32,6 +32,7 @@ package gov.nasa.pds.objectAccess.table;
 
 import static org.testng.Assert.assertEquals;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -101,13 +102,13 @@ public class DoubleBinaryFieldAdapterTest {
 		byte[] b = longToBytes(Double.doubleToLongBits(value), true);
 		FieldAdapter adapter = new DoubleBinaryFieldAdapter(true);					
 		adapter.setDouble(value, offset, length, buf, false);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 		
 		b = longToBytes(Double.doubleToLongBits((float) value), true);
 		adapter.setFloat((float) value, offset, length, buf, false);	
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}
@@ -120,13 +121,13 @@ public class DoubleBinaryFieldAdapterTest {
 		byte[] b = longToBytes(Double.doubleToLongBits(value), false);
 		FieldAdapter adapter = new DoubleBinaryFieldAdapter(false);		
 		adapter.setDouble(value, offset, length, buf, false);	
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);				
 		assertEquals(bytes, b);
 		
 		b = longToBytes(Double.doubleToLongBits((float) value), false);
 		adapter.setFloat((float) value, offset, length, buf, false);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}
@@ -146,15 +147,15 @@ public class DoubleBinaryFieldAdapterTest {
 		};
 		int length = Double.SIZE / Byte.SIZE;
 		byte[] bytes = new byte[length];
-		buffer.clear();
+		((Buffer) buffer).clear();
 		FieldAdapter adapter = new DoubleBinaryFieldAdapter(true);		
 		adapter.setString(Double.toString(3.14), 0, length, buffer, true);
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, length);
 		assertEquals(bytes, b);
 		
 		adapter.setString(Double.toString(3.14), 0, length, buffer, true, Charset.forName("US-ASCII"));
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, length);
 		assertEquals(bytes, b);		
 	}

@@ -31,6 +31,7 @@
 package gov.nasa.pds.objectAccess.array;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
@@ -260,7 +261,7 @@ public class ArrayAdapter {
 	       cachedBuffer = buf;
 	     } else {
 	       int relativePosition = (int) (index - startPosition);
-	       buf.position(relativePosition);
+	       ((Buffer) buf).position(relativePosition);
 	     }
 	     return buf;
 	  }
@@ -283,7 +284,7 @@ public class ArrayAdapter {
 	      buf = ByteBuffer.allocate(BUFFER_SIZE);
 	    }
 	    channel.read(buf);
-	    buf.flip();
+	    ((Buffer) buf).flip();
 	    startPosition = index;
 	    return buf;
 	  }

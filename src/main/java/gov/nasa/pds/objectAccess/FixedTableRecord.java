@@ -38,6 +38,7 @@ import gov.nasa.pds.objectAccess.table.DefaultFieldAdapter;
 import gov.nasa.pds.objectAccess.table.DelimiterType;
 
 import java.math.BigInteger;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -86,7 +87,7 @@ public class FixedTableRecord implements TableRecord {
 
 			// Set the buffer position based on the length of the record delimiter
 			// and add the delimiter at that position to the end of the record.
-			this.buffer.position(length - delimiter.getBytes(charset).length);
+			((Buffer) this.buffer).position(length - delimiter.getBytes(charset).length);
 			setString(delimiter);
 		}
 	}
@@ -336,7 +337,7 @@ public class FixedTableRecord implements TableRecord {
 
 	@Override
 	public void clear() {
-		buffer.clear();
+		((Buffer) buffer).clear();
 	}
 
 	/**

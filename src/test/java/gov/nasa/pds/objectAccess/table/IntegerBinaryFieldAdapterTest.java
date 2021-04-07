@@ -33,6 +33,7 @@ package gov.nasa.pds.objectAccess.table;
 import static org.testng.Assert.assertEquals;
 
 import java.math.BigInteger;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import org.testng.annotations.DataProvider;
@@ -163,13 +164,13 @@ public class IntegerBinaryFieldAdapterTest {
 		byte[] bytes = new byte[len];
 		FieldAdapter adapter = new IntegerBinaryFieldAdapter(len, true, true);
 		adapter.setString(s, 0, len, buffer, true);
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, len);
 		assertEquals(bytes, s.getBytes("US-ASCII"));
 
 		adapter = new IntegerBinaryFieldAdapter(len, true, false);
 		adapter.setString(s, 10, len, buffer, true);
-		buffer.position(10);
+		((Buffer) buffer).position(10);
 		buffer.get(bytes, 0, len);
 		assertEquals(bytes, s.getBytes("US-ASCII"));
 	}
@@ -180,7 +181,7 @@ public class IntegerBinaryFieldAdapterTest {
 		ByteBuffer buf = ByteBuffer.allocate(20);
 		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);
 		adapter.setLong(value, offset, length, buf, true);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}
@@ -199,7 +200,7 @@ public class IntegerBinaryFieldAdapterTest {
 		ByteBuffer buf = ByteBuffer.allocate(20);
 		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);
 		adapter.setInt((int) value, offset, length, buf, true);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}
@@ -218,7 +219,7 @@ public class IntegerBinaryFieldAdapterTest {
 		ByteBuffer buf = ByteBuffer.allocate(20);
 		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);
 		adapter.setShort((short) value, offset, length, buf, true);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}
@@ -229,7 +230,7 @@ public class IntegerBinaryFieldAdapterTest {
 		ByteBuffer buf = ByteBuffer.allocate(20);
 		FieldAdapter adapter = new IntegerBinaryFieldAdapter(length, true, isBigEndian);
 		adapter.setByte((byte) value, offset, length, buf, true);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}

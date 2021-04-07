@@ -38,6 +38,7 @@ import java.io.FileInputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.Channels;
@@ -256,7 +257,7 @@ public class ByteWiseFileAccessor {
 	      byte[] bufPortion1 = new byte[aBuf.remaining()];
           aBuf.get(bufPortion1);
           aBuf = this.mappings.get(mapN+1);                                             // Get the next mapping.
-          aBuf.position(0);                                                        // Point the position to the beginning.
+          ((Buffer) aBuf).position(0);                                                        // Point the position to the beginning.
           byte[] bufPortion2 = new byte[this.recordLength-bufPortion1.length]; // The second portion size is the difference.
           aBuf.get(bufPortion2);                                                 // Get the 2nd portion of record from next mapping.
 
@@ -302,7 +303,7 @@ public class ByteWiseFileAccessor {
 	  }
 
 	  ByteBuffer aBuf = mappings.get(mapN);
-	  aBuf.position(offN);   // need to check this
+	  ((Buffer) aBuf).position(offN);   // need to check this
 
       // It is possible to read pass the buffer in variable 'buf'.  Perform a check before the get() function.
       // If not enough bytes left in the buffer, that means that the record we are reading is spanning the boundary of two
@@ -354,7 +355,7 @@ public class ByteWiseFileAccessor {
 	 */
   public void mark() {
 	  int mapN = (int)(this.curPosition/MAPPING_SIZE);
-	  mappings.get(mapN).mark();
+	  ((Buffer) mappings.get(mapN)).mark();
 	}
 	
 	/**
@@ -364,7 +365,7 @@ public class ByteWiseFileAccessor {
   public void reset() {
 	  // reset all buffer??
 	  for (int i=0; i<mappings.size(); i++)
-	    mappings.get(i).reset();
+	    ((Buffer) mappings.get(i)).reset();
 	}
 	
 	/**

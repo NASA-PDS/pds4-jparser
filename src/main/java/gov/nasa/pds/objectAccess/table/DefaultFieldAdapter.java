@@ -31,6 +31,7 @@
 package gov.nasa.pds.objectAccess.table;
 
 import java.math.BigInteger;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -126,7 +127,7 @@ public class DefaultFieldAdapter implements FieldAdapter {
 		if (value.length() > length) {
 			throw new IllegalArgumentException("The size of the value is greater than the field length.");
 		}
-		buffer.position(offset);
+		((Buffer) buffer).position(offset);
 		buffer.put(getJustifiedValue(value, length, isRightJustified, charset), 0, length);
 	}
 

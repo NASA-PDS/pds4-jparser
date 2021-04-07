@@ -32,6 +32,7 @@ package gov.nasa.pds.objectAccess.table;
 
 import static org.testng.Assert.assertEquals;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -124,11 +125,11 @@ public class DefaultFieldAdapterTest {
 		int len = 5;
 		String s = "hello";
 		byte[] bytes = new byte[len];
-		buffer.clear(); // sets the buffer position to 0		
+		((Buffer) buffer).clear(); // sets the buffer position to 0		
 		adapter.setString(s, 0, len, buffer, false);
-		assertEquals(buffer.position(), len);
+		assertEquals(((Buffer) buffer).position(), len);
 		
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, len);			
 		assertEquals(bytes, s.getBytes(US_ASCII));				
 	}
@@ -137,9 +138,9 @@ public class DefaultFieldAdapterTest {
 	public void testRightJustified() {
 		int len = 7;		
 		byte[] bytes = new byte[len];		
-		buffer.clear(); 				
+		((Buffer) buffer).clear(); 				
 		adapter.setString("12345", 0, len, buffer, true);		
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, len);
 		
 		assertEquals(bytes, "  12345".getBytes(US_ASCII));
@@ -149,9 +150,9 @@ public class DefaultFieldAdapterTest {
 	public void testLeftJustified() {
 		int len = 7;		
 		byte[] bytes = new byte[len];		
-		buffer.clear(); 				
+		((Buffer) buffer).clear(); 				
 		adapter.setString("hello", 0, len, buffer, false);		
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, len);
 		
 		assertEquals(bytes, "hello  ".getBytes(US_ASCII));
