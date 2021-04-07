@@ -30,6 +30,7 @@
 
 package gov.nasa.pds.objectAccess.array;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import org.testng.annotations.DataProvider;
@@ -67,11 +68,11 @@ public class DoubleAdapterTest {
 		ByteBuffer buf = ByteBuffer.wrap(bytes);
 		DoubleAdapter adapter = new DoubleAdapter(isBigEndian);
 		
-		buf.rewind();
+		((Buffer) buf).rewind();
 		assertEquals(adapter.getDouble(buf), (double) value);
-		buf.rewind();
+		((Buffer) buf).rewind();
 		assertEquals(adapter.getInt(buf), (int) value);
-		buf.rewind();
+		((Buffer) buf).rewind();
 		assertEquals(adapter.getLong(buf), (long) value);
 	}
 	

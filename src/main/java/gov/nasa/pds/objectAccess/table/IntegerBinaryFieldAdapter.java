@@ -31,6 +31,7 @@
 package gov.nasa.pds.objectAccess.table;
 
 import java.math.BigInteger;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
@@ -121,7 +122,7 @@ public class IntegerBinaryFieldAdapter implements FieldAdapter {
 			throw new IllegalArgumentException("The size of the value is greater than the field length.");
 		}
 		buffer.order(isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-		buffer.position(offset);
+		((Buffer) buffer).position(offset);
 		buffer.put(value.getBytes(charset), 0, length);
 	}
 
@@ -303,7 +304,7 @@ public class IntegerBinaryFieldAdapter implements FieldAdapter {
 			if (isSigned && b[0] < 0) {
 				Arrays.fill(temp, (byte) 0xFF);
 			}
-			buffer.position(offset);
+			((Buffer) buffer).position(offset);
 			buffer.put(temp);
 		}
 

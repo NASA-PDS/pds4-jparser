@@ -32,6 +32,7 @@ package gov.nasa.pds.objectAccess.table;
 
 import static org.testng.Assert.assertEquals;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -136,20 +137,20 @@ public class NumericTextFieldAdapterTest {
 		byte[] b = Integer.toString(value).getBytes(US_ASCII);
 		int length = b.length;
 		byte[] bytes = new byte[length];		
-		buffer.clear();
+		((Buffer) buffer).clear();
 		
 		adapter.setInt(value, 0, length, buffer, false);		
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, length);
 		assertEquals(bytes, b);
 				
 		adapter.setShort((short) value, 5, length, buffer, false);		
-		buffer.position(5);
+		((Buffer) buffer).position(5);
 		buffer.get(bytes, 0, length);
 		assertEquals(bytes, b);
 				
 		adapter.setByte((byte) value, 10, length, buffer, false);		
-		buffer.position(10);
+		((Buffer) buffer).position(10);
 		buffer.get(bytes, 0, length);
 		assertEquals(bytes, b);		
 	}
@@ -160,9 +161,9 @@ public class NumericTextFieldAdapterTest {
 		byte[] b = Long.toString(value).getBytes(US_ASCII);
 		int length = b.length;
 		byte[] bytes = new byte[length];		
-		buffer.clear();		
+		((Buffer) buffer).clear();		
 		adapter.setLong(value, 0, length, buffer, false);		
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}
@@ -173,9 +174,9 @@ public class NumericTextFieldAdapterTest {
 		byte[] b = Float.toString(value).getBytes(US_ASCII);
 		int length = b.length;
 		byte[] bytes = new byte[length];
-		buffer.clear();		
+		((Buffer) buffer).clear();		
 		adapter.setFloat(value, 0, length, buffer, false);		
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, length);			
 		assertEquals(bytes, b);
 	}
@@ -186,9 +187,9 @@ public class NumericTextFieldAdapterTest {
 		byte[] b = Double.toString(value).getBytes(US_ASCII);		
 		int length = b.length;
 		byte[] bytes = new byte[length];
-		buffer.clear();
+		((Buffer) buffer).clear();
 		adapter.setDouble(value, 0, length, buffer, false);		
-		buffer.position(0);
+		((Buffer) buffer).position(0);
 		buffer.get(bytes, 0, length);		
 		assertEquals(bytes, b);	
 	}

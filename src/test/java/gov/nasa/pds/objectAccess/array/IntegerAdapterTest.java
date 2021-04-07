@@ -33,6 +33,7 @@ package gov.nasa.pds.objectAccess.array;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import org.testng.annotations.DataProvider;
@@ -51,16 +52,16 @@ public class IntegerAdapterTest {
 		IntegerAdapter adapter = new IntegerAdapter(data.length, isBigEndian, isUnsigned);
 		
 		assertEquals(adapter.getLong(buf), expected);
-		buf.rewind();
+		((Buffer) buf).rewind();
 		assertEquals(adapter.getDouble(buf), (double) expected);
 		
 		if (Integer.MIN_VALUE<=expected && expected<=Integer.MAX_VALUE) {
-			buf.rewind();
+		    ((Buffer) buf).rewind();
 			int actualInt = adapter.getInt(buf);
 			assertEquals(actualInt, (int) expected);
 		} else {
 			try {
-				buf.rewind();
+			    ((Buffer) buf).rewind();
 				@SuppressWarnings("unused")
 				int actualInt = adapter.getInt(buf);
 				// If we get here, we didn't get an exception - fail
