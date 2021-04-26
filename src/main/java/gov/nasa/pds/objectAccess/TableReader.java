@@ -53,12 +53,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 import java.net.URLConnection;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.stream.Collectors;
-import java.util.Scanner;
+import java.nio.charset.Charset;
+//import java.util.stream.Collectors;
+//import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -311,6 +313,56 @@ public class TableReader {
 	public ByteWiseFileAccessor getAccessor() {
 	  return this.accessor;
 	}
+
+    private long countCarriageReturn(URL dataFile) throws Exception {
+        // Count the number of carriage returns for a file of any size.   The traditional BufferReader cannot handle files larger than 2GB.
+        long numCarriageReturns = 0;
+
+        //offset = 0;
+        //System.out.print("offset ");
+        //System.out.println(offset);
+        //System.exit(0);
+
+        // Use RandomAccessFile to get filesize larger than 2gb
+        File aFile = new File(dataFile.toURI());
+        RandomAccessFile raf = new RandomAccessFile(aFile, "r");
+        raf.seek(offset); // Move the pointer to the offset first.
+                    
+        FileChannel inChannel = raf.getChannel();
+        //int bufferSize = 1024*20;
+        int bufferSize = 1024*128;
+        if (bufferSize > inChannel.size()) {
+            bufferSize = (int) inChannel.size();
+        }
+        ByteBuffer buff = ByteBuffer.allocate(bufferSize);
+
+        String strFind = "\n";
+        int fromIndex = 0;
+        String text = null;
+        Charset charset = Charset.forName("ISO-8859-1");
+        while (inChannel.read(buff) > 0) {
+            buff = buff.position(0); // Must point the pointer to the beginning of buff indorder to access the elements in the array.
+            text = charset.decode(buff).toString();
+//System.out.print("text  [");
+//System.out.print(text);
+//System.out.println("]");
+        
+            // After the byte array is converted to text, we can look for the carriage returns.
+            while ((fromIndex = text.indexOf(strFind, fromIndex)) != -1 ){
+//System.out.println("Found at index: " + fromIndex);
+//System.out.print(".");
+                numCarriageReturns++;
+                fromIndex++;
+//System.out.println("numCarriageReturns: " + numCarriageReturns);
+             }
+             buff.clear();
+        
+//System.out.println("Total occurrences: " + numCarriageReturns);
+//System.exit(0);
+        }
+        raf.close();
+        return(numCarriageReturns);
+    }
 	
 	/**
 	 * @return the size of record (i.e. number of lines)
@@ -325,14 +377,11 @@ public class TableReader {
 			throw ex;
 		}
 		if (adapter instanceof TableDelimitedAdapter) {			
-			// chek this again
-			is.skip(offset);
-			bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
-			int numLines = 0;
-			while (bufferedReader.readLine()!=null) {
-			   ++numLines;
-			}
-			this.recordSize = numLines;
+            // Removed old usage of BufferedReader to count lines which is problematic when file is large.
+            // Use new function countCarriageReturn() to count number of lines of any file sizes.
+
+            this.recordSize = this.countCarriageReturn(dataFile);
+
 		} else {
 			if (adapter instanceof TableBinaryAdapter)
 				offset = 0;
