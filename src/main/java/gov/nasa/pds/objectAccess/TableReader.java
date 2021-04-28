@@ -129,6 +129,9 @@ public class TableReader {
 	public TableReader(Object table, URL dataFile, boolean checkSize, 
 	    boolean readEntireFile, boolean keepQuotationsFlag) throws Exception {
 		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
+
+        LOGGER.debug("TableReader:dataFile {}",dataFile);
+
 		try {
 			offset = adapter.getOffset();
 		} catch (NullPointerException ex) {
@@ -136,6 +139,7 @@ public class TableReader {
 			throw ex;
 		}
 		if (adapter instanceof TableDelimitedAdapter) {
+          LOGGER.debug("TableReader:instanceof TableDelimitedAdapter: {},{}",dataFile,adapter.getClass().getSimpleName());
 		  TableDelimitedAdapter tda = (TableDelimitedAdapter) adapter;
 		  this.inputStream = Utility.openConnection(dataFile.openConnection());
 		  this.inputStream.skip(offset);
@@ -148,6 +152,7 @@ public class TableReader {
 		  CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(keepQuotationsFlag).build();
 		  this.csvReader = new CSVReaderBuilder(bufferedReader).withCSVParser(parser).build();
 		} else {		
+          LOGGER.debug("TableReader:else instanceof TableDelimitedAdapter: {},{}",dataFile,adapter.getClass().getSimpleName());
 		  if (readEntireFile) {
 		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());    
 		  } else {
@@ -311,40 +316,29 @@ public class TableReader {
 	  return this.accessor;
 	}
 
-    private long countCarriageReturn(URL dataFile) throws Exception {
-        // Count the number of carriage returns for a file of any size.   The traditional BufferReader cannot handle files larger than 2GB.
-        long numCarriageReturns = 0;
+    private long countRecordsForTableAdapterType(URL dataFile, long offset) throws Exception {
+        // For TableCharacter, we have to rely on the size of each record and the file size to calculate the number
+        // of records thus not having to read through the entire file.
 
-        // Use RandomAccessFile to get filesize larger than 2gb
-        File aFile = new File(dataFile.toURI());
-        RandomAccessFile raf = new RandomAccessFile(aFile, "r");
-        raf.seek(offset); // Move the pointer to the offset first.
-                    
-        FileChannel inChannel = raf.getChannel();
-        //int bufferSize = 1024*20;
-        int bufferSize = 1024*128;
-        if (bufferSize > inChannel.size()) {
-            bufferSize = (int) inChannel.size();
-        }
-        ByteBuffer buff = ByteBuffer.allocate(bufferSize);
+        LOGGER.debug("countRecordsForTableAdapterType:dataFile,offset {},{}",dataFile,offset);
+        LOGGER.debug("countRecordsForTableAdapterType:dataFile,adapter.getRecordLength() {},{}",dataFile,adapter.getRecordLength());
 
-        String strFind = "\n";
-        int fromIndex = 0;
-        String text = null;
-        Charset charset = Charset.forName("ISO-8859-1");
-        while (inChannel.read(buff) > 0) {
-            buff = buff.position(0); // Must point the pointer to the beginning of buff indorder to access the elements in the array.
-            text = charset.decode(buff).toString();
+        long numRecords = -1;
+
+		File aFile = new File(dataFile.toURI());
+		RandomAccessFile raf = new RandomAccessFile(aFile, "r");
+		raf.seek(offset);
+	
+		FileChannel inChannel = raf.getChannel();
+		long fileSize = inChannel.size();  // The value of fileSize is now the rest content of the file after skipping any offset.
+		raf.close();
+
+        // The number of records is the size of the file divided by the record length
+        numRecords = fileSize/adapter.getRecordLength();
         
-            // After the byte array is converted to text, we can look for the carriage returns.
-            while ((fromIndex = text.indexOf(strFind, fromIndex)) != -1 ){
-                numCarriageReturns++;
-                fromIndex++;
-             }
-             buff.clear();
-        }
-        raf.close();
-        return(numCarriageReturns);
+        LOGGER.debug("countRecordsForTableAdapterType:numRecords {}",numRecords);
+
+        return(numRecords);
     }
 	
 	/**
@@ -353,6 +347,8 @@ public class TableReader {
 	public long getRecordSize(URL dataFile, Object table) throws Exception {
 		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
 		InputStream is = Utility.openConnection(dataFile.openConnection());
+
+        LOGGER.debug("getRecordSize:adapter {}",adapter);
 		try {
 			offset = adapter.getOffset();
 		} catch (NullPointerException ex) {
@@ -360,25 +356,31 @@ public class TableReader {
 			throw ex;
 		}
 		if (adapter instanceof TableDelimitedAdapter) {			
-            // Removed old usage of BufferedReader to count lines which is problematic when file is large.
-            // Use new function countCarriageReturn() to count number of lines of any file sizes.
+            LOGGER.debug("getRecordSize:adapter instanceof TableDelimitedAdapter");
+            // The advantage of the new function countRecordsForTableAdapterType() is it does not
+            // re-read the file but merely calculate how many records fit into the file given the record length.
 
-            this.recordSize = this.countCarriageReturn(dataFile);
+            this.recordSize = this.countRecordsForTableAdapterType(dataFile, offset);
 
 		} else {
+            LOGGER.debug("getRecordSize:adapter instanceof TableDelimitedAdapter else");
 			if (adapter instanceof TableBinaryAdapter)
 				offset = 0;
 			
 			is.skip(offset);
 			bufferedReader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
 			if (adapter instanceof TableCharacterAdapter) {
-				int numLines = 0;
-				while (bufferedReader.readLine()!=null) {
-				   ++numLines;
-				}
-				this.recordSize = numLines;
+                LOGGER.debug("getRecordSize:adapter instanceof TableCharacterAdapter");
+
+                // The advantage of the new function countRecordsForTableAdapterType() is it does not
+                // re-read the file but merely calculate how many records fit into the file given the record length.
+
+                this.recordSize = this.countRecordsForTableAdapterType(dataFile, offset);
+
 			}
 			else {
+                LOGGER.debug("getRecordSize:adapter instanceof TableCharacterAdapter else");
+
 				this.recordSize = is.available();	
 			
 				// need to change to get filesize larger than 2gb
@@ -392,6 +394,9 @@ public class TableReader {
 				raf.close();
 			}
 		}			
+        LOGGER.debug("getRecordSize:this.recordSize {}",this.recordSize);
+        LOGGER.debug("getRecordSize:adapter.getRecordLength() {}",adapter.getRecordLength());
+
 		return this.recordSize;
 	}
 	
