@@ -316,6 +316,52 @@ public class TableReader {
 	  return this.accessor;
 	}
 
+    private long parseBufferForLineCount(URL dataFile, byte [] bufferAsBytes) throws Exception {
+        // Given a byte array, read through as if reading through a smaller file and count the lines.
+        InputStream inputStream = new ByteArrayInputStream(bufferAsBytes);
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        long linesInBuffer = 0;
+        try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+            while (reader.readLine() != null) linesInBuffer++;
+        } catch (IOException e) {
+            LOGGER.error("Cannot count lines from file {} in parseBufferForLineCount() function",dataFile);
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+        }
+        LOGGER.debug("parseBufferForLineCount:linesInBuffer {}",linesInBuffer);
+        return linesInBuffer;
+    }
+
+    private long countCarriageReturn(URL dataFile) throws Exception {
+        // Count the number of carriage returns for a file of any size.   The traditional BufferReader cannot handle files larger than 2GB.
+        long numCarriageReturns = 0;
+
+        // Use RandomAccessFile to get filesize larger than 2gb
+        File aFile = new File(dataFile.toURI());
+        RandomAccessFile raf = new RandomAccessFile(aFile, "r");
+        raf.seek(offset); // Move the pointer to the offset first.
+
+        FileChannel inChannel = raf.getChannel();
+        int bufferSize = 1024*128;
+        if (bufferSize > inChannel.size()) {
+            bufferSize = (int) inChannel.size();
+        }
+        ByteBuffer buff = ByteBuffer.allocate(bufferSize);
+
+        byte [] bufferAsBytes = null;
+        while (inChannel.read(buff) > 0) {
+            buff = buff.position(0); // Must point the pointer to the beginning of buff indorder to access the elements in the array.
+            bufferAsBytes = buff.array();  // Get the underlying byte array in ByteBuffer.
+
+             // With the smaller buffer, we can safely read through the buffer for all lines and count them.
+             numCarriageReturns = numCarriageReturns + this.parseBufferForLineCount(dataFile, bufferAsBytes);
+
+             buff.clear();
+        }
+        raf.close();
+        return(numCarriageReturns);
+    }
+
     private long countRecordsForTableAdapterType(URL dataFile, long offset) throws Exception {
         // For TableCharacter, we have to rely on the size of each record and the file size to calculate the number
         // of records thus not having to read through the entire file.
@@ -325,6 +371,16 @@ public class TableReader {
 
         long numRecords = -1;
 
+        // Do a sanity check if the record size is not known or zero.  Not all labels provide the record size, for example comma separated files.
+        // If the record size is not known or zero, unfortunately we must read through the file and count the carriage returns.
+
+        if (adapter.getRecordLength() <= 0) {
+            numRecords = this.countCarriageReturn(dataFile);
+            LOGGER.debug("countRecordsForTableAdapterType:numRecords {}",numRecords);
+            return(numRecords);
+        }
+
+        LOGGER.debug("countRecordsForTableAdapterType:numRecords:initial {}",numRecords);
 		File aFile = new File(dataFile.toURI());
 		RandomAccessFile raf = new RandomAccessFile(aFile, "r");
 		raf.seek(offset);
@@ -335,7 +391,7 @@ public class TableReader {
 
         // The number of records is the size of the file divided by the record length
         numRecords = fileSize/adapter.getRecordLength();
-        
+
         LOGGER.debug("countRecordsForTableAdapterType:numRecords {}",numRecords);
 
         return(numRecords);
