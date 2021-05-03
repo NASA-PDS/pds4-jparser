@@ -332,9 +332,9 @@ public class TableReader {
         return linesInBuffer;
     }
 
-    private long countCarriageReturn(URL dataFile) throws Exception {
-        // Count the number of carriage returns for a file of any size.   The traditional BufferReader cannot handle files larger than 2GB.
-        long numCarriageReturns = 0;
+    private long countRecordsForTextTable(URL dataFile) throws Exception {
+        // Count the number of records for a text file of any size.   The traditional BufferReader cannot handle files larger than 2GB.
+        long numRecordsForTextTable = 0;
 
         // Use RandomAccessFile to get filesize larger than 2gb
         File aFile = new File(dataFile.toURI());
@@ -354,12 +354,12 @@ public class TableReader {
             bufferAsBytes = buff.array();  // Get the underlying byte array in ByteBuffer.
 
              // With the smaller buffer, we can safely read through the buffer for all lines and count them.
-             numCarriageReturns = numCarriageReturns + this.parseBufferForLineCount(dataFile, bufferAsBytes);
+             numRecordsForTextTable = numRecordsForTextTable + this.parseBufferForLineCount(dataFile, bufferAsBytes);
 
              buff.clear();
         }
         raf.close();
-        return(numCarriageReturns);
+        return(numRecordsForTextTable);
     }
 
     private long countRecordsForTableAdapterType(URL dataFile, long offset) throws Exception {
@@ -372,10 +372,10 @@ public class TableReader {
         long numRecords = -1;
 
         // Do a sanity check if the record size is not known or zero.  Not all labels provide the record size, for example comma separated files.
-        // If the record size is not known or zero, unfortunately we must read through the file and count the carriage returns.
+        // If the record size is not known or zero, unfortunately we must read through the file and count the records.
 
         if (adapter.getRecordLength() <= 0) {
-            numRecords = this.countCarriageReturn(dataFile);
+            numRecords = this.countRecordsForTextTable(dataFile);
             LOGGER.debug("countRecordsForTableAdapterType:numRecords {}",numRecords);
             return(numRecords);
         }
