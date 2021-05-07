@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.net.URLConnection;
 import java.io.RandomAccessFile;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -350,7 +351,7 @@ public class TableReader {
 
         byte [] bufferAsBytes = null;
         while (inChannel.read(buff) > 0) {
-            buff = buff.position(0); // Must point the pointer to the beginning of buff indorder to access the elements in the array.
+            ((Buffer) buff).position(0); // Must point the pointer to the beginning of buff in order to access the elements in the array.
             bufferAsBytes = buff.array();  // Get the underlying byte array in ByteBuffer.
 
              // With the smaller buffer, we can safely read through the buffer for all lines and count them.
