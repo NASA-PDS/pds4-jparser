@@ -14,7 +14,7 @@
 
 **Defects:**
 
-- NoSuchMethodError: java.nio.ByteBuffer with Java9 Builds [\#36](https://github.com/NASA-PDS/pds4-jparser/issues/36)
+- NoSuchMethodError: java.nio.ByteBuffer with Java9 Builds [\#36](https://github.com/NASA-PDS/pds4-jparser/issues/36) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
 
 ## [v1.11.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.11.0) (2021-04-03)
 
