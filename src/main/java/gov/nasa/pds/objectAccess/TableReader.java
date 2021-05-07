@@ -357,7 +357,7 @@ public class TableReader {
              // With the smaller buffer, we can safely read through the buffer for all lines and count them.
              numRecordsForTextTable = numRecordsForTextTable + this.parseBufferForLineCount(dataFile, bufferAsBytes);
 
-             buff.clear();
+             ((Buffer) buff).clear();
         }
         raf.close();
         return(numRecordsForTextTable);
