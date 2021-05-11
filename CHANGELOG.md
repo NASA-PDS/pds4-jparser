@@ -1,9 +1,5 @@
 # Changelog
 
-## [v2.1.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.1.0-SNAPSHOT) (2021-05-07)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.0.1...v2.1.0-SNAPSHOT)
-
 ## [v2.0.1](https://github.com/NASA-PDS/pds4-jparser/tree/v2.0.1) (2021-05-03)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.0.0...v2.0.1)
@@ -14,7 +10,7 @@
 
 **Defects:**
 
-- NoSuchMethodError: java.nio.ByteBuffer with Java9 Builds [\#36](https://github.com/NASA-PDS/pds4-jparser/issues/36) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
+- NoSuchMethodError: java.nio.ByteBuffer with Java9 Builds [\#36](https://github.com/NASA-PDS/pds4-jparser/issues/36)
 
 ## [v1.11.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.11.0) (2021-04-03)
 
