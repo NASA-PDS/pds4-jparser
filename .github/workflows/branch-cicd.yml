@@ -1,0 +1,54 @@
+# 🏃‍♀️ Continuous Integration and Delivery: Branch Testing
+# ======================================================
+
+
+---
+
+name: 🔁 Branch integration testing
+
+
+# Driving Event
+# -------------
+#
+# What event starts this workflow: a push to ``main`` (or ``master`` in old
+# parlance).
+
+on:
+    push:
+        branches:
+            -   '**'
+            -   '!master'
+
+
+# What to Do
+# ----------
+#
+# Round up, yee-haw!
+
+jobs:
+    branch_testing:
+        name: 🧩 Branch Testing
+        runs-on: ubuntu-latest
+        if: github.actor != 'pdsen-ci'
+        steps:
+          - uses: actions/checkout@v2
+          - name: Set up JDK 1.8
+            uses: actions/setup-java@v1
+            with:
+              java-version: 1.8
+              server-id: ossrh
+              server-username: MAVEN_USERNAME
+              server-password: MAVEN_PASSWORD
+
+          - name: Set up Python 3
+            uses: actions/setup-python@v1
+            with:
+              python-version: '3.7'
+
+          - name: Test Software
+            run: mvn compile test site --file pom.xml
+            env:
+               MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+               MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+
+# -*- mode: yaml; indent: 4; fill-column: 120; coding: utf-8 -*-
