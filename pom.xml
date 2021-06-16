@@ -258,11 +258,6 @@
   </scm>
 
   <repositories>
-    <repository>
-      <id>project.local</id>
-      <name>project</name>
-      <url>file:${project.basedir}/repo</url>
-    </repository>
     <!-- JBoss Repo Needed for JAI libraries -->
     <repository>
       <id>JBoss</id>
@@ -302,7 +297,7 @@
       <version>1.7.21</version>
     </dependency>    
     <dependency>
-      <groupId>com.opencsv</groupId>
+      <groupId>gov.nasa.pds</groupId>
       <artifactId>opencsv</artifactId>
       <version>5.4-SNAPSHOT</version>
     </dependency>
@@ -433,7 +428,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>gov.nasa.jpl.ammos.ids.vicario</groupId>
+      <groupId>gov.nasa.pds</groupId>
       <artifactId>vicario</artifactId>
       <version>48.0.3-SNAPSHOT</version>
       <scope>compile</scope>
