@@ -32,6 +32,6 @@ mvn versions:set-property -Dproperty=model-version -DnewVersion=$version
 
 git add pom.xml $outdir
 git commit -m "Updated IM version"
-git push origin master
+git push origin main
 
 exit 0
