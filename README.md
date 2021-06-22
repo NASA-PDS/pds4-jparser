@@ -126,19 +126,19 @@ git push origin gh-pages
 
 Update `pom.xml` with the next SNAPSHOT version either manually or using Github Versions Plugin, e.g.:
 ```
-git checkout master
+git checkout main
 VERSION=1.16.0-SNAPSHOT
 mvn versions:set -DnewVersion=$VERSION
 git add pom.xml
 git commit -m "Update version for $VERSION development"
-git push -u origin master
+git push -u origin main
 ```
 
 ### Complete Release in Github
 Currently the process to create more formal release notes and attach Assets is done manually through the [Github UI](https://github.com/NASA-PDS/pds4-jparser/releases/new) but should eventually be automated via script.
 
 ## Snapshot Release
-1. Checkout the master branch.
+1. Checkout the main branch.
 
 2. Deploy software to Sonatype Maven repo:
 ```
