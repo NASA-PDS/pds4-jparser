@@ -263,9 +263,9 @@
       <id>geotools</id>
       <name>OSGeo Download Server</name>
       <layout>default</layout>
-      <url>http://download.osgeo.org/webdav/geotools/</url>
+      <url>https://download.osgeo.org/webdav/geotools/</url>
       <snapshots>
-	<enabled>false</enabled>
+        <enabled>false</enabled>
       </snapshots>
     </repository>
   </repositories>
