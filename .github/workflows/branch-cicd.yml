@@ -30,20 +30,18 @@ jobs:
         name: 🧩 Branch Testing
         runs-on: ubuntu-latest
         if: github.actor != 'pdsen-ci'
+
+        strategy:
+          matrix:
+            java-version: [8, 11]
+
         steps:
           - uses: actions/checkout@v2
-          - name: Set up JDK 1.8
-            uses: actions/setup-java@v1
+          - name: Set up OpenJDK
+            uses: actions/setup-java@v2
             with:
-              java-version: 1.8
-              server-id: ossrh
-              server-username: MAVEN_USERNAME
-              server-password: MAVEN_PASSWORD
-
-          - name: Set up Python 3
-            uses: actions/setup-python@v1
-            with:
-              python-version: '3.7'
+              distribution: 'adopt'
+              java-version: ${{ matrix.java-version }}
 
           - name: Test Software
             run: mvn compile test site --file pom.xml
