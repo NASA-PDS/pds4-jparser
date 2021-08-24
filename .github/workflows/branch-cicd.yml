@@ -33,20 +33,24 @@ jobs:
 
         strategy:
           matrix:
-            java-version: [8, 11]
+            openjdk-version: [ openjdk8, openjdk11 ]
 
         steps:
-          - uses: actions/checkout@v2
-          - name: Set up OpenJDK
-            uses: actions/setup-java@v2
-            with:
-              distribution: 'adopt'
-              java-version: ${{ matrix.java-version }}
+            -
+                name: 💳 Checkout
+                uses: actions/checkout@v2
+                with:
+                    lfs: true
+                    token: ${{secrets.ADMIN_GITHUB_TOKEN}}
 
-          - name: Test Software
-            run: mvn compile test site --file pom.xml
-            env:
-               MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-               MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-
-# -*- mode: yaml; indent: 4; fill-column: 120; coding: utf-8 -*-
+            -
+                name: 🤠 Roundup
+                uses: NASA-PDS/roundup-action@main
+                with:
+                    assembly: integration
+                    packages: ${{ matrix.java-version }}
+                env:
+                    ossrh_username: ${{secrets.OSSRH_USERNAME}}
+                    ossrh_password: ${{secrets.OSSRH_PASSWORD}}
+                    CODE_SIGNING_KEY: ${{secrets.CODE_SIGNING_KEY}}
+                    ADMIN_GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
