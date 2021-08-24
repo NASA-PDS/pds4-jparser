@@ -48,7 +48,7 @@ jobs:
                 uses: NASA-PDS/roundup-action@main
                 with:
                     assembly: integration
-                    packages: ${{ matrix.java-version }}
+                    packages: ${{ matrix.openjdk-version }}
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
