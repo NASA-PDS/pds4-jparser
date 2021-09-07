@@ -49,6 +49,7 @@ jobs:
                 with:
                     assembly: integration
                     packages: ${{ matrix.openjdk-version }}
+                    maven-unstable-artifact-phases: clean,package,site
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
