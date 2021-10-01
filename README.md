@@ -3,9 +3,12 @@ Java library providing APIs for parsing and exporting information
 on PDS4 table and image objects to various formats including CSV, PNG, Vicar, 
 Fits, etc. The software is packaged in a JAR file.
 
+Please visit the website https://NASA-PDS.github.io/pds4-jparser/ for information on installation, use, operation, and also *development* of this software.
+
+
 # System Requirements
 Current software requires:
-* Java 1.8 - the Ant build does not appear to complete succcessfully in later versions of Java
+* Java 1.8 — the Ant build does not appear to complete succcessfully in later versions of Java
 * Maven 3
 
 # Documentation
@@ -54,6 +57,9 @@ build/pre-build.sh ops 1E00
 For internal JPL use, the ConMan software package can be used for releasing software, otherwise the following sections outline how to complete these steps manually.
 
 ## Manual Release
+
+Note that GitHub Actions are enabled for the repository of this software so that automated SNAPSHOT and stable releases are available. Manual release instructions follow below.
+
 
 ### Update Version Numbers
 

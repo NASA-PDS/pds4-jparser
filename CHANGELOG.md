@@ -1,8 +1,12 @@
 # Changelog
 
-## [v2.1.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.1.0-SNAPSHOT) (2021-06-30)
+## [v2.1.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.1.0-SNAPSHOT) (2021-09-21)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.0.3...v2.1.0-SNAPSHOT)
+
+**Defects:**
+
+- Software does not build in Java11 on Windows [\#42](https://github.com/NASA-PDS/pds4-jparser/issues/42) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
 
 ## [v2.0.3](https://github.com/NASA-PDS/pds4-jparser/tree/v2.0.3) (2021-06-30)
 
@@ -38,8 +42,8 @@
 
 **Defects:**
 
-- NIO Library causes error when trying to build with openJDK 8 [\#32](https://github.com/NASA-PDS/pds4-jparser/issues/32)
-- Update table reads for large files and improve memory footprints [\#21](https://github.com/NASA-PDS/pds4-jparser/issues/21)
+- NIO Library causes error when trying to build with openJDK 8 [\#32](https://github.com/NASA-PDS/pds4-jparser/issues/32) [[s.high](https://github.com/NASA-PDS/pds4-jparser/labels/s.high)]
+- Update table reads for large files and improve memory footprints [\#21](https://github.com/NASA-PDS/pds4-jparser/issues/21) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
 
 **Other closed issues:**
 

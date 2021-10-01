@@ -75,20 +75,33 @@
   
   <files>
     <file>
-      <source>LICENSE</source>
+      <source>LICENSE.md</source>
       <outputDirectory>/</outputDirectory>
       <fileMode>644</fileMode>
       <lineEnding>crlf</lineEnding>
     </file>
     <file>
-      <source>README-PACKAGE.txt</source>
+      <source>CHANGELOG.md</source>
       <outputDirectory>/</outputDirectory>
-      <destName>README.md</destName>
       <fileMode>644</fileMode>
       <lineEnding>crlf</lineEnding>
       <filtered>true</filtered>
     </file>
-  </files> 
+    <file>
+      <source>README.md</source>
+      <outputDirectory>/</outputDirectory>
+      <fileMode>644</fileMode>
+      <lineEnding>crlf</lineEnding>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>NOTICE.txt</source>
+      <outputDirectory>/</outputDirectory>
+      <fileMode>644</fileMode>
+      <lineEnding>crlf</lineEnding>
+      <filtered>true</filtered>
+    </file>
+  </files>
   
   <dependencySets>
     <dependencySet>
