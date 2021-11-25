@@ -68,10 +68,9 @@ jobs:
                     restore-keys: pds-${{runner.os}}-mvn-
             -
                 name: 🤠 Roundup
-                uses: NASA-PDS/roundup-action@main
+                uses: nasa-pds/roundup-action@stable
                 with:
                     assembly: stable
-                    packages: openjdk8
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
