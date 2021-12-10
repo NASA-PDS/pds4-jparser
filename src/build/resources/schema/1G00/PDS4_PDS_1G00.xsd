@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <!-- PDS4 XML/Schema for Name Space Id:pds  Version:1.16.0.0 - Mon Feb 01 14:54:13 EST 2021 -->
+  <!-- PDS4 XML/Schema for Name Space Id:pds  Version:1.16.0.0 - Fri Apr 23 17:33:38 EDT 2021 -->
   <!-- Generated from the PDS4 Information Model Version 1.16.0.0 - System Build 11.1 -->
   <!-- *** This PDS4 product schema is an operational deliverable. *** -->
   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -7223,7 +7223,7 @@
         description in a display or listing of
         products.</xs:documentation>
     </xs:annotation>
-    <xs:restriction base="pds:ASCII_Short_String_Collapsed">
+    <xs:restriction base="pds:UTF8_Short_String_Collapsed">
      <xs:minLength value="1"/>
      <xs:maxLength value="255"/>
 	   </xs:restriction>
