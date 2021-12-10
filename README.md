@@ -1,4 +1,7 @@
 # PDS4 JParser
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5725957.svg)](https://doi.org/10.5281/zenodo.5725957) [![🤪 Unstable integration & delivery](https://github.com/NASA-PDS/pds4-jparser/actions/workflows/unstable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/pds4-jparser/actions/workflows/unstable-cicd.yaml) [![😌 Stable integration & delivery](https://github.com/NASA-PDS/pds4-jparser/actions/workflows/stable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/pds4-jparser/actions/workflows/stable-cicd.yaml)
+
 Java library providing APIs for parsing and exporting information
 on PDS4 table and image objects to various formats including CSV, PNG, Vicar, 
 Fits, etc. The software is packaged in a JAR file.
