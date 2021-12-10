@@ -1,6 +1,6 @@
 # Changelog
 
-## [v2.2.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.2.0-SNAPSHOT) (2021-11-25)
+## [v2.2.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.2.0-SNAPSHOT) (2021-12-10)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.1.0...v2.2.0-SNAPSHOT)
 
