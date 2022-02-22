@@ -115,6 +115,14 @@ public class ArrayObject extends DataObject {
 	public int[] getDimensions() {
 		return dimensions;
 	}
+        
+        /**
+         * return the name of this array.
+         * @return the name of this array.
+         */
+        public String getName() {
+            return array.getName();
+        }
 
 	private long findSize(int elementSize) {
 		long count = 1;
@@ -264,6 +272,23 @@ public class ArrayObject extends DataObject {
 		}
 	}
 
+	/**
+	 * Gets the entire 1-D array, as doubles.
+	 *
+	 * @return an array of double with all array elements
+	 * @throws IOException 
+	 */
+	public double[] getElements1D() throws IOException {
+		checkDimensions(1);
+
+		double[] values = new double[dimensions[0]];
+		for (int i=0; i < dimensions[0]; ++i) {
+			values[i] = getDouble( new int[] { i } );
+		}
+
+		return values;
+	}
+        
 	/**
 	 * Gets the entire 2-D array, as doubles.
 	 *
