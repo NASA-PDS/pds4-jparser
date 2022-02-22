@@ -32,6 +32,7 @@ package gov.nasa.pds.objectAccess.table;
 
 import static org.testng.Assert.assertEquals;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -126,12 +127,12 @@ public class FloatBinaryFieldAdapterTest {
 		FieldAdapter adapter = new FloatBinaryFieldAdapter(true);
 		
 		adapter.setFloat(value, offset, length, buf, false);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 				
 		adapter.setDouble((double) value, offset, length, buf, false);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}
@@ -145,12 +146,12 @@ public class FloatBinaryFieldAdapterTest {
 		FieldAdapter adapter = new FloatBinaryFieldAdapter(false);
 		
 		adapter.setFloat(value, offset, length, buf, false);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);		
 		assertEquals(bytes, b);
 		
 		adapter.setDouble((double) value, offset, length, buf, false);
-		buf.position(offset);
+		((Buffer) buf).position(offset);
 		buf.get(bytes, 0, length);
 		assertEquals(bytes, b);
 	}

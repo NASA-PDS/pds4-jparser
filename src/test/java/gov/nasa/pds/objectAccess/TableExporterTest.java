@@ -52,7 +52,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.Test;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class TableExporterTest {
 	private static final String DELIMITED_LABEL_NAME = "Product_Table_Delimited.xml";		

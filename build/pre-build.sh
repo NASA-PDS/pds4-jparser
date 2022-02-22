@@ -13,9 +13,9 @@ if [ $# -ne 2 ]; then
 fi
 
 if [ $1 == "dev" ]; then
-    BASE_URL=https://pds.jpl.nasa.gov/datastandards/schema/develop/pds/
+    BASE_URL=https://pds.nasa.gov/datastandards/schema/develop/pds/
 elif [ $1 == "ops" ]; then
-    BASE_URL=https://pds.jpl.nasa.gov/pds4/pds/v1/
+    BASE_URL=https://pds.nasa.gov/pds4/pds/v1/
 else
     usage
 fi
@@ -24,7 +24,8 @@ version=$2
 outdir=src/build/resources/schema/$version/
 
 mkdir -p $outdir
-wget --no-parent -P $outdir $BASE_URL/PDS4_PDS_${version}.xsd
+wget --no-parent -P $outdir $BASE_URL/PDS4_PDS_${version}.xsd -O PDS4_PDS_${version}.xsd
+mv PDS4_PDS_${version}.xsd src/build/resources/schema/$version/
 
 sed "s/REPLACE_ME/$version/g" src/build/resources/schema/PDS4_DISP_template.xsd > src/build/resources/schema/$version/PDS4_DISP_${version}.xsd
 
@@ -32,6 +33,6 @@ mvn versions:set-property -Dproperty=model-version -DnewVersion=$version
 
 git add pom.xml $outdir
 git commit -m "Updated IM version"
-git push origin master
+git push origin main
 
 exit 0
