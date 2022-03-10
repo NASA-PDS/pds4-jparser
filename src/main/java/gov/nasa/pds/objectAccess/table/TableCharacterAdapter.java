@@ -74,6 +74,7 @@ public class TableCharacterAdapter implements TableAdapter {
 		desc.setType(FieldType.getFieldType(field.getDataType()));
 		desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
 		desc.setLength(field.getFieldLength().getValue().intValueExact());
+		desc.setSpecialConstants(field.getSpecialConstants());
     if (field.getFieldFormat() != null) {
       desc.setFieldFormat(field.getFieldFormat());
     }

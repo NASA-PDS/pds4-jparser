@@ -83,6 +83,7 @@ public class TableBinaryAdapter implements TableAdapter {
 		desc.setType(FieldType.getFieldType(field.getDataType()));
 		desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
 		desc.setLength(field.getFieldLength().getValue().intValueExact());
+		desc.setSpecialConstants(field.getSpecialConstants());
     if (field.getFieldFormat() != null) {
       desc.setFieldFormat(field.getFieldFormat());
     }
@@ -116,6 +117,7 @@ public class TableBinaryAdapter implements TableAdapter {
 		desc.setType(FieldType.getFieldType(bitField.getDataType()));
 		desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
 		desc.setLength(field.getFieldLength().getValue().intValueExact());
+		desc.setSpecialConstants(field.getSpecialConstants());
 		int startBit = 0;
 		if (bitField.getStartBit() != null) {
 		  startBit = bitField.getStartBit().intValueExact();
