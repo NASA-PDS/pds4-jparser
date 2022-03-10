@@ -30,6 +30,7 @@
 
 package gov.nasa.pds.label.object;
 
+import gov.nasa.arc.pds.xml.generated.SpecialConstants;
 
 /**
  * Implements a description of a table field.
@@ -47,6 +48,7 @@ public class FieldDescription {
 	private String validationFormat;
 	private Double minimum;
 	private Double maximum;
+	private SpecialConstants specialConstants;
 	
 	public FieldDescription() {
 	  name = "";
@@ -60,9 +62,11 @@ public class FieldDescription {
 	  validationFormat = "";
 	  minimum = null;
 	  maximum = null;
+	  specialConstants = null;
 	}
 	
-	/**
+
+  /**
 	 * Gets the field name.
 	 * 
 	 * @return the field name
@@ -228,5 +232,13 @@ public class FieldDescription {
 	public Double getMaximum() {
 	  return maximum;
 	}
+
+	public SpecialConstants getSpecialConstants() {
+	  return specialConstants;
+	}
+
+    public void setSpecialConstants(SpecialConstants specialConstants) {
+      this.specialConstants = specialConstants;
+    }
 	
 }

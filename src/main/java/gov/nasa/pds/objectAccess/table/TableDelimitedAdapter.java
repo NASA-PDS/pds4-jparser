@@ -71,6 +71,7 @@ public class TableDelimitedAdapter implements TableAdapter {
 		FieldDescription desc = new FieldDescription();
 		desc.setName(field.getName());
 		desc.setType(FieldType.getFieldType(field.getDataType()));
+		desc.setSpecialConstants(field.getSpecialConstants());
 		if (field.getMaximumFieldLength() != null) {
 		  desc.setMaxLength(field.getMaximumFieldLength().getValue().intValueExact());
 		}
