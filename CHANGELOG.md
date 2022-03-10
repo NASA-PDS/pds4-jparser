@@ -1,16 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2022-02-22)
+## [v2.2.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.2.0-SNAPSHOT) (2022-02-22)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.2.0-SNAPSHOT...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.1.1...v2.2.0-SNAPSHOT)
 
 **Improvements:**
 
 - Improve ArrayObject accessor with new methods for improved access to the array label information [\#55](https://github.com/NASA-PDS/pds4-jparser/issues/55)
-
-## [v2.2.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.2.0-SNAPSHOT) (2022-01-31)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.1.1...v2.2.0-SNAPSHOT)
 
 ## [v2.1.1](https://github.com/NASA-PDS/pds4-jparser/tree/v2.1.1) (2021-12-10)
 
