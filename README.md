@@ -8,6 +8,8 @@ Fits, etc. The software is packaged in a JAR file.
 
 Please visit the website https://NASA-PDS.github.io/pds4-jparser/ for information on installation, use, operation, and also *development* of this software.
 
+**Looking for a Python library? See the [Planetary Data Reader (pdr)](https://github.com/MillionConcepts/pdr)**
+
 
 # System Requirements
 Current software requires:
