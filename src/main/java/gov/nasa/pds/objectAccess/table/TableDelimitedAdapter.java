@@ -35,7 +35,7 @@ import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
-
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,8 +101,8 @@ public class TableDelimitedAdapter implements TableAdapter {
 	}
 
 	@Override
-	public int getRecordCount() {
-		return table.getRecords().intValueExact();
+	public long getRecordCount() {
+		return table.getRecords().longValueExact();
 	}
 
 	@Override

@@ -58,6 +58,7 @@ public class ByteWiseFileAccessorTest {
 		try {
 			ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(new File(BIN_DATA_FILE), 0, 96, 336);
 			byte[] bytes = fileObject.readRecordBytes(recordNum, offset, length);
+			fileObject.close();
 			assertNotNull(bytes);
 			assertEquals(bytes, expected);
 		} catch(Exception e) { }
@@ -75,14 +76,16 @@ public class ByteWiseFileAccessorTest {
 	// Tests the case when the table length exceeds the file extent.
 	// Here, the size of BIN_DATA_FILE is 32,356 = 336 records * 96 bytes/record.
 	// We specify 97 bytes/record.
-	@Test(expectedExceptions={IllegalArgumentException.class})
-	public void testFileTooShort() throws IOException {
-		new ByteWiseFileAccessor(new File(BIN_DATA_FILE), 0, 97, 336);
+	@Test(expectedExceptions={InvalidTableException.class})
+	public void testFileTooShort() throws IOException, InvalidTableException {
+	    ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(new File(BIN_DATA_FILE), 0, 97, 336);
+	    fileObject.close();
 	}
 
 	@Test(expectedExceptions={FileNotFoundException.class})
 	public void testFileNotFoundException() throws Exception {
-		new ByteWiseFileAccessor(new File("file.dat"), 0, 96, 336);
+	    ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(new File("file.dat"), 0, 96, 336);
+	    fileObject.close();
 	}
 
 	@Test

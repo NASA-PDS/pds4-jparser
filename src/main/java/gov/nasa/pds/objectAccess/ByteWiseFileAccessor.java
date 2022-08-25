@@ -30,38 +30,31 @@
 
 package gov.nasa.pds.objectAccess;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gov.nasa.pds.objectAccess.utility.Utility;
 
 /**
  * Class that provides common I/O functionality for PDS data objects.
  */
-public class ByteWiseFileAccessor {
+public class ByteWiseFileAccessor implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ByteWiseFileAccessor.class);
 	private int recordLength;
-	private ByteBuffer buffer = null;
-	private long fileContentSize;
+	private RandomAccessFile raf = null;
+	private FileChannel fileAccessChannel = null;
+	private long totalFileContentSize;
 	
 	//https://vanillajava.blogspot.com/2011/12/using-memory-mapped-file-for-huge.html
 	private static final int MAPPING_SIZE = 1 << 30;  
@@ -71,7 +64,6 @@ public class ByteWiseFileAccessor {
 	//private static final int MAPPING_SIZE = 317;  // TODO: Uncomment by developer only to split small files into multiple chunks.
 	private final List<ByteBuffer> mappings = new ArrayList<>();
 	private long curPosition = 0;
-	private long curListIndex = 0;
 	private long totalBytesRead = 0;
 
 	 /**
@@ -85,8 +77,11 @@ public class ByteWiseFileAccessor {
    * @throws FileNotFoundException If <code>file</code> does not exist, is a directory
    *       rather than a regular file, or for some other reason cannot be opened for reading
    * @throws IOException If an I/O error occurs
+	 * @throws InvalidTableException 
+	 * @throws MissingDataException 
+	 * @throws IllegalArgumentException 
    */
-  public ByteWiseFileAccessor(File file, long offset, int length, int records) throws FileNotFoundException, IOException {
+  public ByteWiseFileAccessor(File file, long offset, int length, long records) throws FileNotFoundException, IOException, InvalidTableException {
     this(file.toURI().toURL(), offset, length, records);
   }
 	
@@ -101,10 +96,18 @@ public class ByteWiseFileAccessor {
    * @throws FileNotFoundException If <code>file</code> does not exist, is a directory
    *       rather than a regular file, or for some other reason cannot be opened for reading
    * @throws IOException If an I/O error occurs
+ * @throws InvalidTableException 
+ * @throws MissingDataException 
+ * @throws IllegalArgumentException 
    */
-  public ByteWiseFileAccessor(URL url, long offset, int length, int records) 
-      throws FileNotFoundException, IOException {
+  public ByteWiseFileAccessor(URL url, long offset, int length, long records) 
+      throws FileNotFoundException, IOException, InvalidTableException {
     this(url, offset, length, records, true);
+  }
+  
+  public ByteWiseFileAccessor(URL url, long offset, int length, long records, boolean checkSize)
+		    throws FileNotFoundException, IOException, InvalidTableException {
+	this(url, offset, length, records, true, null);  
   }
   
 	/**
@@ -120,110 +123,87 @@ public class ByteWiseFileAccessor {
 	 * @throws FileNotFoundException If <code>file</code> does not exist, is a directory
 	 * 		   rather than a regular file, or for some other reason cannot be opened for reading
 	 * @throws IOException If an I/O error occurs
+	 * @throws InvalidTableException 
+	 * @throws MissingDataException 
 	 */
-  public ByteWiseFileAccessor(URL url, long offset, int length, int records, boolean checkSize)
-	    throws FileNotFoundException, IOException {
-    this.recordLength = length;
-    long lsize = (long)length * (long)records;
-    this.totalBytesRead = 0;
-    int bytesRead = 0;
-    try {
-      //issue_189: handle the buffer size > 2GB to read a huge file
-      File dataFile = new File(url.toURI());
-      RandomAccessFile raf = new RandomAccessFile(dataFile, "r");
-      FileChannel inChannel = raf.getChannel();    
-      long fileSize = this.fileContentSize = inChannel.size();
-      long sizeToRead = lsize;
-      // check this again
-      if (sizeToRead>(fileSize-offset)) 
-      	  sizeToRead = (fileSize-offset);
-      
-      //https://stackoverflow.com/questions/55300976/memory-mapping-huge-files-in-java
-      long tmpSize = sizeToRead;
-      for (long offset2 = 0; offset2 < sizeToRead; offset2 += MAPPING_SIZE) {
-    	long size2 = Math.min(tmpSize, MAPPING_SIZE);
-        mappings.add(inChannel.map(FileChannel.MapMode.READ_ONLY, (offset2+offset), size2));
-        tmpSize -= size2;
-        LOGGER.debug("ByteWiseFileAccessor: mappings.add: offset2,offset {},{}",offset2,offset);
-        LOGGER.debug("ByteWiseFileAccessor: mappings.add: size2,mappings.size {},{}",size2,mappings.size());
-      }   
-      raf.close();
-      for (int i=0; i<mappings.size(); i++) {
-          bytesRead = mappings.get(i).capacity();
-          totalBytesRead += bytesRead;
-          LOGGER.debug("ByteWiseFileAccessor: i,bytesRead,totalBytesRead " + Integer.toString(i) + "," + Long.toString(bytesRead) + "," + Long.toString(totalBytesRead));
-      }
-      this.curPosition = 0;      
-      if (checkSize) {
-         if (totalBytesRead < lsize) {
-    	    throw new IllegalArgumentException("Expected to read in " + lsize
+  public ByteWiseFileAccessor(URL url, long offset, int length, long records, boolean checkSize, RandomAccessFile raf)
+	    throws FileNotFoundException, IOException, InvalidTableException {
+      this.raf = raf;
+	  if (this.raf == null) {
+		  try {
+		      File dataFile = new File(url.toURI());
+		      this.raf = new RandomAccessFile(dataFile, "r");
+		  } catch (java.net.URISyntaxException ex) {
+		  	  LOGGER.error("URI Syntax Error.", ex);
+		  	  //ex.printStackTrace();
+		      //throw ex;
+		  }
+	  }
+	  
+	  this.fileAccessChannel = this.raf.getChannel();
+      initializeAccessor(url, offset, length, records, checkSize);
+  }
+  
+  private void initializeAccessor(URL url, long offset, int length, long records, boolean checkSize) 
+          throws FileNotFoundException, IOException, InvalidTableException {
+	    this.recordLength = length;
+	    this.totalBytesRead = 0;
+ 
+	    try {
+	      //issue_189: handle the buffer size > 2GB to read a huge file
+    
+	      this.totalFileContentSize = this.fileAccessChannel.size();
+
+	      long expectedBytesToRead , actualBytesToRead;
+	      expectedBytesToRead = (long)length * records;
+	      long fileSizeMinusOffset = Math.max(0, this.totalFileContentSize-offset);
+
+	      actualBytesToRead = expectedBytesToRead;
+	      if (expectedBytesToRead <= 0 || expectedBytesToRead > fileSizeMinusOffset)
+	          actualBytesToRead = fileSizeMinusOffset;
+
+	      //https://stackoverflow.com/questions/55300976/memory-mapping-huge-files-in-java
+	      long tmpSize = actualBytesToRead;
+	      for (long offset2 = 0; offset2 < actualBytesToRead; offset2 += MAPPING_SIZE) {
+	    	long size2 = Math.min(tmpSize, MAPPING_SIZE);
+	        mappings.add(this.fileAccessChannel.map(FileChannel.MapMode.READ_ONLY, (offset2+offset), size2));
+	        tmpSize -= size2;
+	        LOGGER.debug("ByteWiseFileAccessor: mappings.add: offset2,offset {},{}",offset2,offset);
+	        LOGGER.debug("ByteWiseFileAccessor: mappings.add: size2,mappings.size {},{}",size2,mappings.size());
+	      }
+
+	      int bytesRead = 0;
+	      for (int i=0; i<mappings.size(); i++) {
+	          bytesRead = mappings.get(i).capacity();
+	          totalBytesRead += bytesRead;
+	          LOGGER.debug("ByteWiseFileAccessor: i,bytesRead,totalBytesRead " + Integer.toString(i) + "," + Long.toString(bytesRead) + "," + Long.toString(totalBytesRead));
+	      }
+	      this.curPosition = 0;
+
+	      // if for whatever reason we don't read in sufficient bytes
+         if (totalBytesRead < expectedBytesToRead) {
+    	    throw new InvalidTableException("Expected to read in " + expectedBytesToRead
     			      + " bytes but only " + totalBytesRead + " bytes were read for "
     			      + url.toString());
     	}
-      }
 
-      LOGGER.debug("ByteWiseFileAccessor: url {}",url);
-      LOGGER.debug("ByteWiseFileAccessor: fileSize,sizeToRead {},{}",url,sizeToRead);
-      LOGGER.debug("ByteWiseFileAccessor: totalBytesRead {}",totalBytesRead);
-      LOGGER.debug("ByteWiseFileAccessor: mappings.size() {}",mappings.size());
-    } catch (java.nio.channels.NonWritableChannelException ex) {
-       // don't do anything
-       //ex.printStackTrace();
-    } catch (FileNotFoundException ex) {
-    	LOGGER.error("The file '" + url.toString() + "' is not found. ", ex);
-    	throw ex;
-    } catch (IOException ex) {
-  	  LOGGER.error("I/O error.", ex);
-  	  throw ex;
-  	} catch (java.net.URISyntaxException ex) {
-  	  LOGGER.error("URI Syntax Error.", ex);
-  	  //ex.printStackTrace();
-      //throw ex;
-  	}
+	      LOGGER.debug("ByteWiseFileAccessor: url {}",url);
+	      LOGGER.debug("ByteWiseFileAccessor: fileSize,sizeToRead {},{}",url,expectedBytesToRead);
+	      LOGGER.debug("ByteWiseFileAccessor: totalBytesRead {}",totalBytesRead);
+	      LOGGER.debug("ByteWiseFileAccessor: mappings.size() {}",mappings.size());
+	    } catch (java.nio.channels.NonWritableChannelException ex) {
+	       // don't do anything
+	       //ex.printStackTrace();
+	    } catch (FileNotFoundException ex) {
+	    	LOGGER.error("The file '" + url.toString() + "' is not found. ", ex);
+	    	throw ex;
+	    } catch (IOException ex) {
+	    	LOGGER.error("I/O error.", ex);
+	    	throw ex;
+	  	}
   }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param url The data file.
-	 * @param offset The offset within the data file.
-	 * @throws IOException If an I/O error occurs.
-	 */
-  public ByteWiseFileAccessor(URL url, long offset, int length) throws IOException {
-	  this.recordLength = length;
-	  int bytesRead = 0;
-	  this.totalBytesRead = 0;
-	  try {
-		  File dataFile = new File(url.toURI());
-		  RandomAccessFile raf = new RandomAccessFile(dataFile, "r");
-		  FileChannel inChannel = raf.getChannel();    
-		  long fileSize = this.fileContentSize = inChannel.size();
-		  long size = (fileSize - offset);		  
-		  long tmpSize = size;
-		  for (long offset2 = 0; offset2 < size; offset2 += MAPPING_SIZE) {
-			  long size2 = Math.min(tmpSize, MAPPING_SIZE);
-			  mappings.add(inChannel.map(FileChannel.MapMode.READ_ONLY, (offset2+offset), size2));
-			  tmpSize -= size2;
-		  }   
-		  raf.close();
-		  for (int i=0; i<mappings.size(); i++) {
-			 //Get the size based on content size of file
-			 bytesRead = mappings.get(i).capacity();
-			 totalBytesRead += bytesRead;
-		  }
-		  this.curPosition = 0;
-	  } catch (java.nio.channels.NonWritableChannelException ex) {
-		  // don't do anything
-		  //ex.printStackTrace();
-	  } catch (IOException ex) {
-		  LOGGER.error("I/O error.", ex);
-		  throw ex;
-	  } catch (java.net.URISyntaxException ex) {
-		  LOGGER.error("URI Syntax Error.", ex);
-	  }
-	}
-
-    private byte[] handleTooSmallMapping(int recordNum, int offset, int length, ByteBuffer aBuf, int mapN, int offN, long fileOffset, byte[] buf) {
+    private byte[] handleTooSmallMapping(long recordNum, int offset, int length, ByteBuffer aBuf, int mapN, int offN, long fileOffset, byte[] buf) {
           // This function handle a special case when the remaining content of a chunk (mapping) is smaller than the requested length to read.
           // Because large files are splitted into multiple chunks (called mappings), some records may span over two chunks.
           // If a record span over two chunks, the first part of the record is extracted from the 1st chunk and the
@@ -236,18 +216,13 @@ public class ByteWiseFileAccessor {
           LOGGER.debug("handleTooSmallBuffer: length,fileOffset {},{}",length,fileOffset);
           LOGGER.debug("handleTooSmallBuffer: mapN,offN {},{}",mapN,offN);
           LOGGER.debug("handleTooSmallBuffer: this.recordLength {}",this.recordLength);
-          LOGGER.debug("handleTooSmallBuffer:Record number " + Integer.toString(recordNum) + " spanning over two mappings.  Will perform an extra read.");
+          LOGGER.debug("handleTooSmallBuffer:Record number {} spanning over two mappings.  Will perform an extra read.", recordNum);
 
-          LOGGER.info("Record number " + Integer.toString(recordNum) + " spanning over two mappings.  Will perform an extra read.");
-
-          //Printout used by developer to debug
-          //System.out.println("handleTooSmallMapping:  mapN+1,this.mappings.size() " + Integer.toString(mapN+1) + "," + Integer.toString(this.mappings.size()));
-          //System.out.println("handleTooSmallMapping:early#exit001");
-          //System.exit(0);
+          LOGGER.info("Record number {} spanning over two mappings.  Will perform an extra read.", recordNum);
 
           // Do a sanity check if there are actually another mapping to get.
           if ((mapN+1) >= this.mappings.size()) {
-              LOGGER.error("Expecting another mapping of file content while reading record " + Integer.toString(recordNum));
+              LOGGER.error("Expecting another mapping of file content while reading record " + recordNum);
               //System.exit(1);
 	          return(buf);
           }
@@ -276,7 +251,6 @@ public class ByteWiseFileAccessor {
 
           // Because the original input value of length does not know that the record span over two mappings,
           // reset it to the default length of the record.
-          //length = this.recordLength;
           return(buf);  // Variable buf is both input and output.
     }
 
@@ -288,10 +262,10 @@ public class ByteWiseFileAccessor {
 	 * @param length the number of bytes to read from the record
 	 * @return an array of bytes
 	 */
-  public byte[] readRecordBytes(int recordNum, int offset, int length) {
+  public byte[] readRecordBytes(long recordNum, int offset, int length) {
 	  assert recordNum > 0;
 	  // The offset within the mapped buffer
-	  long fileOffset = (long)(recordNum-1)*this.recordLength;
+	  long fileOffset = (recordNum-1) * this.recordLength;
 	  byte[] buf = new byte[this.recordLength];
 	  // CHECK this again with big file
 	  int mapN = (int) (fileOffset / MAPPING_SIZE);
@@ -374,6 +348,7 @@ public class ByteWiseFileAccessor {
 	 * @return 'true' if there are more bytes to be read. 'false' otherwise.
 	 */
   public boolean hasRemaining() {
+      LOGGER.debug("hasRemaining: totalBytesRead {}", totalBytesRead);
 	  if ((this.totalBytesRead-this.curPosition)==0)
 		  return false;
 	  else
@@ -384,7 +359,17 @@ public class ByteWiseFileAccessor {
 	  return this.curPosition;
   }
   
-  public long getFileContentSize() {
-	  return this.fileContentSize;
+  public long getTotalFileContentSize() {
+      return this.totalFileContentSize;
+  }
+
+  @Override
+  public void close() throws IOException {
+      LOGGER.debug("Closing ByteWiseFileAccessor");
+      this.raf.close();
+  }
+  
+  public RandomAccessFile getRandomAccessFile() {
+      return raf;
   }
 }

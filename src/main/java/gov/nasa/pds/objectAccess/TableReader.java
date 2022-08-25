@@ -44,28 +44,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
-import java.net.URLConnection;
 import java.io.RandomAccessFile;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -73,17 +66,16 @@ import com.opencsv.CSVParserBuilder;
 /**
  * The <code>TableReader</code> class defines methods for reading table records.
  */
-public class TableReader {
+public class TableReader implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TableReader.class);
 
 	private TableAdapter adapter;
 	private long offset;
-	private int currentRow = 0;
+	private long currentRow = 0;
 	private TableRecord record = null;
 	protected ByteWiseFileAccessor accessor = null;
 	private Map<String, Integer> map = new HashMap<String, Integer>();
 	private CSVReader csvReader = null;
-	private List<String[]> delimitedRecordList;
 	private BufferedReader bufferedReader = null;
 	private InputStream inputStream = null;
 	private long recordSize = 0;
@@ -106,14 +98,20 @@ public class TableReader {
     this(table, dataFile, true);
   }
 	
-  public TableReader(Object table, URL dataFile, boolean checkSize) throws Exception {
+  public TableReader(Object table, URL dataFile, boolean checkSize) throws InvalidTableException, Exception {
     this(table, dataFile, checkSize, false);
   }
 
-  public TableReader(Object table, URL dataFile, boolean checkSize, boolean readEntireFile) throws Exception {
+  public TableReader(Object table, URL dataFile, boolean checkSize, boolean readEntireFile) throws InvalidTableException, Exception {
     this(table, dataFile, checkSize, readEntireFile, false);
   }
   
+	public TableReader(Object table, URL dataFile, boolean checkSize, 
+		    boolean readEntireFile, boolean keepQuotationsFlag) throws InvalidTableException, Exception {
+		this(table, dataFile, checkSize, readEntireFile, keepQuotationsFlag, null, null);
+	}
+  
+
 	/**
 	 * Constructs a <code>TableReader</code> instance for reading records from a
 	 * data file associated with a table object.
@@ -128,10 +126,10 @@ public class TableReader {
 	 * @throws NullPointerException if table offset is null
 	 */
 	public TableReader(Object table, URL dataFile, boolean checkSize, 
-	    boolean readEntireFile, boolean keepQuotationsFlag) throws Exception {
+	    boolean readEntireFile, boolean keepQuotationsFlag, RandomAccessFile raf, InputStream inputStream) throws InvalidTableException, Exception {
 		adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
 
-        LOGGER.debug("TableReader:dataFile {}",dataFile);
+        LOGGER.debug("TableReader:dataFile {}, raf {}", dataFile, raf);
 
 		try {
 			offset = adapter.getOffset();
@@ -139,27 +137,33 @@ public class TableReader {
 			LOGGER.error("The table offset cannot be null.");
 			throw ex;
 		}
+
 		if (adapter instanceof TableDelimitedAdapter) {
           LOGGER.debug("TableReader:instanceof TableDelimitedAdapter: {},{}",dataFile,adapter.getClass().getSimpleName());
 		  TableDelimitedAdapter tda = (TableDelimitedAdapter) adapter;
-		  this.inputStream = Utility.openConnection(dataFile.openConnection());
+		  
+		  if (inputStream == null)
+		      this.inputStream = Utility.openConnection(dataFile.openConnection());
+		  else
+		      this.inputStream = inputStream;
+
 		  this.inputStream.skip(offset);
 		  this.inputStream.mark(0);
-		  bufferedReader = new BufferedReader(new InputStreamReader(this.inputStream, "US-ASCII"));
-		  accessor = new ByteWiseFileAccessor(dataFile, offset, -1);
+		  this.bufferedReader = new BufferedReader(new InputStreamReader(this.inputStream, "US-ASCII"));
+		  this.accessor = new ByteWiseFileAccessor(dataFile, offset, -1, adapter.getRecordCount(), false, raf);
 		  this.delimitedChar = tda.getFieldDelimiter();
 		  
           // Use the flag keepQuotationsFlag to tell the CSVParserBuilder that we wish to keep the starting/ending quotes.
 		  CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(keepQuotationsFlag).build();
-		  this.csvReader = new CSVReaderBuilder(bufferedReader).withCSVParser(parser).build();
+		  this.csvReader = new CSVReaderBuilder(this.bufferedReader).withCSVParser(parser).build();
 		} else {		
-          LOGGER.debug("TableReader:else instanceof TableDelimitedAdapter: {},{}",dataFile,adapter.getClass().getSimpleName());
-		  if (readEntireFile) {
-		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());    
-		  } else {
-		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength(),
-			    adapter.getRecordCount(), checkSize);
-		  }
+          LOGGER.debug("TableReader:NOT TableDelimitedAdapter: {},{}",dataFile,this.adapter.getClass().getSimpleName());
+//		  if (readEntireFile) {
+//		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());    
+//		  } else {
+		    this.accessor = new ByteWiseFileAccessor(dataFile, this.offset, this.adapter.getRecordLength(),
+			    this.adapter.getRecordCount(), true, raf);
+//		  }
 		}
 		createFieldMap();
 	}
@@ -225,8 +229,8 @@ public class TableReader {
 	 * @throws IllegalArgumentException if index is greater than the record number
 	 * @throws CsvValidationException 
 	 */
-	public TableRecord getRecord(int index, boolean keepQuotationsFlag) throws IllegalArgumentException, IOException, CsvValidationException {
-		int recordCount = adapter.getRecordCount();		
+	public TableRecord getRecord(long index, boolean keepQuotationsFlag) throws IllegalArgumentException, IOException, CsvValidationException {
+		long recordCount = adapter.getRecordCount();		
 		if (index < 1 || index > recordCount) {
 			String msg = "The index is out of range 1 - " + recordCount;
 			LOGGER.error(msg);
@@ -253,11 +257,7 @@ public class TableReader {
 	private TableRecord getTableRecord() throws IOException, CsvValidationException {
         // DEBUG statements can be time consuming.  Should be uncommented by developer only.
 		if (adapter instanceof TableDelimitedAdapter) {			
-			//String[] recordValue = delimitedRecordList.get(currentRow-1);
-
 			String[] recordValue = this.csvReader.readNext();
-            //LOGGER.debug("getTableRecord: RECORDVALUE,record  RECORDVALUE={}, record={}",recordValue,record);
-            //LOGGER.debug("getTableRecord: recordValue.length,currentRow {},{}",recordValue.length,currentRow);
 			if (recordValue!=null && (recordValue.length != adapter.getFieldCount())) {
 				throw new IOException("Record " + currentRow + " has wrong number of fields "
 						+ "(expected " + adapter.getFieldCount() + ", got " + recordValue.length + ")"
@@ -269,11 +269,7 @@ public class TableReader {
 				record = new DelimitedTableRecord(map, adapter.getFieldCount(), recordValue);
 			} 
 		} else {
-            //LOGGER.debug("getTableRecord: currentRow,adapter.getRecordLength() {},{}",currentRow,adapter.getRecordLength());
-			byte[] recordValue = accessor.readRecordBytes(currentRow, 0, adapter.getRecordLength());
-            //LOGGER.debug("getTableRecord: recordValue.length,currentRow {},{}",recordValue.length,currentRow);
-            //System.out.println("getTableRecord:early#exit#0001");
-            //System.exit(0);
+		    byte[] recordValue = this.accessor.readRecordBytes(currentRow, 0, adapter.getRecordLength());
 			if (record != null) {
 				((FixedTableRecord) record).setRecordValue(recordValue);
 			} else {
@@ -302,20 +298,33 @@ public class TableReader {
 	 * @param row The row to set.
 	 */
 	public void setCurrentRow(int row) {
-	  this.currentRow = row;
+	  this.setCurrentRow((long)row);
 	}
+	
+    /**
+     * Sets the current row.
+     * 
+     * @param row The row to set.
+     */
+    public void setCurrentRow(long row) {
+      this.currentRow = row;
+    }
 	
 	/**
 	 * 
 	 * @return the current row.
 	 */
-	public int getCurrentRow() {
+	public long getCurrentRow() {
 	  return this.currentRow;
 	}
 	
 	public ByteWiseFileAccessor getAccessor() {
 	  return this.accessor;
 	}
+	
+    public InputStream getInputStream() {
+        return this.inputStream;
+    }
 
     private long parseBufferForLineCount(URL dataFile, byte [] bufferAsBytes) throws Exception {
         // Given a byte array, read through as if reading through a smaller file and count the lines.
@@ -459,5 +468,18 @@ public class TableReader {
 	
 	public long getOffset() {
 		return this.offset;
+	}
+	
+	@Override
+	public void close() throws IOException {
+	    LOGGER.debug("closing accessor/buffers");
+	    if (this.accessor != null)
+	        this.accessor.close();
+	    
+	    if (this.inputStream != null)
+	        this.inputStream.close();
+
+	    if (this.bufferedReader != null)
+	        this.bufferedReader.close();
 	}
 }

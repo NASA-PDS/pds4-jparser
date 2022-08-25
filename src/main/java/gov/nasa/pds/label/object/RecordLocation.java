@@ -50,7 +50,7 @@ public final class RecordLocation {
   private int table;
   
   /** The index of the record. */
-  private int record;
+  private long record;
   
   /**
    * Constructor.
@@ -58,9 +58,21 @@ public final class RecordLocation {
    * @param label The label.
    * @param dataFile The data file.
    * @param table The table index.
-   * @param record The record index.
+   * @param record The record index as integer.
    */
   public RecordLocation(URL label, URL dataFile, int table, int record) {
+    this(label, dataFile, table, (long)record);
+  }
+  
+  /**
+   * Constructor.
+   * 
+   * @param label The label.
+   * @param dataFile The data file.
+   * @param table The table index.
+   * @param record The record index as a long.
+   */
+  public RecordLocation(URL label, URL dataFile, int table, long record) {
     this.label = label;
     this.dataFile = dataFile;
     this.table = table;
@@ -95,7 +107,7 @@ public final class RecordLocation {
    * 
    * @return the record index.
    */
-  public int getRecord() {
+  public long getRecord() {
     return this.record;
   }
 }
