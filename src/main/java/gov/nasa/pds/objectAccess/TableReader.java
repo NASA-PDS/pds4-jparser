@@ -157,13 +157,10 @@ public class TableReader implements Closeable {
 		  CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar).withKeepQuotations(keepQuotationsFlag).build();
 		  this.csvReader = new CSVReaderBuilder(this.bufferedReader).withCSVParser(parser).build();
 		} else {		
-          LOGGER.debug("TableReader:NOT TableDelimitedAdapter: {},{}",dataFile,this.adapter.getClass().getSimpleName());
-//		  if (readEntireFile) {
-//		    accessor = new ByteWiseFileAccessor(dataFile, offset, adapter.getRecordLength());    
-//		  } else {
-		    this.accessor = new ByteWiseFileAccessor(dataFile, this.offset, this.adapter.getRecordLength(),
-			    this.adapter.getRecordCount(), true, raf);
-//		  }
+		    LOGGER.debug("TableReader:NOT TableDelimitedAdapter: {},{}",dataFile,this.adapter.getClass().getSimpleName());
+
+    	    this.accessor = new ByteWiseFileAccessor(dataFile, this.offset, this.adapter.getRecordLength(),
+    		    this.adapter.getRecordCount(), true, raf);
 		}
 		createFieldMap();
 	}
