@@ -90,7 +90,7 @@ public class TableWriterTest {
 		
 		Object table = getTableObject(objectAccess, fileArea);		
 		TableAdapter adapter = getTableAdapter(table);
-		int cols = adapter.getFieldCount();
+		long cols = adapter.getFieldCount();
 		int rows = 2;		
 						
 		TableWriter tableWriter = null;		
@@ -149,8 +149,8 @@ public class TableWriterTest {
 		
 		Object table = getTableObject(objectAccess, fileArea);
 		TableAdapter adapter = getTableAdapter(table);		
-		int cols = adapter.getFieldCount();
-		int rows = adapter.getRecordCount();		
+		long cols = adapter.getFieldCount();
+		long rows = adapter.getRecordCount();		
 		
 		try {					
 			writer = new TableWriter(table, os);										
@@ -219,8 +219,8 @@ public class TableWriterTest {
 		Writer writer = new BufferedWriter(new OutputStreamWriter(os, "US-ASCII"));
 		
 		TableAdapter adapter = getTableAdapter(table);
-		int rows = adapter.getRecordCount();
-		int cols = adapter.getFieldCount();
+		long rows = adapter.getRecordCount();
+		long cols = adapter.getFieldCount();
 		
 		try {	
 			tableWriter = new TableWriter(table, writer);			

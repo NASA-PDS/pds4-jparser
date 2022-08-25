@@ -186,8 +186,8 @@ public class TableBinaryAdapter implements TableAdapter {
 	}
 
 	@Override
-	public int getRecordCount() {
-		return table.getRecords().intValueExact();
+	public long getRecordCount() {
+		return table.getRecords().longValueExact();
 	}
 
 	@Override

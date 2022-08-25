@@ -153,6 +153,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 * @param outputStream  the output stream for the output file
 	 * @throws IOException If an I/O error occurs
 	 * @throws CsvValidationException 
+	 * @throws MissingDataException 
 	 */
 	public void convert(Object object, OutputStream outputStream) throws IOException, InvalidTableException, CsvValidationException {		
 		URL dataFile = new URL(getObjectProvider().getRoot(), getObservationalFileArea().getFile().getFileName());		
@@ -172,6 +173,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	 *                      	 
 	 * @throws IOException If an I/O error occurs
 	 * @throws CsvValidationException 
+	 * @throws MissingDataException 
 	 */
 	public void convert(OutputStream outputStream, int objectIndex) throws IOException, InvalidTableException, CsvValidationException {
 		List<Object> list = getObjectProvider().getTableObjects(getObservationalFileArea());		
@@ -281,6 +283,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 				csvWriter.writeNext(data);				
 			}	
 			
+			fileAccessor.close();
 			csvWriter.flush();						
 			csvWriter.close();			
 		} catch(FileNotFoundException ex) {
@@ -289,7 +292,10 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 		} catch(IOException ex) {
 			LOGGER.error("I/O error.", ex);
 			throw ex;
-		}
+		} catch(InvalidTableException ex) {
+            LOGGER.error("Invalid table read", ex);
+            throw ex;
+        }
 	}
 	
 	/*
@@ -298,7 +304,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	private void exportDelimitedTableToCSV(URL dataFile, Writer writer, TableDelimited table, Charset charset) 
 		throws FileNotFoundException, IOException, InvalidTableException, CsvValidationException {
 		TableAdapter adapter = AdapterFactory.INSTANCE.getTableAdapter(table);		
-		int records = table.getRecords().intValueExact();
+		long records = table.getRecords().longValue();
 		long tableOffset = table.getOffset().getValue().longValueExact();
 		InputStream is = null;
 		try {
@@ -314,7 +320,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	        CSVParser parser = new CSVParserBuilder().withSeparator(((TableDelimitedAdapter) adapter).getFieldDelimiter()).build();
 	        CSVReader reader = new CSVReaderBuilder(buffer).withCSVParser(parser).build();    
 			 
-			for (int i = 0; i <records; i++) {
+			for (long i = 0; i < records; i++) {
 				String[] line = reader.readNext();
 				csvWriter.writeNext(line);
 			}
@@ -349,7 +355,7 @@ public class TableExporter extends ObjectExporter implements Exporter<Object> {
 	/*
 	 * Reads column data
 	 */
-	private String[] readColumnData(FieldDescription[] fields, int recordNum, int recordLength,
+	private String[] readColumnData(FieldDescription[] fields, long recordNum, int recordLength,
 			ByteWiseFileAccessor fileAccessor, Charset charset) {	
 		
 		List<String> data = new ArrayList<String>();

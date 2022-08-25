@@ -123,8 +123,9 @@ public class ExtractTable {
 	 *
 	 * @param args the command-line arguments
 	 * @throws CsvValidationException 
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws CsvValidationException {
+	public static void main(String[] args) throws CsvValidationException, IOException {
 		(new ExtractTable()).run(args);
 	}
 
@@ -178,8 +179,9 @@ public class ExtractTable {
 	 *
 	 * @param args the command-line arguments
 	 * @throws CsvValidationException 
+	 * @throws IOException 
 	 */
-	private void run(String[] args) throws CsvValidationException {
+	private void run(String[] args) throws CsvValidationException, IOException {
 		parseArguments(args);
 
 		if (outputFile != null) {
@@ -260,7 +262,8 @@ public class ExtractTable {
   			    (this.dataFile == null || this.dataFile.getName().equalsIgnoreCase(fileName))) ) {
   				extractTable(reader);
   				break;
-  			}  
+  			}
+  			reader.close();
   			++currentIndex;
   		}
   		if (!listTables && (this.dataFile == null && !extractAll)) {

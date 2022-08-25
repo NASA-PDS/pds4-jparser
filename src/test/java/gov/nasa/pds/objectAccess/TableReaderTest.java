@@ -125,6 +125,7 @@ public class TableReaderTest {
 				}
 			}
 		}
+		reader.close();
 
 		dataFile.deleteOnExit();
 		new File(FileUtils.toFile(oa.getRoot()), label).deleteOnExit();
@@ -199,6 +200,7 @@ public class TableReaderTest {
 
 		dataFile.deleteOnExit();
 		new File(FileUtils.toFile(oa.getRoot()), label).deleteOnExit();
+		reader.close();
 	}
 
 	//@Test
@@ -237,6 +239,7 @@ public class TableReaderTest {
 
 		dataFile.deleteOnExit();
 		new File(FileUtils.toFile(oa.getRoot()), label).deleteOnExit();
+		reader.close();
 	}
 
 	private ProductObservational createProductLabel(ObjectAccess oa, String label) throws Exception {

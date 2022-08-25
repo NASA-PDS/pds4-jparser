@@ -30,6 +30,7 @@
 
 package gov.nasa.pds.objectAccess.table;
 
+import java.math.BigInteger;
 import gov.nasa.pds.label.object.FieldDescription;
 
 /**
@@ -43,14 +44,14 @@ public interface TableAdapter {
 	 * 
 	 * @return the number of records
 	 */
-	int getRecordCount();
+    long getRecordCount();
 	
 	/**
 	 * Gets the number of fields in each record.
 	 * 
 	 * @return the number of fields
 	 */
-	int getFieldCount();
+    int getFieldCount();
 
 	/**
 	 * Returns the field at a given index. This field will
