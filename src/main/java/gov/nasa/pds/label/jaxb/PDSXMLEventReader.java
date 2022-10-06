@@ -32,7 +32,6 @@ package gov.nasa.pds.label.jaxb;
 
 import java.io.IOException;
 import java.util.Iterator;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
@@ -48,20 +47,20 @@ import javax.xml.stream.util.EventReaderDelegate;
 
 /**
  * Event reader when parsing a PDS4 Product Label.
- * 
+ *
  * @author mcayanan
  *
  */
 public class PDSXMLEventReader extends EventReaderDelegate {
   /** To hold context information. */
   private XMLLabelContext labelContext;
-  
+
   /** The name of the root of the label. */
   private String root;
-  
+
   /**
    * Constructor.
-   * 
+   *
    * @param xsr An XMLEventReader object.
    * @param root The name of the root element of the label.
    */
@@ -74,17 +73,16 @@ public class PDSXMLEventReader extends EventReaderDelegate {
   @Override
   public XMLEvent nextEvent() throws XMLStreamException {
     final XMLEvent e = super.nextEvent();
-    if(e.getEventType() == XMLStreamConstants.START_ELEMENT)
-    {
+    if (e.getEventType() == XMLStreamConstants.START_ELEMENT) {
       final StartElement startElement = e.asStartElement();
       String name = startElement.getName().getLocalPart();
-      if (name.equalsIgnoreCase(root)) { 
+      if (name.equalsIgnoreCase(root)) {
         PDSNamespacePrefixMapper namespaces = null;
         try {
           namespaces = collectXmlns(startElement);
         } catch (IOException io) {
-          throw new XMLStreamException("Error while trying to read namespace "
-              + "properties file: " + io.getMessage());
+          throw new XMLStreamException(
+              "Error while trying to read namespace " + "properties file: " + io.getMessage());
         }
         if (namespaces != null) {
           labelContext.setNamespaces(namespaces);
@@ -110,17 +108,17 @@ public class PDSXMLEventReader extends EventReaderDelegate {
 
   /**
    * Gather the namespaces.
-   * 
+   *
    * @param e The element with the namespaces in it.
-   * 
+   *
    * @return A mapping of the namespace prefixes to URIs.
-   * 
+   *
    * @throws IOException If an error occurred while reading the namepsaces.
    */
   private PDSNamespacePrefixMapper collectXmlns(StartElement e) throws IOException {
     final PDSNamespacePrefixMapper namespaces = new PDSNamespacePrefixMapper();
     final NamespaceContext nsCtx = e.getNamespaceContext();
-    for (final Iterator i = e.getNamespaces();i.hasNext();) {
+    for (final Iterator i = e.getNamespaces(); i.hasNext();) {
       final Namespace ns = (Namespace) i.next();
       final String uri = ns.getNamespaceURI();
       final String prefix = ns.getPrefix();
@@ -136,7 +134,7 @@ public class PDSXMLEventReader extends EventReaderDelegate {
   }
 
   /**
-   * 
+   *
    * @return Returns the label context.
    */
   public XMLLabelContext getLabelContext() {

@@ -35,74 +35,74 @@ import java.util.List;
 
 /**
  * Class to hold context information from a PDS4 product label.
- * 
+ *
  * @author mcayanan
  *
  */
 public class XMLLabelContext {
   /** Contains a mapping of namespace prefixes to URIs. */
   private PDSNamespacePrefixMapper namespaces;
-  
+
   /** Contains the schema locations set in the SchemaLocation attribute. */
   private String schemaLocation;
-  
+
   /** Contains the schematron references set in the label. */
   private List<String> xmlModels;
-  
+
   /**
    * Constructor.
    */
   public XMLLabelContext() {
     this.namespaces = null;
     this.schemaLocation = null;
-    xmlModels = new ArrayList<String>();
+    xmlModels = new ArrayList<>();
   }
-  
+
   /**
-   * 
+   *
    * @return get the namespaces.
    */
   public PDSNamespacePrefixMapper getNamespaces() {
     return this.namespaces;
   }
-  
+
   /**
    * Sets the namespaces.
-   * 
+   *
    * @param namespaces a mapping of namespace prefixes to URIs.
    */
   public void setNamespaces(PDSNamespacePrefixMapper namespaces) {
     this.namespaces = namespaces;
   }
-  
+
   /**
-   * 
+   *
    * @return get the SchemaLocation that was set in the label.
    */
   public String getSchemaLocation() {
     return this.schemaLocation;
   }
-  
+
   /**
    * Sets the schemalocation.
-   * 
+   *
    * @param location What was set in the SchemaLocation attribute.
    */
   public void setSchemaLocation(String location) {
     this.schemaLocation = location;
   }
-  
+
   /**
    * @return Returns the values set in the xml-models processing instructions.
    */
   public List<String> getXmlModels() {
     return this.xmlModels;
   }
-  
+
   /**
-   * 
-   * @return Returns string representations of the xml-models processing
-   * instructions set in the label.
+   *
+   * @return Returns string representations of the xml-models processing instructions set in the
+   *         label.
    */
   public String getXmlModelPIs() {
     String models = "\n";
@@ -111,10 +111,10 @@ public class XMLLabelContext {
     }
     return models;
   }
-  
+
   /**
    * Adds the xml-model value to the list already captured.
-   * 
+   *
    * @param model The xml-model value.
    */
   public void addXmlModel(String model) {

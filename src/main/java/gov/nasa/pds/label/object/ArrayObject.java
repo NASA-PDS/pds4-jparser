@@ -30,31 +30,29 @@
 
 package gov.nasa.pds.label.object;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
 import gov.nasa.pds.objectAccess.array.ArrayAdapter;
 import gov.nasa.pds.objectAccess.array.ElementType;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-
 
 /**
- * Implements an object representing an array object in a
- * PDS product.
+ * Implements an object representing an array object in a PDS product.
  */
 public class ArrayObject extends DataObject {
 
-	private Array array;
-	private ArrayAdapter adapter;
-	private ElementType elementType;
-	int[] dimensions;
+  private Array array;
+  private ArrayAdapter adapter;
+  private ElementType elementType;
+  int[] dimensions;
 
-	 /**
+  /**
    * Creats a new array instance.
    *
    * @param parentDir the parent directory for the data file
@@ -64,307 +62,298 @@ public class ArrayObject extends DataObject {
    * @throws IOException if there is an error opening the data file
    * @throws FileNotFoundException if the data file is not found
    */
-  public ArrayObject(
-      File parentDir,
-      gov.nasa.arc.pds.xml.generated.File fileObject,
-      Array array,
-      long offset
-  ) throws FileNotFoundException, IOException {
+  public ArrayObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, Array array,
+      long offset) throws FileNotFoundException, IOException {
     this(parentDir.toURI().toURL(), fileObject, array, offset);
   }
-	
-	/**
-	 * Creats a new array instance.
-	 *
-	 * @param parent the parent directory for the data file
-	 * @param fileObject the file object metadata
-	 * @param array the array object
-	 * @param offset the offset within the data file
-	 * @throws IOException if there is an error opening the data file
-	 * @throws FileNotFoundException if the data file is not found
-	 */
-	public ArrayObject(
-			URL parent,
-			gov.nasa.arc.pds.xml.generated.File fileObject,
-			Array array,
-			long offset
-	) throws FileNotFoundException, IOException {
-		super(parent, fileObject, offset, 0);
-		this.array = array;
 
-		dimensions = findDimensions();
-		elementType = ElementType.getTypeForName(array.getElementArray().getDataType());
-		setSize(findSize(elementType.getSize()));
-		adapter = new ArrayAdapter(dimensions, getChannel(), elementType);
-	}
+  /**
+   * Creats a new array instance.
+   *
+   * @param parent the parent directory for the data file
+   * @param fileObject the file object metadata
+   * @param array the array object
+   * @param offset the offset within the data file
+   * @throws IOException if there is an error opening the data file
+   * @throws FileNotFoundException if the data file is not found
+   */
+  public ArrayObject(URL parent, gov.nasa.arc.pds.xml.generated.File fileObject, Array array,
+      long offset) throws FileNotFoundException, IOException {
+    super(parent, fileObject, offset, 0);
+    this.array = array;
 
-	private int[] findDimensions() {
-		int[] dims = new int[array.getAxes()];
-		for (int i=0; i < dims.length; ++i) {
-			dims[i] = array.getAxisArraies().get(i).getElements().intValueExact();
-		}
+    dimensions = findDimensions();
+    elementType = ElementType.getTypeForName(array.getElementArray().getDataType());
+    setSize(findSize(elementType.getSize()));
+    adapter = new ArrayAdapter(dimensions, getChannel(), elementType);
+  }
 
-		return dims;
-	}
+  private int[] findDimensions() {
+    int[] dims = new int[array.getAxes()];
+    for (int i = 0; i < dims.length; ++i) {
+      dims[i] = array.getAxisArraies().get(i).getElements().intValueExact();
+    }
 
-	/**
-	 * Gets the dimensions of the array.
-	 *
-	 * @return an array of dimensions
-	 */
-	public int[] getDimensions() {
-		return dimensions;
-	}
-        
-        /**
-         * return the name of this array.
-         * @return the name of this array.
-         */
-        public String getName() {
-            return array.getName();
+    return dims;
+  }
+
+  /**
+   * Gets the dimensions of the array.
+   *
+   * @return an array of dimensions
+   */
+  public int[] getDimensions() {
+    return dimensions;
+  }
+
+  /**
+   * return the name of this array.
+   *
+   * @return the name of this array.
+   */
+  public String getName() {
+    return array.getName();
+  }
+
+  private long findSize(int elementSize) {
+    long count = 1;
+    for (int dimension : dimensions) {
+      count *= dimension;
+    }
+
+    return count * elementSize;
+  }
+
+  /**
+   * Gets the number of dimensions.
+   *
+   * @return the number of dimensions
+   */
+  public int getAxes() {
+    return dimensions.length;
+  }
+
+  /**
+   * Gets the size of an array element.
+   *
+   * @return the element size, in bytes
+   */
+  public int getElementSize() {
+    return adapter.getElementSize();
+  }
+
+  /**
+   * Gets an element of a 2-D array, as an int.
+   *
+   * @param row the row
+   * @param column the column
+   * @return the element value, as an int
+   * @throws IOException
+   */
+  public int getInt(int row, int column) throws IOException {
+    return getInt(new int[] {row, column});
+  }
+
+  /**
+   * Gets an element of a 2-D array, as a long.
+   *
+   * @param row the row
+   * @param column the column
+   * @return the element value, as a long
+   * @throws IOException
+   */
+  public long getLong(int row, int column) throws IOException {
+    return getLong(new int[] {row, column});
+  }
+
+  /**
+   * Gets an element of a 2-D array, as a double.
+   *
+   * @param row the row
+   * @param column the column
+   * @return the element value, as a double
+   * @throws IOException
+   */
+  public double getDouble(int row, int column) throws IOException {
+    return getDouble(new int[] {row, column});
+  }
+
+  /**
+   * Gets an element of a 3-D array, as an int.
+   *
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @return the element value, as an int
+   * @throws IOException
+   */
+  public int getInt(int i1, int i2, int i3) throws IOException {
+    return getInt(new int[] {i1, i2, i3});
+  }
+
+  /**
+   * Gets an element of a 3-D array, as a long.
+   *
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @return the element value, as a long
+   * @throws IOException
+   */
+  public long getLong(int i1, int i2, int i3) throws IOException {
+    return getLong(new int[] {i1, i2, i3});
+  }
+
+  /**
+   * Gets an element of a 3-D array, as a double.
+   *
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @return the element value, as a double
+   * @throws IOException
+   */
+  public double getDouble(int i1, int i2, int i3) throws IOException {
+    return adapter.getDouble(i1, i2, i3);
+  }
+
+  /**
+   * Gets an array element, as an int.
+   *
+   * @param position the indices of the element
+   * @return the value of the element, as an int
+   * @throws IOException
+   */
+  public int getInt(int[] position) throws IOException {
+    checkIndices(position);
+    return adapter.getInt(position);
+  }
+
+  /**
+   * Gets an array element, as a long.
+   *
+   * @param position the indices of the element
+   * @return the value of the element, as a long
+   * @throws IOException
+   */
+  public long getLong(int[] position) throws IOException {
+    checkIndices(position);
+    return adapter.getLong(position);
+  }
+
+  /**
+   * Gets an array element, as a double.
+   *
+   * @param position the indices of the element
+   * @return the value of the element, as a double
+   * @throws IOException
+   */
+  public double getDouble(int[] position) throws IOException {
+    checkIndices(position);
+    return adapter.getDouble(position);
+  }
+
+  private void checkIndices(int[] position) {
+    checkDimensions(position.length);
+
+    for (int i = 0; i < dimensions.length; ++i) {
+      if (position[i] < 0 || position[i] >= dimensions[i]) {
+        throw new ArrayIndexOutOfBoundsException(
+            "Index " + i + " out of bounds (" + position[i] + ")");
+      }
+    }
+  }
+
+  /**
+   * Gets the entire 1-D array, as doubles.
+   *
+   * @return an array of double with all array elements
+   * @throws IOException
+   */
+  public double[] getElements1D() throws IOException {
+    checkDimensions(1);
+
+    double[] values = new double[dimensions[0]];
+    for (int i = 0; i < dimensions[0]; ++i) {
+      values[i] = getDouble(new int[] {i});
+    }
+
+    return values;
+  }
+
+  /**
+   * Gets the entire 2-D array, as doubles.
+   *
+   * @return an array of double with all array elements
+   * @throws IOException
+   */
+  public double[][] getElements2D() throws IOException {
+    checkDimensions(2);
+
+    double[][] values = new double[dimensions[0]][dimensions[1]];
+    for (int i = 0; i < dimensions[0]; ++i) {
+      for (int j = 0; j < dimensions[1]; ++j) {
+        values[i][j] = getDouble(i, j);
+      }
+    }
+
+    return values;
+  }
+
+  /**
+   * Gets the entire 3-D array, as doubles.
+   *
+   * @return an array of double with all array elements
+   * @throws IOException
+   */
+  public double[][][] getElements3D() throws IOException {
+    checkDimensions(3);
+
+    double[][][] values = new double[dimensions[0]][dimensions[1]][dimensions[2]];
+    for (int i = 0; i < dimensions[0]; ++i) {
+      for (int j = 0; j < dimensions[1]; ++j) {
+        for (int k = 0; k < dimensions[2]; ++k) {
+          values[i][j][k] = getDouble(i, j, k);
         }
+      }
+    }
 
-	private long findSize(int elementSize) {
-		long count = 1;
-		for (int i=0; i < dimensions.length; ++i) {
-			count *= dimensions[i];
-		}
+    return values;
+  }
 
-		return (long) (count * elementSize);
-	}
+  private void checkDimensions(int expected) {
+    if (expected != dimensions.length) {
+      throw new IllegalArgumentException(
+          "Array access with wrong number of dimensions: " + expected + "!=" + dimensions.length);
+    }
+  }
 
-	/**
-	 * Gets the number of dimensions.
-	 *
-	 * @return the number of dimensions
-	 */
-	public int getAxes() {
-		return dimensions.length;
-	}
+  /**
+   * Checks to see whether the array is an image.
+   *
+   * @return true, if the array is an image
+   */
+  public boolean isImage() {
+    return (array instanceof Array2DImage) || (array instanceof Array3DImage);
+  }
 
-	/**
-	 * Gets the size of an array element.
-	 *
-	 * @return the element size, in bytes
-	 */
-	public int getElementSize() {
-		return adapter.getElementSize();
-	}
+  /**
+   * Returns a BufferedImage object with the type set to TYPE_BYTE_GRAY.
+   * 
+   * @return a BufferedImage
+   */
+  public BufferedImage as2DImage() {
+    if (!(array instanceof Array2DImage)) {
+      throw new UnsupportedOperationException("Data object is not a 2-D image.");
+    }
 
-	/**
-	 * Gets an element of a 2-D array, as an int.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @return the element value, as an int
-	 * @throws IOException 
-	 */
-	public int getInt(int row, int column) throws IOException {
-		return getInt(new int[] {row, column});
-	}
+    BufferedImage image =
+        new BufferedImage(dimensions[0], dimensions[1], BufferedImage.TYPE_BYTE_GRAY);
+    return image;
+  }
 
-	/**
-	 * Gets an element of a 2-D array, as a long.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @return the element value, as a long
-	 * @throws IOException 
-	 */
-	public long getLong(int row, int column) throws IOException {
-		return getLong(new int[] {row, column});
-	}
-
-	/**
-	 * Gets an element of a 2-D array, as a double.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 * @return the element value, as a double
-	 * @throws IOException 
-	 */
-	public double getDouble(int row, int column) throws IOException {
-		return getDouble(new int[] {row, column});
-	}
-
-	/**
-	 * Gets an element of a 3-D array, as an int.
-	 *
-	 * @param i1 the first index
-	 * @param i2 the second index
-	 * @param i3 the third index
-	 * @return the element value, as an int
-	 * @throws IOException 
-	 */
-	public int getInt(int i1, int i2, int i3) throws IOException {
-		return getInt(new int[] {i1, i2, i3});
-	}
-
-	/**
-	 * Gets an element of a 3-D array, as a long.
-	 *
-	 * @param i1 the first index
-	 * @param i2 the second index
-	 * @param i3 the third index
-	 * @return the element value, as a long
-	 * @throws IOException 
-	 */
-	public long getLong(int i1, int i2, int i3) throws IOException {
-		return getLong(new int[] {i1, i2, i3});
-	}
-
-	/**
-	 * Gets an element of a 3-D array, as a double.
-	 *
-	 * @param i1 the first index
-	 * @param i2 the second index
-	 * @param i3 the third index
-	 * @return the element value, as a double
-	 * @throws IOException 
-	 */
-	public double getDouble(int i1, int i2, int i3) throws IOException {
-		return adapter.getDouble(i1, i2, i3);
-	}
-
-	/**
-	 * Gets an array element, as an int.
-	 *
-	 * @param position the indices of the element
-	 * @return the value of the element, as an int
-	 * @throws IOException 
-	 */
-	public int getInt(int[] position) throws IOException {
-		checkIndices(position);
-		return adapter.getInt(position);
-	}
-
-	/**
-	 * Gets an array element, as a long.
-	 *
-	 * @param position the indices of the element
-	 * @return the value of the element, as a long
-	 * @throws IOException 
-	 */
-	public long getLong(int[] position) throws IOException {
-		checkIndices(position);
-		return adapter.getLong(position);
-	}
-
-	/**
-	 * Gets an array element, as a double.
-	 *
-	 * @param position the indices of the element
-	 * @return the value of the element, as a double
-	 * @throws IOException 
-	 */
-	public double getDouble(int[] position) throws IOException {
-		checkIndices(position);
-		return adapter.getDouble(position);
-	}
-
-	private void checkIndices(int[] position) {
-		checkDimensions(position.length);
-
-		for (int i=0; i < dimensions.length; ++i) {
-			if (position[i] < 0 || position[i] >= dimensions[i]) {
-				throw new ArrayIndexOutOfBoundsException("Index " + i + " out of bounds (" + position[i] + ")");
-			}
-		}
-	}
-
-	/**
-	 * Gets the entire 1-D array, as doubles.
-	 *
-	 * @return an array of double with all array elements
-	 * @throws IOException 
-	 */
-	public double[] getElements1D() throws IOException {
-		checkDimensions(1);
-
-		double[] values = new double[dimensions[0]];
-		for (int i=0; i < dimensions[0]; ++i) {
-			values[i] = getDouble( new int[] { i } );
-		}
-
-		return values;
-	}
-        
-	/**
-	 * Gets the entire 2-D array, as doubles.
-	 *
-	 * @return an array of double with all array elements
-	 * @throws IOException 
-	 */
-	public double[][] getElements2D() throws IOException {
-		checkDimensions(2);
-
-		double[][] values = new double[dimensions[0]][dimensions[1]];
-		for (int i=0; i < dimensions[0]; ++i) {
-			for (int j=0; j < dimensions[1]; ++j) {
-				values[i][j] = getDouble(i, j);
-			}
-		}
-
-		return values;
-	}
-
-	/**
-	 * Gets the entire 3-D array, as doubles.
-	 *
-	 * @return an array of double with all array elements
-	 * @throws IOException 
-	 */
-	public double[][][] getElements3D() throws IOException {
-		checkDimensions(3);
-
-		double[][][] values = new double[dimensions[0]][dimensions[1]][dimensions[2]];
-		for (int i=0; i < dimensions[0]; ++i) {
-			for (int j=0; j < dimensions[1]; ++j) {
-				for (int k=0; k < dimensions[2]; ++k) {
-					values[i][j][k] = getDouble(i, j, k);
-				}
-			}
-		}
-
-		return values;
-	}
-
-	private void checkDimensions(int expected) {
-		if (expected != dimensions.length) {
-			throw new IllegalArgumentException(
-					"Array access with wrong number of dimensions: "
-					+ expected
-					+ "!="
-					+ dimensions.length
-			);
-		}
-	}
-
-	/**
-	 * Checks to see whether the array is an image.
-	 *
-	 * @return true, if the array is an image
-	 */
-	public boolean isImage() {
-		return (array instanceof Array2DImage) || (array instanceof Array3DImage);
-	}
-
-	/**
-	 * Returns a BufferedImage object with the type set to TYPE_BYTE_GRAY.
-	 * 
-	 * @return a BufferedImage
-	 */
-	public BufferedImage as2DImage() {
-		if (!(array instanceof Array2DImage)) {
-			throw new UnsupportedOperationException("Data object is not a 2-D image.");
-		}
-
-		BufferedImage image = new BufferedImage(dimensions[0], dimensions[1], BufferedImage.TYPE_BYTE_GRAY);
-		return image;
-	}
-	
-	public ElementType getElementType() {
-	  return elementType;
-	}
+  public ElementType getElementType() {
+    return elementType;
+  }
 
 }

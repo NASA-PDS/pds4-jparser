@@ -30,6 +30,8 @@
 
 package gov.nasa.pds.objectAccess.table;
 
+import java.util.ArrayList;
+import java.util.List;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.GroupFieldCharacter;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
@@ -37,44 +39,41 @@ import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
 import gov.nasa.pds.objectAccess.InvalidTableException;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TableCharacterAdapter implements TableAdapter {
 
-	TableCharacter table;
-	List<FieldDescription> fields;
+  TableCharacter table;
+  List<FieldDescription> fields;
 
-	/**
-	 * Creates a new instance for a particular table.
-	 *
-	 * @param table the table
-	 */
-	public TableCharacterAdapter(TableCharacter table) throws InvalidTableException {
-		this.table = table;
+  /**
+   * Creates a new instance for a particular table.
+   *
+   * @param table the table
+   */
+  public TableCharacterAdapter(TableCharacter table) throws InvalidTableException {
+    this.table = table;
 
-		fields = new ArrayList<FieldDescription>();
-		expandFields(table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters(), 0);
-	}
+    fields = new ArrayList<>();
+    expandFields(table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters(), 0);
+  }
 
-	private void expandFields(List<Object> fields, int baseOffset) throws InvalidTableException {
-		for (Object field : fields) {
-			if (field instanceof FieldCharacter) {
-				expandField((FieldCharacter) field, baseOffset);
-			} else {
-				// Must be GroupFieldCharacter
-				expandGroupField((GroupFieldCharacter) field, baseOffset);
-			}
-		}
-	}
+  private void expandFields(List<Object> fields, int baseOffset) throws InvalidTableException {
+    for (Object field : fields) {
+      if (field instanceof FieldCharacter) {
+        expandField((FieldCharacter) field, baseOffset);
+      } else {
+        // Must be GroupFieldCharacter
+        expandGroupField((GroupFieldCharacter) field, baseOffset);
+      }
+    }
+  }
 
-	private void expandField(FieldCharacter field, int baseOffset) {
-		FieldDescription desc = new FieldDescription();
-		desc.setName(field.getName());
-		desc.setType(FieldType.getFieldType(field.getDataType()));
-		desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
-		desc.setLength(field.getFieldLength().getValue().intValueExact());
-		desc.setSpecialConstants(field.getSpecialConstants());
+  private void expandField(FieldCharacter field, int baseOffset) {
+    FieldDescription desc = new FieldDescription();
+    desc.setName(field.getName());
+    desc.setType(FieldType.getFieldType(field.getDataType()));
+    desc.setOffset(field.getFieldLocation().getValue().intValueExact() - 1 + baseOffset);
+    desc.setLength(field.getFieldLength().getValue().intValueExact());
+    desc.setSpecialConstants(field.getSpecialConstants());
     if (field.getFieldFormat() != null) {
       desc.setFieldFormat(field.getFieldFormat());
     }
@@ -89,87 +88,91 @@ public class TableCharacterAdapter implements TableAdapter {
         desc.setMaximum(field.getFieldStatistics().getMaximum());
       }
     }
-		fields.add(desc);
-	}
+    fields.add(desc);
+  }
 
-	private void expandGroupField(GroupFieldCharacter group, int outerOffset) throws InvalidTableException {
-		int baseOffset = outerOffset + group.getGroupLocation().getValue().intValueExact() - 1;
+  private void expandGroupField(GroupFieldCharacter group, int outerOffset)
+      throws InvalidTableException {
+    int baseOffset = outerOffset + group.getGroupLocation().getValue().intValueExact() - 1;
 
-		int groupLength = group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
+    int groupLength =
+        group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
 
-		// Check that the group length is large enough for the contained fields.
-		int actualGroupLength = getGroupExtent(group);	
-		if (groupLength < actualGroupLength) {
-			String msg = "ERROR: GroupFieldCharacter attribute group_length is smaller than size of contained fields: "
-                    + (groupLength * group.getRepetitions().intValueExact())
-                    + "<"
-                    + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
-			groupLength = actualGroupLength;
-			throw new InvalidTableException(msg);
-		}
-		else if (groupLength > actualGroupLength) {
-			String msg = "ERROR: GroupFieldCharacter attribute group_length is larger than size of contained fields: "
-                    + (groupLength * group.getRepetitions().intValueExact())
-                    + ">"
-                    + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
-			groupLength = actualGroupLength;
-			throw new InvalidTableException(msg);
-			
-		}
+    // Check that the group length is large enough for the contained fields.
+    int actualGroupLength = getGroupExtent(group);
+    if (groupLength < actualGroupLength) {
+      String msg =
+          "ERROR: GroupFieldCharacter attribute group_length is smaller than size of contained fields: "
+              + (groupLength * group.getRepetitions().intValueExact()) + "<"
+              + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
+      groupLength = actualGroupLength;
+      throw new InvalidTableException(msg);
+    }
+    if (groupLength > actualGroupLength) {
+      String msg =
+          "ERROR: GroupFieldCharacter attribute group_length is larger than size of contained fields: "
+              + (groupLength * group.getRepetitions().intValueExact()) + ">"
+              + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
+      groupLength = actualGroupLength;
+      throw new InvalidTableException(msg);
 
-		for (int i=0; i < group.getRepetitions().intValueExact(); ++i) {
-			expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset);
-			baseOffset += groupLength;
-		}
-	}
+    }
 
-	private int getGroupExtent(GroupFieldCharacter group) {
-		int groupExtent = 0;
+    for (int i = 0; i < group.getRepetitions().intValueExact(); ++i) {
+      expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset);
+      baseOffset += groupLength;
+    }
+  }
 
-		for (Object o : group.getFieldCharactersAndGroupFieldCharacters()) {
-			if (o instanceof GroupFieldCharacter) {
-				GroupFieldCharacter field = (GroupFieldCharacter) o;
-				int fieldEnd = field.getGroupLocation().getValue().intValueExact() + getGroupExtent(field) - 1;
-				groupExtent = Math.max(groupExtent, fieldEnd);
-			} else {
-				// Must be FieldCharacter
-				FieldCharacter field = (FieldCharacter) o;
-				int fieldEnd = field.getFieldLocation().getValue().intValueExact() + field.getFieldLength().getValue().intValueExact() - 1;
-				groupExtent = Math.max(groupExtent,  fieldEnd);
-			}
-		}
+  private int getGroupExtent(GroupFieldCharacter group) {
+    int groupExtent = 0;
 
-		return groupExtent;
-	}
+    for (Object o : group.getFieldCharactersAndGroupFieldCharacters()) {
+      if (o instanceof GroupFieldCharacter) {
+        GroupFieldCharacter field = (GroupFieldCharacter) o;
+        int fieldEnd =
+            field.getGroupLocation().getValue().intValueExact() + getGroupExtent(field) - 1;
+        groupExtent = Math.max(groupExtent, fieldEnd);
+      } else {
+        // Must be FieldCharacter
+        FieldCharacter field = (FieldCharacter) o;
+        int fieldEnd = field.getFieldLocation().getValue().intValueExact()
+            + field.getFieldLength().getValue().intValueExact() - 1;
+        groupExtent = Math.max(groupExtent, fieldEnd);
+      }
+    }
 
-	@Override
-	public long getRecordCount() {
-		return table.getRecords().longValueExact();
-	}
+    return groupExtent;
+  }
 
-	@Override
-	public int getFieldCount() {
-		return fields.size();
-	}
+  @Override
+  public long getRecordCount() {
+    return table.getRecords().longValueExact();
+  }
 
-	@Override
-	public FieldDescription getField(int index) {
-		return fields.get(index);
-	}
+  @Override
+  public int getFieldCount() {
+    return fields.size();
+  }
 
-	@Override
-	public FieldDescription[] getFields() {
-		return fields.toArray(new FieldDescription[fields.size()]);
-	}
+  @Override
+  public FieldDescription getField(int index) {
+    return fields.get(index);
+  }
 
-	@Override
-	public long getOffset() {
-		return table.getOffset().getValue().longValueExact();
-	}
+  @Override
+  public FieldDescription[] getFields() {
+    return fields.toArray(new FieldDescription[fields.size()]);
+  }
 
-	@Override
-	public int getRecordLength() {
-		return table.getRecordCharacter().getRecordLength().getValue().intValueExact();
-	}
+  @Override
+  public long getOffset() {
+    return table.getOffset().getValue().longValueExact();
+  }
+
+  @Override
+  public int getRecordLength() {
+    return table.getRecordCharacter().getRecordLength().getValue().intValueExact();
+  }
 
 }

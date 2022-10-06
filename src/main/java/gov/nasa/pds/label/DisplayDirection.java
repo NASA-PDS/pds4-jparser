@@ -31,51 +31,50 @@
 package gov.nasa.pds.label;
 
 /**
- * Defines the various display directions that can be used by
- * axes within arrays and images.
+ * Defines the various display directions that can be used by axes within arrays and images.
  */
 public enum DisplayDirection {
 
-	/** Display is right-to-left. */
-	LEFT("Left"),
+  /** Display is right-to-left. */
+  LEFT("Left"),
 
-	RIGHT_TO_LEFT("Right to Left"),
-	
-	/** Display is left-to-right. */
-	RIGHT("Right"),
+  RIGHT_TO_LEFT("Right to Left"),
+
+  /** Display is left-to-right. */
+  RIGHT("Right"),
 
   LEFT_TO_RIGHT("Left to Right"),
-	
-	/** Display is bottom-to-top. */
-	UP("Up"),
-	
+
+  /** Display is bottom-to-top. */
+  UP("Up"),
+
   BOTTOM_TO_TOP("Bottom to Top"),
-	
-	/** Display is top-to-bottom. */
-	DOWN("Down"),
-	
-	TOP_TO_BOTTOM("Top to Bottom");
 
-	private String elementValue;
+  /** Display is top-to-bottom. */
+  DOWN("Down"),
 
-	private DisplayDirection(String elementValue) {
-		this.elementValue = elementValue;
-	}
+  TOP_TO_BOTTOM("Top to Bottom");
 
-	/**
-	 * Looks up a display direction based on the value within the metadata.
-	 *
-	 * @param value the metadata value
-	 * @return the display direciton corresponding to the metadata value, or null if not found
-	 */
-	public static DisplayDirection getDirectionFromValue(String value) {
-		for (DisplayDirection dir : DisplayDirection.values()) {
-			if (dir.elementValue.equalsIgnoreCase(value)) {
-				return dir;
-			}
-		}
+  private String elementValue;
 
-		return null;
-	}
+  private DisplayDirection(String elementValue) {
+    this.elementValue = elementValue;
+  }
+
+  /**
+   * Looks up a display direction based on the value within the metadata.
+   *
+   * @param value the metadata value
+   * @return the display direciton corresponding to the metadata value, or null if not found
+   */
+  public static DisplayDirection getDirectionFromValue(String value) {
+    for (DisplayDirection dir : DisplayDirection.values()) {
+      if (dir.elementValue.equalsIgnoreCase(value)) {
+        return dir;
+      }
+    }
+
+    return null;
+  }
 
 }

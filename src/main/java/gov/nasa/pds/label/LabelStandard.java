@@ -35,10 +35,10 @@ package gov.nasa.pds.label;
  */
 public enum LabelStandard {
 
-	/** The PDS 3 data standard. */
-	PDS3,
-	
-	/** The PDS 4 data standard. */
-	PDS4;
-	
+  /** The PDS 3 data standard. */
+  PDS3,
+
+  /** The PDS 4 data standard. */
+  PDS4;
+
 }

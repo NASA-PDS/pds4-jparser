@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Implements a generic interface to a data object, for objects
- * that are not otherwise specially handled.
+ * Implements a generic interface to a data object, for objects that are not otherwise specially
+ * handled.
  */
 public class GenericObject extends DataObject {
 
@@ -49,23 +49,23 @@ public class GenericObject extends DataObject {
    * @param size the size of the data object, in bytes
    * @throws IOException if an error occurred initializng the object
    */
-  public GenericObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset, long size) 
-      throws IOException {
+  public GenericObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
+      long size) throws IOException {
     this(parentDir.toURI().toURL(), fileObject, offset, size);
   }
-  
-	/**
-	 * Creates a new instance.
-	 *
-	 * @param parentDir the parent directory of the data file
-	 * @param fileObject the PDS4 file object for the data file
-	 * @param offset the offset within the file of the start of the data object
-	 * @param size the size of the data object, in bytes
+
+  /**
+   * Creates a new instance.
+   *
+   * @param parentDir the parent directory of the data file
+   * @param fileObject the PDS4 file object for the data file
+   * @param offset the offset within the file of the start of the data object
+   * @param size the size of the data object, in bytes
    * @throws IOException if an error occurred initializng the object
-	 */
-	public GenericObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset, long size) 
-	    throws IOException {
-		super(parentDir, fileObject, offset, size);
-	}
+   */
+  public GenericObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
+      long size) throws IOException {
+    super(parentDir, fileObject, offset, size);
+  }
 
 }

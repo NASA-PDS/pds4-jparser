@@ -30,26 +30,24 @@
 
 package gov.nasa.pds.label.object;
 
-import gov.nasa.pds.objectAccess.ExporterFactory;
-import gov.nasa.pds.objectAccess.TableReader;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
 import com.opencsv.exceptions.CsvValidationException;
+import gov.nasa.pds.objectAccess.ExporterFactory;
+import gov.nasa.pds.objectAccess.TableReader;
 
 
 /**
- * Implements an object that represents a table in a PDS
- * product. The table may be binary, character, or delimited.
+ * Implements an object that represents a table in a PDS product. The table may be binary,
+ * character, or delimited.
  */
 public class TableObject extends DataObject {
 
-	private Object tableObject;
-	private TableReader tableReader;
+  private Object tableObject;
+  private TableReader tableReader;
 
-	 /**
+  /**
    * Creates a new instance of the table object.
    *
    * @param parentDir the parent directory for the table object
@@ -59,81 +57,71 @@ public class TableObject extends DataObject {
    * @param size the size of the table object, in bytes
    * @throws Exception if there is any error accessing the table
    */
-  public TableObject(
-      File parentDir,
-      gov.nasa.arc.pds.xml.generated.File fileObject,
-      Object tableObject,
-      long offset,
-      long size
-  ) throws Exception {
+  public TableObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject,
+      Object tableObject, long offset, long size) throws Exception {
     this(parentDir.toURI().toURL(), fileObject, tableObject, offset, size);
   }
-	
-	/**
-	 * Creates a new instance of the table object.
-	 *
-	 * @param parentDir the parent directory for the table object
-	 * @param fileObject the file object describing the data file
-	 * @param tableObject the table object describing the table
-	 * @param offset the offset of the table object within the data file
-	 * @param size the size of the table object, in bytes
-	 * @throws Exception if there is any error accessing the table
-	 */
-	public TableObject(
-			URL parentDir,
-			gov.nasa.arc.pds.xml.generated.File fileObject,
-			Object tableObject,
-			long offset,
-			long size
-	) throws Exception {
-		super(parentDir, fileObject, offset, size);
-		this.tableObject = tableObject;
-		this.tableReader = getTableReader();
-	}
 
-	/**
-	 * Returns a table reader for this table.
-	 *
-	 * @return a table reader
-	 * @throws Exception if there is an error creating the table reader
-	 */
-	private TableReader getTableReader() throws Exception {
-		return ExporterFactory.getTableReader(tableObject, getDataFile());
-	}
+  /**
+   * Creates a new instance of the table object.
+   *
+   * @param parentDir the parent directory for the table object
+   * @param fileObject the file object describing the data file
+   * @param tableObject the table object describing the table
+   * @param offset the offset of the table object within the data file
+   * @param size the size of the table object, in bytes
+   * @throws Exception if there is any error accessing the table
+   */
+  public TableObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject,
+      Object tableObject, long offset, long size) throws Exception {
+    super(parentDir, fileObject, offset, size);
+    this.tableObject = tableObject;
+    this.tableReader = getTableReader();
+  }
 
-	/**
-	 * Gets the field descriptions for fields in the table.
-	 *
-	 * @return an array of field descriptions
-	 */
-	public FieldDescription[] getFields() {
-		return tableReader.getFields();
-	}
+  /**
+   * Returns a table reader for this table.
+   *
+   * @return a table reader
+   * @throws Exception if there is an error creating the table reader
+   */
+  private TableReader getTableReader() throws Exception {
+    return ExporterFactory.getTableReader(tableObject, getDataFile());
+  }
 
-	/**
-	 * Reads the next record from the data file.
-	 *
-	 * @return the next record, or null if no further records.
-	 * @throws IOException if there is an error reading from the data file
-	 * @throws CsvValidationException 
-	 */
-	public TableRecord readNext() throws IOException, CsvValidationException {
-		return tableReader.readNext();
-	}
+  /**
+   * Gets the field descriptions for fields in the table.
+   *
+   * @return an array of field descriptions
+   */
+  public FieldDescription[] getFields() {
+    return tableReader.getFields();
+  }
 
-	/**
-	 * Gets access to the table record given the index. The current row is set to
-	 * this index, thus, subsequent call to readNext() gets the next record from
-	 * this position.
-	 *
-	 * @param index the record index (1-relative)
-	 * @return an instance of <code>TableRecord</code>
-	 * @throws IllegalArgumentException if index is greater than the record number
-	 * @throws IOException if there is an error reading from the data file
-	 * @throws CsvValidationException 
-	 */
-	public TableRecord getRecord(int index, boolean keepQuotationsFlag) throws IllegalArgumentException, IOException, CsvValidationException {
-		return tableReader.getRecord(index,keepQuotationsFlag);
-	}
+  /**
+   * Reads the next record from the data file.
+   *
+   * @return the next record, or null if no further records.
+   * @throws IOException if there is an error reading from the data file
+   * @throws CsvValidationException
+   */
+  public TableRecord readNext() throws IOException, CsvValidationException {
+    return tableReader.readNext();
+  }
+
+  /**
+   * Gets access to the table record given the index. The current row is set to this index, thus,
+   * subsequent call to readNext() gets the next record from this position.
+   *
+   * @param index the record index (1-relative)
+   * @return an instance of <code>TableRecord</code>
+   * @throws IllegalArgumentException if index is greater than the record number
+   * @throws IOException if there is an error reading from the data file
+   * @throws CsvValidationException
+   */
+  public TableRecord getRecord(int index, boolean keepQuotationsFlag)
+      throws IllegalArgumentException, IOException, CsvValidationException {
+    return tableReader.getRecord(index, keepQuotationsFlag);
+  }
 
 }

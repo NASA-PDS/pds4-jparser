@@ -30,6 +30,31 @@
 
 package gov.nasa.pds.objectAccess;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.NoSuchElementException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
 import gov.nasa.arc.pds.xml.generated.Array3DImage;
@@ -55,111 +80,83 @@ import gov.nasa.pds.label.jaxb.PDSXMLEventReader;
 import gov.nasa.pds.label.jaxb.XMLLabelContext;
 import gov.nasa.pds.objectAccess.utility.Utility;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * The <code>ObjectAccess</code> class is a point of entry into parsed PDS (including PDS 4/XML-schema-labeled) objects.
+ * The <code>ObjectAccess</code> class is a point of entry into parsed PDS (including PDS
+ * 4/XML-schema-labeled) objects.
  *
  * @author dcberrio
  */
 public class ObjectAccess implements ObjectProvider {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectAccess.class);
-	private String archiveRoot;
-	private URL root;
-	private final XMLInputFactory xif = XMLInputFactory.newInstance();
-	private XMLLabelContext labelContext;
+  private static final Logger LOGGER = LoggerFactory.getLogger(ObjectAccess.class);
+  private String archiveRoot;
+  private URL root;
+  private final XMLInputFactory xif = XMLInputFactory.newInstance();
+  private XMLLabelContext labelContext;
 
-	/**
-	 * Creates a new instance with the current local directory as the archive root
-	 * path.
-	 * @throws URISyntaxException 
-	 * @throws MalformedURLException 
-	 */
-	
-	public ObjectAccess() throws MalformedURLException, URISyntaxException {
-		this(new File("."));
-	}
-	
+  /**
+   * Creates a new instance with the current local directory as the archive root path.
+   *
+   * @throws URISyntaxException
+   * @throws MalformedURLException
+   */
 
-	/**
-	 * Constructs an <code>ObjectAccess</code> object and sets the archive root path.
-	 *
-	 * @param archiveRoot the archive root path
-	 * @throws URISyntaxException 
-	 * @throws MalformedURLException 
-	 */
-	public ObjectAccess(String archiveRoot) throws MalformedURLException, URISyntaxException {
-	  URL url = null;
-	  try {
-	    url = new URL(archiveRoot);
-	  } catch (MalformedURLException mu) {
-	    url = new File(archiveRoot).toURI().toURL();
-	  }
-	  this.root = url.toURI().normalize().toURL();
-	  this.archiveRoot = this.root.toString();
-	  this.labelContext = new XMLLabelContext();
-	}
+  public ObjectAccess() throws MalformedURLException, URISyntaxException {
+    this(new File("."));
+  }
 
-	/**
+
+  /**
    * Constructs an <code>ObjectAccess</code> object and sets the archive root path.
    *
    * @param archiveRoot the archive root path
-   * @throws URISyntaxException 
-   * @throws MalformedURLException 
+   * @throws URISyntaxException
+   * @throws MalformedURLException
    */
-	public ObjectAccess(File archiveRoot) throws MalformedURLException, URISyntaxException {
-	  this(archiveRoot.toURI().toURL());
-	}
-	
-	/**
-	 * Constructs an <code>ObjectAccess</code> object and sets the archive root path.
-	 *
-	 * @param archiveRoot the archive root path
-	 * @throws URISyntaxException 
-	 * @throws MalformedURLException 
-	 */
-	public ObjectAccess(URL archiveRoot) throws URISyntaxException, MalformedURLException {
-		this.root = archiveRoot.toURI().normalize().toURL();
-		this.archiveRoot = this.root.toString();
+  public ObjectAccess(String archiveRoot) throws MalformedURLException, URISyntaxException {
+    URL url = null;
+    try {
+      url = new URL(archiveRoot);
+    } catch (MalformedURLException mu) {
+      url = new File(archiveRoot).toURI().toURL();
+    }
+    this.root = url.toURI().normalize().toURL();
+    this.archiveRoot = this.root.toString();
     this.labelContext = new XMLLabelContext();
-	}
+  }
 
-	private JAXBContext getJAXBContext(String pkgName) throws JAXBException {
-		ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
-		if (!(currentLoader instanceof WorkaroundClassLoader)) {
-			ClassLoader loader = new WorkaroundClassLoader(
-					currentLoader!=null ? currentLoader : getClass().getClassLoader()
-			);
-			Thread.currentThread().setContextClassLoader(loader);
-		}
-		return JAXBContext.newInstance(pkgName);
-	}
+  /**
+   * Constructs an <code>ObjectAccess</code> object and sets the archive root path.
+   *
+   * @param archiveRoot the archive root path
+   * @throws URISyntaxException
+   * @throws MalformedURLException
+   */
+  public ObjectAccess(File archiveRoot) throws MalformedURLException, URISyntaxException {
+    this(archiveRoot.toURI().toURL());
+  }
+
+  /**
+   * Constructs an <code>ObjectAccess</code> object and sets the archive root path.
+   *
+   * @param archiveRoot the archive root path
+   * @throws URISyntaxException
+   * @throws MalformedURLException
+   */
+  public ObjectAccess(URL archiveRoot) throws URISyntaxException, MalformedURLException {
+    this.root = archiveRoot.toURI().normalize().toURL();
+    this.archiveRoot = this.root.toString();
+    this.labelContext = new XMLLabelContext();
+  }
+
+  private JAXBContext getJAXBContext(String pkgName) throws JAXBException {
+    ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
+    if (!(currentLoader instanceof WorkaroundClassLoader)) {
+      ClassLoader loader = new WorkaroundClassLoader(
+          currentLoader != null ? currentLoader : getClass().getClassLoader());
+      Thread.currentThread().setContextClassLoader(loader);
+    }
+    return JAXBContext.newInstance(pkgName);
+  }
 
   @Override
   public <T> T getProduct(File labelFile, Class<T> productClass) throws ParseException {
@@ -170,46 +167,45 @@ public class ObjectAccess implements ObjectProvider {
       throw new ParseException("Unable to parse the product label", e);
     }
   }
-	
-	@Override
-	public <T> T getProduct(URL label, Class<T> productClass) throws ParseException {
-		try {
-			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
-			Unmarshaller u = context.createUnmarshaller();
-			u.setEventHandler(new LenientEventHandler());
-			return productClass.cast(u.unmarshal(Utility.openConnection(label)));
-		} catch (JAXBException je) {
-			LOGGER.error("Failed to load the product from the label.", je);
-			throw new ParseException("Unable to parse the product label", je);
-		} catch (IOException io) {
+
+  @Override
+  public <T> T getProduct(URL label, Class<T> productClass) throws ParseException {
+    try {
+      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
+      Unmarshaller u = context.createUnmarshaller();
+      u.setEventHandler(new LenientEventHandler());
+      return productClass.cast(u.unmarshal(Utility.openConnection(label)));
+    } catch (JAXBException je) {
+      LOGGER.error("Failed to load the product from the label.", je);
+      throw new ParseException("Unable to parse the product label", je);
+    } catch (IOException io) {
       LOGGER.error("Failed to load the product from the label.", io);
       throw new ParseException("Unable to parse the product label", io);
-		} catch (Exception e) {
-		  throw new ParseException("Error while parsing the product label", e);
-		}
-	}
+    } catch (Exception e) {
+      throw new ParseException("Error while parsing the product label", e);
+    }
+  }
 
-	@Override
-	public ProductObservational getObservationalProduct(String relativeXmlFilePath) {
-	  InputStream in = null;
-		try {
-			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
-			Unmarshaller u = context.createUnmarshaller();
-			u.setEventHandler(new LenientEventHandler());
-			URL url = new URL(getRoot(), relativeXmlFilePath);
-			in = url.openStream();
-			XmlRootElement a = ProductObservational.class.getAnnotation(XmlRootElement.class);
-			String root = a.name();
-			PDSXMLEventReader xsr = new PDSXMLEventReader(
-			    xif.createXMLEventReader(in), root);
-			ProductObservational po = (ProductObservational) u.unmarshal(xsr);
-	    labelContext = xsr.getLabelContext();
-	    return po;
-		} catch (JAXBException e) {
-			LOGGER.error("Failed to get the product observational.", e);
-			e.printStackTrace();
+  @Override
+  public ProductObservational getObservationalProduct(String relativeXmlFilePath) {
+    InputStream in = null;
+    try {
+      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
+      Unmarshaller u = context.createUnmarshaller();
+      u.setEventHandler(new LenientEventHandler());
+      URL url = new URL(getRoot(), relativeXmlFilePath);
+      in = url.openStream();
+      XmlRootElement a = ProductObservational.class.getAnnotation(XmlRootElement.class);
+      String root = a.name();
+      PDSXMLEventReader xsr = new PDSXMLEventReader(xif.createXMLEventReader(in), root);
+      ProductObservational po = (ProductObservational) u.unmarshal(xsr);
+      labelContext = xsr.getLabelContext();
+      return po;
+    } catch (JAXBException e) {
+      LOGGER.error("Failed to get the product observational.", e);
+      e.printStackTrace();
       return null;
-		} catch (MalformedURLException e) {
+    } catch (MalformedURLException e) {
       LOGGER.error("Failed to get the product observational.", e);
       e.printStackTrace();
       return null;
@@ -224,533 +220,534 @@ public class ObjectAccess implements ObjectProvider {
     } finally {
       IOUtils.closeQuietly(in);
     }
-	}
+  }
 
-	 public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product) 
-	     throws Exception {
-	   setObservationalProduct(relativeXmlFilePath, product, null);
-	 }
-	
+  @Override
+  public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product)
+      throws Exception {
+    setObservationalProduct(relativeXmlFilePath, product, null);
+  }
+
   /**
-   * Writes a label given the product XML file. This method assumes that the 
-   * label will be written to the local file system. Therefore, the protocol
-   * of the ObjectAccess archive root must be a 'file'.
+   * Writes a label given the product XML file. This method assumes that the label will be written
+   * to the local file system. Therefore, the protocol of the ObjectAccess archive root must be a
+   * 'file'.
    *
-   * @param relativeXmlFilePath the XML file path and name of the product to set, relative
-   *      to the ObjectAccess archive root
-   *      
+   * @param relativeXmlFilePath the XML file path and name of the product to set, relative to the
+   *        ObjectAccess archive root
+   * 
    * @param product The Product_Observational object to serialize into an XML file.
-   * 
+   *
    * @param labelContext A context to use when creating the XML file. Can be set to null.
-   * 
+   *
    * @throws Exception If there was an error creating the XML file.
    */
-	@Override
-	public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product, 
-	    XMLLabelContext labelContext) throws Exception {
-		try {
-			JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
-			Marshaller m = context.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			if (labelContext != null) {
-			  m.setProperty("com.sun.xml.bind.namespacePrefixMapper", labelContext.getNamespaces());
-			  m.setProperty("com.sun.xml.bind.xmlHeaders", labelContext.getXmlModelPIs());
-			  m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, labelContext.getSchemaLocation());
-			}
-			if ("file".equalsIgnoreCase(getRoot().getProtocol())) {
-  			File parent = FileUtils.toFile(getRoot());
-  			File f = new File(parent, relativeXmlFilePath);
-  			m.marshal(product, f);
-			} else {
-			  OutputStream os = null;
-			  try {
-			    URL u = new URL(getRoot(), relativeXmlFilePath);
-			    URLConnection conn = u.openConnection();
-			    conn.setDoOutput(true);
-			    os = conn.getOutputStream();
-			    m.marshal(product, os);
-			  } catch (Exception e) {
-			    LOGGER.error("Failed to set the product observational.", e);
-			    e.printStackTrace();
-			    throw e;
-			  } finally {
-			    IOUtils.closeQuietly(os);
-			  }
-			}
-		} catch (JAXBException e) {
-			LOGGER.error("Failed to set the product observational.", e);
-			e.printStackTrace();
-			throw e;
-		}
-	}
+  @Override
+  public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product,
+      XMLLabelContext labelContext) throws Exception {
+    try {
+      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
+      Marshaller m = context.createMarshaller();
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      if (labelContext != null) {
+        m.setProperty("com.sun.xml.bind.namespacePrefixMapper", labelContext.getNamespaces());
+        m.setProperty("com.sun.xml.bind.xmlHeaders", labelContext.getXmlModelPIs());
+        m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, labelContext.getSchemaLocation());
+      }
+      if ("file".equalsIgnoreCase(getRoot().getProtocol())) {
+        File parent = FileUtils.toFile(getRoot());
+        File f = new File(parent, relativeXmlFilePath);
+        m.marshal(product, f);
+      } else {
+        OutputStream os = null;
+        try {
+          URL u = new URL(getRoot(), relativeXmlFilePath);
+          URLConnection conn = u.openConnection();
+          conn.setDoOutput(true);
+          os = conn.getOutputStream();
+          m.marshal(product, os);
+        } catch (Exception e) {
+          LOGGER.error("Failed to set the product observational.", e);
+          e.printStackTrace();
+          throw e;
+        } finally {
+          IOUtils.closeQuietly(os);
+        }
+      }
+    } catch (JAXBException e) {
+      LOGGER.error("Failed to set the product observational.", e);
+      e.printStackTrace();
+      throw e;
+    }
+  }
 
-	@Override
-	public List<Array> getArrays(FileArea fileArea) {
-    List<Array> list = new ArrayList<Array>();
+  @Override
+  public List<Array> getArrays(FileArea fileArea) {
+    List<Array> list = new ArrayList<>();
     if (fileArea instanceof FileAreaObservational) {
       list.addAll(getArrays((FileAreaObservational) fileArea));
     } else if (fileArea instanceof FileAreaBrowse) {
       list.addAll(getArrays((FileAreaBrowse) fileArea));
     }
-    return list;  
-	}
-	
-	@Override
-	public List<Array> getArrays(FileAreaObservational fileArea) {
-		List<Array> list = new ArrayList<Array>();
-		for (Object obj : fileArea.getDataObjects()) {
-			if (obj instanceof Array) {
-				list.add(Array.class.cast(obj));
-			}
-		}
-		return list;
-	}
-	
-	@Override
-	public List<Array> getArrays(FileAreaBrowse fileArea) {
-	  List<Array> list = new ArrayList<Array>();
-	  for (Object obj : fileArea.getDataObjects()) {
-	    if (obj instanceof Array) {
-	      list.add(Array.class.cast(obj));
-	    }
-	  }
-	  return list;
-	}
+    return list;
+  }
 
-	@Override
-    public List<Array2DImage> getArray2DImages(FileAreaObservational observationalFileArea) {
-    	ArrayList<Array2DImage> list = new ArrayList<Array2DImage>();
-    	for (Object obj : observationalFileArea.getDataObjects()) {
-    		if (obj.getClass().equals(Array2DImage.class)) {
-    			list.add(Array2DImage.class.cast(obj));
-    		}
-    	}
-    	return list;
+  @Override
+  public List<Array> getArrays(FileAreaObservational fileArea) {
+    List<Array> list = new ArrayList<>();
+    for (Object obj : fileArea.getDataObjects()) {
+      if (obj instanceof Array) {
+        list.add(Array.class.cast(obj));
+      }
     }
+    return list;
+  }
 
-	public List<Array3DImage> getArray3DImages(FileAreaObservational observationalFileArea) {
-    ArrayList<Array3DImage> list = new ArrayList<Array3DImage>();
+  @Override
+  public List<Array> getArrays(FileAreaBrowse fileArea) {
+    List<Array> list = new ArrayList<>();
+    for (Object obj : fileArea.getDataObjects()) {
+      if (obj instanceof Array) {
+        list.add(Array.class.cast(obj));
+      }
+    }
+    return list;
+  }
+
+  @Override
+  public List<Array2DImage> getArray2DImages(FileAreaObservational observationalFileArea) {
+    ArrayList<Array2DImage> list = new ArrayList<>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      if (obj.getClass().equals(Array2DImage.class)) {
+        list.add(Array2DImage.class.cast(obj));
+      }
+    }
+    return list;
+  }
+
+  @Override
+  public List<Array3DImage> getArray3DImages(FileAreaObservational observationalFileArea) {
+    ArrayList<Array3DImage> list = new ArrayList<>();
     for (Object obj : observationalFileArea.getDataObjects()) {
       if (obj.getClass().equals(Array3DImage.class)) {
         list.add(Array3DImage.class.cast(obj));
       }
     }
     return list;
-	}
-	
-	public List<Array3DSpectrum> getArray3DSpectrums(FileAreaObservational observationalFileArea) {
-    ArrayList<Array3DSpectrum> list = new ArrayList<Array3DSpectrum>();
+  }
+
+  @Override
+  public List<Array3DSpectrum> getArray3DSpectrums(FileAreaObservational observationalFileArea) {
+    ArrayList<Array3DSpectrum> list = new ArrayList<>();
     for (Object obj : observationalFileArea.getDataObjects()) {
       if (obj.getClass().equals(Array3DSpectrum.class)) {
         list.add(Array3DSpectrum.class.cast(obj));
       }
     }
-    return list;	  
-	}
-	
-	public List<Object> getHeaderObjects(FileAreaAncillary anciilaryFileArea) {
+    return list;
+  }
+
+  @Override
+  public List<Object> getHeaderObjects(FileAreaAncillary anciilaryFileArea) {
     Class<?> clazz;
-    ArrayList<Object> list = new ArrayList<Object>();
+    ArrayList<Object> list = new ArrayList<>();
     for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray2Ds()) {
       clazz = obj.getClass();
       if (clazz.equals(Header.class)) {
-        list.add(obj);
-      }
-    }
-    return list;	  
-	}
-	
-	public List<Object> getHeaderObjects(FileAreaObservational observationalFileArea) {
-    Class<?> clazz;
-    ArrayList<Object> list = new ArrayList<Object>();
-    for (Object obj : observationalFileArea.getDataObjects()) {
-      clazz = obj.getClass();
-      if (clazz.equals(Header.class)) {
-        list.add(obj);
-      }
-    }
-    return list;	  
-	}
-	
-	public List<Object> getHeaderObjects(FileAreaBrowse browseFileArea) {
-    Class<?> clazz;
-    ArrayList<Object> list = new ArrayList<Object>();
-    for (Object obj : browseFileArea.getDataObjects()) {
-      clazz = obj.getClass();
-      if (clazz.equals(Header.class)) {
-        list.add(obj);
-      }
-    }
-    return list;	  
-	}
-	
-	public List<Object> getHeaderObjects(FileArea fileArea) {
-		List<Object> list = new ArrayList<Object>();
-		if (fileArea instanceof FileAreaObservational) {
-			list.addAll(getHeaderObjects((FileAreaObservational) fileArea));
-		} 
-		/*else if (fileArea instanceof FileAreaInventory) {
-		    list.add(((FileAreaInventory) fileArea).getInventory());
-		  } else if (fileArea instanceof FileAreaSIPDeepArchive) {
-		    list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive());
-		  } else if (fileArea instanceof FileAreaTransferManifest) {
-		    list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
-		  } */
-		else if (fileArea instanceof FileAreaBrowse) {
-			list.addAll(getHeaderObjects((FileAreaBrowse) fileArea));
-		} else if (fileArea instanceof FileAreaAncillary) {
-			list.addAll(getHeaderObjects((FileAreaAncillary) fileArea));
-		}
-		// FileAreaObservationalSupplemental
-		// FileAreaMetadata.java
-		// FileAreaUpdate
-		// 
-		return list;
-	}
-
-	@Override
-	public List<Object> getTableObjects(FileAreaObservational observationalFileArea) {
-		Class<?> clazz;
-		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : observationalFileArea.getDataObjects()) {
-			clazz = obj.getClass();
-			if (clazz.equals(TableCharacter.class)
-					|| clazz.equals(TableBinary.class)
-					|| clazz.equals(TableDelimited.class)) {
-				list.add(obj);
-			}
-		}
-		return list;
-	}
-	
-	@Override
-	public List<Object> getTableObjects(FileAreaBrowse browseFileArea) {
-    Class<?> clazz;
-    ArrayList<Object> list = new ArrayList<Object>();
-    for (Object obj : browseFileArea.getDataObjects()) {
-      clazz = obj.getClass();
-      if (clazz.equals(TableCharacter.class)
-          || clazz.equals(TableBinary.class)
-          || clazz.equals(TableDelimited.class)) {
-        list.add(obj);
-      }
-    }
-    return list;	  
-	}
-	
-	@Override
-	public List<Object> getTableObjects(FileAreaAncillary anciilaryFileArea) {
-    Class<?> clazz;
-    ArrayList<Object> list = new ArrayList<Object>();
-    for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray2Ds()) {
-      clazz = obj.getClass();
-      if (clazz.equals(TableCharacter.class)
-          || clazz.equals(TableBinary.class)
-          || clazz.equals(TableDelimited.class)) {
-        list.add(obj);
-      }
-    }
-    return list;	  
-	}
-	
-	@Override
-	public List<Object> getTableObjects(FileAreaObservationalSupplemental observationalFileAreaSupplemental) {
-		Class<?> clazz;
-		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : observationalFileAreaSupplemental.getDataObjects()) {
-			clazz = obj.getClass();
-			if (clazz.equals(TableCharacter.class)
-					|| clazz.equals(TableBinary.class)
-					|| clazz.equals(TableDelimited.class)) {
-				list.add(obj);
-			}
-		}
-		return list;
-	}
-
-	@Override
-	public List<Object> getTableObjects(FileArea fileArea) {
-	  List<Object> list = new ArrayList<Object>();
-	  if (fileArea instanceof FileAreaObservational) {
-	    list.addAll(getTableObjects((FileAreaObservational) fileArea));
-	  } else if (fileArea instanceof FileAreaInventory) {
-	    list.add(((FileAreaInventory) fileArea).getInventory());
-	  } else if (fileArea instanceof FileAreaSIPDeepArchive) {
-	    list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive());
-	  } else if (fileArea instanceof FileAreaTransferManifest) {
-	    list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
-	  } else if (fileArea instanceof FileAreaBrowse) {
-	    list.addAll(getTableObjects((FileAreaBrowse) fileArea));
-	  } else if (fileArea instanceof FileAreaAncillary) {
-		list.addAll(getTableObjects((FileAreaAncillary) fileArea));
-	  } else if (fileArea instanceof FileAreaObservationalSupplemental) {
-		list.add(getTableObjects((FileAreaObservationalSupplemental) fileArea));
-	  }
-	  // how to get these???
-	  // FileAreaMetadata
-	  // FileAreaUpdate
-	  return list;
-	}
-	
-	public List<Object> getTablesAndImages(FileArea fileArea) {
-	  List<Object> list = new ArrayList<Object>();
-	   if (fileArea instanceof FileAreaObservational) {
-	      list.addAll(getTablesAndImages((FileAreaObservational) fileArea));
-	    } else if (fileArea instanceof FileAreaInventory) {
-	      list.add(((FileAreaInventory) fileArea).getInventory());
-	    } else if (fileArea instanceof FileAreaSIPDeepArchive) {
-	      list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive());
-	    } else if (fileArea instanceof FileAreaTransferManifest) {
-	      list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
-	    } else if (fileArea instanceof FileAreaBrowse) {
-	      list.addAll(getTablesAndImages((FileAreaBrowse) fileArea));
-	    } else if (fileArea instanceof FileAreaAncillary) {
-	      list.addAll(getTableObjects((FileAreaAncillary) fileArea));
-		}
-	    return list;
-	}
-
-	public List<Object> getTablesAndImages(FileAreaObservational observationalFileArea) {
-    List<Object> list = new ArrayList<Object>();
-    Class<?> clazz;
-    for (Object obj : observationalFileArea.getDataObjects()) {
-      clazz = obj.getClass();
-      if (clazz.equals(Array3DSpectrum.class) || 
-          clazz.equals(Array2DImage.class) || 
-          clazz.equals(Array3DImage.class) || 
-          clazz.equals(TableCharacter.class) || 
-          clazz.equals(TableBinary.class) || 
-          clazz.equals(TableDelimited.class) ) {
         list.add(obj);
       }
     }
     return list;
-	}
-	
+  }
+
+  @Override
+  public List<Object> getHeaderObjects(FileAreaObservational observationalFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(Header.class)) {
+        list.add(obj);
+      }
+    }
+    return list;
+  }
+
+  @Override
+  public List<Object> getHeaderObjects(FileAreaBrowse browseFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : browseFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(Header.class)) {
+        list.add(obj);
+      }
+    }
+    return list;
+  }
+
+  @Override
+  public List<Object> getHeaderObjects(FileArea fileArea) {
+    List<Object> list = new ArrayList<>();
+    if (fileArea instanceof FileAreaObservational) {
+      list.addAll(getHeaderObjects((FileAreaObservational) fileArea));
+    }
+    /*
+     * else if (fileArea instanceof FileAreaInventory) { list.add(((FileAreaInventory)
+     * fileArea).getInventory()); } else if (fileArea instanceof FileAreaSIPDeepArchive) {
+     * list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive()); } else if
+     * (fileArea instanceof FileAreaTransferManifest) { list.add(((FileAreaTransferManifest)
+     * fileArea).getTransferManifest()); }
+     */
+    else if (fileArea instanceof FileAreaBrowse) {
+      list.addAll(getHeaderObjects((FileAreaBrowse) fileArea));
+    } else if (fileArea instanceof FileAreaAncillary) {
+      list.addAll(getHeaderObjects((FileAreaAncillary) fileArea));
+    }
+    // FileAreaObservationalSupplemental
+    // FileAreaMetadata.java
+    // FileAreaUpdate
+    //
+    return list;
+  }
+
+  @Override
+  public List<Object> getTableObjects(FileAreaObservational observationalFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(TableCharacter.class) || clazz.equals(TableBinary.class)
+          || clazz.equals(TableDelimited.class)) {
+        list.add(obj);
+      }
+    }
+    return list;
+  }
+
+  @Override
+  public List<Object> getTableObjects(FileAreaBrowse browseFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : browseFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(TableCharacter.class) || clazz.equals(TableBinary.class)
+          || clazz.equals(TableDelimited.class)) {
+        list.add(obj);
+      }
+    }
+    return list;
+  }
+
+  @Override
+  public List<Object> getTableObjects(FileAreaAncillary anciilaryFileArea) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray2Ds()) {
+      clazz = obj.getClass();
+      if (clazz.equals(TableCharacter.class) || clazz.equals(TableBinary.class)
+          || clazz.equals(TableDelimited.class)) {
+        list.add(obj);
+      }
+    }
+    return list;
+  }
+
+  @Override
+  public List<Object> getTableObjects(
+      FileAreaObservationalSupplemental observationalFileAreaSupplemental) {
+    Class<?> clazz;
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : observationalFileAreaSupplemental.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(TableCharacter.class) || clazz.equals(TableBinary.class)
+          || clazz.equals(TableDelimited.class)) {
+        list.add(obj);
+      }
+    }
+    return list;
+  }
+
+  @Override
+  public List<Object> getTableObjects(FileArea fileArea) {
+    List<Object> list = new ArrayList<>();
+    if (fileArea instanceof FileAreaObservational) {
+      list.addAll(getTableObjects((FileAreaObservational) fileArea));
+    } else if (fileArea instanceof FileAreaInventory) {
+      list.add(((FileAreaInventory) fileArea).getInventory());
+    } else if (fileArea instanceof FileAreaSIPDeepArchive) {
+      list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive());
+    } else if (fileArea instanceof FileAreaTransferManifest) {
+      list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
+    } else if (fileArea instanceof FileAreaBrowse) {
+      list.addAll(getTableObjects((FileAreaBrowse) fileArea));
+    } else if (fileArea instanceof FileAreaAncillary) {
+      list.addAll(getTableObjects((FileAreaAncillary) fileArea));
+    } else if (fileArea instanceof FileAreaObservationalSupplemental) {
+      list.add(getTableObjects((FileAreaObservationalSupplemental) fileArea));
+    }
+    // how to get these???
+    // FileAreaMetadata
+    // FileAreaUpdate
+    return list;
+  }
+
+  @Override
+  public List<Object> getTablesAndImages(FileArea fileArea) {
+    List<Object> list = new ArrayList<>();
+    if (fileArea instanceof FileAreaObservational) {
+      list.addAll(getTablesAndImages((FileAreaObservational) fileArea));
+    } else if (fileArea instanceof FileAreaInventory) {
+      list.add(((FileAreaInventory) fileArea).getInventory());
+    } else if (fileArea instanceof FileAreaSIPDeepArchive) {
+      list.add(((FileAreaSIPDeepArchive) fileArea).getManifestSIPDeepArchive());
+    } else if (fileArea instanceof FileAreaTransferManifest) {
+      list.add(((FileAreaTransferManifest) fileArea).getTransferManifest());
+    } else if (fileArea instanceof FileAreaBrowse) {
+      list.addAll(getTablesAndImages((FileAreaBrowse) fileArea));
+    } else if (fileArea instanceof FileAreaAncillary) {
+      list.addAll(getTableObjects((FileAreaAncillary) fileArea));
+    }
+    return list;
+  }
+
+  @Override
+  public List<Object> getTablesAndImages(FileAreaObservational observationalFileArea) {
+    List<Object> list = new ArrayList<>();
+    Class<?> clazz;
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      clazz = obj.getClass();
+      if (clazz.equals(Array3DSpectrum.class) || clazz.equals(Array2DImage.class)
+          || clazz.equals(Array3DImage.class) || clazz.equals(TableCharacter.class)
+          || clazz.equals(TableBinary.class) || clazz.equals(TableDelimited.class)) {
+        list.add(obj);
+      }
+    }
+    return list;
+  }
+
+  @Override
   public List<Object> getTablesAndImages(FileAreaBrowse browseFileArea) {
-    List<Object> list = new ArrayList<Object>();
+    List<Object> list = new ArrayList<>();
     Class<?> clazz;
     for (Object obj : browseFileArea.getDataObjects()) {
       clazz = obj.getClass();
-      if (clazz.equals(Array3DSpectrum.class) || 
-          clazz.equals(Array2DImage.class) || 
-          clazz.equals(Array3DImage.class) || 
-          clazz.equals(TableCharacter.class) || 
-          clazz.equals(TableBinary.class) || 
-          clazz.equals(TableDelimited.class) ) {
+      if (clazz.equals(Array3DSpectrum.class) || clazz.equals(Array2DImage.class)
+          || clazz.equals(Array3DImage.class) || clazz.equals(TableCharacter.class)
+          || clazz.equals(TableBinary.class) || clazz.equals(TableDelimited.class)) {
         list.add(obj);
       }
     }
     return list;
-	}
-	
-	@Override
-	public List<TableCharacter> getTableCharacters(FileAreaObservational observationalFileArea) {
-		ArrayList<TableCharacter> list = new ArrayList<TableCharacter>();
-		for (Object obj : observationalFileArea.getDataObjects()) {
-			if (obj.getClass().equals(TableCharacter.class)) {
-				list.add(TableCharacter.class.cast(obj));
-			}
-		}
-		return list;
-	}
+  }
 
-	@Override
-	public List<TableBinary> getTableBinaries(FileAreaObservational observationalFileArea) {
-		ArrayList<TableBinary> list = new ArrayList<TableBinary>();
-		for (Object obj : observationalFileArea.getDataObjects()) {
-			if (obj.getClass().equals(TableBinary.class)) {
-				list.add(TableBinary.class.cast(obj));
-			}
-		}
-		return list;
-	}
+  @Override
+  public List<TableCharacter> getTableCharacters(FileAreaObservational observationalFileArea) {
+    ArrayList<TableCharacter> list = new ArrayList<>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      if (obj.getClass().equals(TableCharacter.class)) {
+        list.add(TableCharacter.class.cast(obj));
+      }
+    }
+    return list;
+  }
 
-	@Override
-	public List<TableDelimited> getTableDelimiteds(FileAreaObservational observationalFileArea) {
-		ArrayList<TableDelimited> list = new ArrayList<TableDelimited>();
-		for (Object obj : observationalFileArea.getDataObjects()) {
-			if (obj.getClass().equals(TableDelimited.class)) {
-				list.add(TableDelimited.class.cast(obj));
-			}
-		}
-		return list;
-	}
+  @Override
+  public List<TableBinary> getTableBinaries(FileAreaObservational observationalFileArea) {
+    ArrayList<TableBinary> list = new ArrayList<>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      if (obj.getClass().equals(TableBinary.class)) {
+        list.add(TableBinary.class.cast(obj));
+      }
+    }
+    return list;
+  }
 
-	@Override
-	public List<FieldCharacter> getFieldCharacters(TableCharacter table) {
-		ArrayList<FieldCharacter> list = new ArrayList<FieldCharacter>();
-		for (Object obj : table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters()) {
-			if (obj.getClass().equals(FieldCharacter.class)) {
-				list.add(FieldCharacter.class.cast(obj));
-			}
-		}
-		return list;
-	}
+  @Override
+  public List<TableDelimited> getTableDelimiteds(FileAreaObservational observationalFileArea) {
+    ArrayList<TableDelimited> list = new ArrayList<>();
+    for (Object obj : observationalFileArea.getDataObjects()) {
+      if (obj.getClass().equals(TableDelimited.class)) {
+        list.add(TableDelimited.class.cast(obj));
+      }
+    }
+    return list;
+  }
 
-	@Override
-	public List<FieldDelimited> getFieldDelimiteds(TableDelimited table) {
-		ArrayList<FieldDelimited> list = new ArrayList<FieldDelimited>();
-		for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
-			if (obj.getClass().equals(FieldDelimited.class)) {
-				list.add(FieldDelimited.class.cast(obj));
-			}
-		}
-		return list;
-	}
+  @Override
+  public List<FieldCharacter> getFieldCharacters(TableCharacter table) {
+    ArrayList<FieldCharacter> list = new ArrayList<>();
+    for (Object obj : table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters()) {
+      if (obj.getClass().equals(FieldCharacter.class)) {
+        list.add(FieldCharacter.class.cast(obj));
+      }
+    }
+    return list;
+  }
 
-	@Override
-	public List<GroupFieldDelimited> getGroupFieldDelimiteds(TableDelimited table) {
-		ArrayList<GroupFieldDelimited> list = new ArrayList<GroupFieldDelimited>();
-		for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
-			if (obj.getClass().equals(GroupFieldDelimited.class)) {
-				list.add(GroupFieldDelimited.class.cast(obj));
-			}
-		}
-		return list;
-	}
+  @Override
+  public List<FieldDelimited> getFieldDelimiteds(TableDelimited table) {
+    ArrayList<FieldDelimited> list = new ArrayList<>();
+    for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
+      if (obj.getClass().equals(FieldDelimited.class)) {
+        list.add(FieldDelimited.class.cast(obj));
+      }
+    }
+    return list;
+  }
 
-	@Override
-	public List<Object> getFieldDelimitedAndGroupFieldDelimiteds(TableDelimited table) {
-		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
-				list.add(obj);
-		}
-		return list;
-	}
+  @Override
+  public List<GroupFieldDelimited> getGroupFieldDelimiteds(TableDelimited table) {
+    ArrayList<GroupFieldDelimited> list = new ArrayList<>();
+    for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
+      if (obj.getClass().equals(GroupFieldDelimited.class)) {
+        list.add(GroupFieldDelimited.class.cast(obj));
+      }
+    }
+    return list;
+  }
 
-	@Override
-	public List<Object> getFieldCharacterAndGroupFieldCharacters(TableCharacter table) {
-		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters()) {
-				list.add(obj);
-		}
-		return list;
-	}
+  @Override
+  public List<Object> getFieldDelimitedAndGroupFieldDelimiteds(TableDelimited table) {
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds()) {
+      list.add(obj);
+    }
+    return list;
+  }
 
-	@Override
-	public List<Object> getFieldBinaryAndGroupFieldBinaries(TableBinary table) {
-		ArrayList<Object> list = new ArrayList<Object>();
-		for (Object obj : table.getRecordBinary().getFieldBinariesAndGroupFieldBinaries()) {
-				list.add(obj);
-		}
-		return list;
-	}
+  @Override
+  public List<Object> getFieldCharacterAndGroupFieldCharacters(TableCharacter table) {
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters()) {
+      list.add(obj);
+    }
+    return list;
+  }
 
-	@Override
-	public List<FieldBinary> getFieldBinaries(TableBinary table) {
-		ArrayList<FieldBinary> list = new ArrayList<FieldBinary>();
-		for (Object obj : table.getRecordBinary().getFieldBinariesAndGroupFieldBinaries()) {
-			if (obj.getClass().equals(FieldBinary.class)) {
-				list.add(FieldBinary.class.cast(obj));
-			}
-		}
-		return list;
-	}
+  @Override
+  public List<Object> getFieldBinaryAndGroupFieldBinaries(TableBinary table) {
+    ArrayList<Object> list = new ArrayList<>();
+    for (Object obj : table.getRecordBinary().getFieldBinariesAndGroupFieldBinaries()) {
+      list.add(obj);
+    }
+    return list;
+  }
 
-	/**
-	 * Determines if this is a PDS convertible image.
-	 * @param child
-	 * @return true if this image file can be converted, otherwise false.
-	 */
-    static boolean isConvertibleImage(String child) {
-		return child.endsWith("raw");	// PTOOL-51 Need Spec, try <Array_2D_Image base_class="Array_Base">
-	}
+  @Override
+  public List<FieldBinary> getFieldBinaries(TableBinary table) {
+    ArrayList<FieldBinary> list = new ArrayList<>();
+    for (Object obj : table.getRecordBinary().getFieldBinariesAndGroupFieldBinaries()) {
+      if (obj.getClass().equals(FieldBinary.class)) {
+        list.add(FieldBinary.class.cast(obj));
+      }
+    }
+    return list;
+  }
 
-	@Override
-	public String getArchiveRoot() {
-		return this.archiveRoot;
-	}
+  /**
+   * Determines if this is a PDS convertible image.
+   *
+   * @param child
+   * @return true if this image file can be converted, otherwise false.
+   */
+  static boolean isConvertibleImage(String child) {
+    return child.endsWith("raw"); // PTOOL-51 Need Spec, try <Array_2D_Image
+                                  // base_class="Array_Base">
+  }
 
-	@Override
-	public URL getRoot() {
-		return this.root;
-	}
+  @Override
+  public String getArchiveRoot() {
+    return this.archiveRoot;
+  }
 
-	/**
-	 * Implements a validation event handler that attempts to continue the unmarshalling
-	 * even if errors are present. Only fatal errors will halt the unmarshalling.
-	 */
-	private static class LenientEventHandler implements ValidationEventHandler {
+  @Override
+  public URL getRoot() {
+    return this.root;
+  }
 
-		@Override
-		public boolean handleEvent(ValidationEvent event) {
-			if (event.getSeverity() == ValidationEvent.FATAL_ERROR) {
-				System.err.println("Fatal error: " + event.getLocator().toString() + ": " + event.getMessage());
-				return false;
-			}
+  /**
+   * Implements a validation event handler that attempts to continue the unmarshalling even if
+   * errors are present. Only fatal errors will halt the unmarshalling.
+   */
+  private static class LenientEventHandler implements ValidationEventHandler {
 
-			return true;
-		}
+    @Override
+    public boolean handleEvent(ValidationEvent event) {
+      if (event.getSeverity() == ValidationEvent.FATAL_ERROR) {
+        System.err
+            .println("Fatal error: " + event.getLocator().toString() + ": " + event.getMessage());
+        return false;
+      }
 
-	}
+      return true;
+    }
 
-	private static class WorkaroundClassLoader extends ClassLoader {
+  }
 
-		private static final String IGNORED_RESOURCE = "META-INF/services/javax.xml.parsers.DocumentBuilderFactory";
+  private static class WorkaroundClassLoader extends ClassLoader {
 
-		/**
-		 * Create a new instance with the given parent classloader.
-		 *
-		 * @param parent the parent classloader
-		 */
-		public WorkaroundClassLoader(ClassLoader parent) {
-			super(parent);
-		}
+    private static final String IGNORED_RESOURCE =
+        "META-INF/services/javax.xml.parsers.DocumentBuilderFactory";
 
-		@Override
-		protected Enumeration<URL> findResources(String name) throws IOException {
-			if (!name.equals(IGNORED_RESOURCE)) {
-				return super.findResources(name);
-			} else {
-				return new EmptyEnumeration<URL>();
-			}
-		}
+    /**
+     * Create a new instance with the given parent classloader.
+     *
+     * @param parent the parent classloader
+     */
+    public WorkaroundClassLoader(ClassLoader parent) {
+      super(parent);
+    }
 
-		@Override
-		protected URL findResource(String name) {
-			if (!name.equals(IGNORED_RESOURCE)) {
-				return super.findResource(name);
-			} else {
-				return null;
-			}
-		}
+    @Override
+    protected Enumeration<URL> findResources(String name) throws IOException {
+      if (!name.equals(IGNORED_RESOURCE)) {
+        return super.findResources(name);
+      }
+      return new EmptyEnumeration<>();
+    }
 
-		@Override
-		public URL getResource(String name) {
-			if (!name.equals(IGNORED_RESOURCE)) {
-				return super.getResource(name);
-			} else {
-				return null;
-			}
-		}
+    @Override
+    protected URL findResource(String name) {
+      if (!name.equals(IGNORED_RESOURCE)) {
+        return super.findResource(name);
+      }
+      return null;
+    }
 
-		@Override
-		public Enumeration<URL> getResources(String name) throws IOException {
-			if (!name.equals(IGNORED_RESOURCE)) {
-				return super.getResources(name);
-			} else {
-				return new EmptyEnumeration<URL>();
-			}
-		}
+    @Override
+    public URL getResource(String name) {
+      if (!name.equals(IGNORED_RESOURCE)) {
+        return super.getResource(name);
+      }
+      return null;
+    }
 
-	}
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+      if (!name.equals(IGNORED_RESOURCE)) {
+        return super.getResources(name);
+      }
+      return new EmptyEnumeration<>();
+    }
 
-	private static class EmptyEnumeration<T> implements Enumeration<T> {
+  }
 
-		@Override
-		public boolean hasMoreElements() {
-			return false;
-		}
+  private static class EmptyEnumeration<T> implements Enumeration<T> {
 
-		@Override
-		public T nextElement() throws NoSuchElementException {
-			throw new NoSuchElementException();
-		}
+    @Override
+    public boolean hasMoreElements() {
+      return false;
+    }
 
-	}
-	
-	public XMLLabelContext getXMLLabelContext() {
-	  return this.labelContext;
-	}
+    @Override
+    public T nextElement() throws NoSuchElementException {
+      throw new NoSuchElementException();
+    }
+
+  }
+
+  public XMLLabelContext getXMLLabelContext() {
+    return this.labelContext;
+  }
 }

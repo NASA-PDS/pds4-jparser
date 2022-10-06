@@ -37,11 +37,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-
 import org.xml.sax.InputSource;
 
 /**
@@ -55,19 +53,17 @@ public class Utility {
   // Implementation is needed since pds.nasa.gov currently uses SNI
   // which is not supported in Java 6, but is supported in Java 7.
   static {
-    javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
-    new javax.net.ssl.HostnameVerifier(){
-        public boolean verify(String hostname,
-                javax.net.ssl.SSLSession sslSession) {
-          if (hostname.equals("pds.nasa.gov")
-              && hostname.equals(sslSession.getPeerHost())) {
-            return true;
-          } else {
+    javax.net.ssl.HttpsURLConnection
+        .setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
+          @Override
+          public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
+            if (hostname.equals("pds.nasa.gov") && hostname.equals(sslSession.getPeerHost())) {
+              return true;
+            }
             return false;
           }
-        }
-    });
-   }
+        });
+  }
 
   /**
    * Method that opens a connection. Supports redirects.
@@ -75,11 +71,9 @@ public class Utility {
    * @param conn URL Connection
    *
    * @return input stream.
-   * @throws IOException If an error occurred while opening
-   * the stream.
+   * @throws IOException If an error occurred while opening the stream.
    */
-  public static InputStream openConnection(URLConnection conn)
-      throws IOException {
+  public static InputStream openConnection(URLConnection conn) throws IOException {
     boolean redir;
     int redirects = 0;
     InputStream in = null;
@@ -95,7 +89,7 @@ public class Utility {
           HttpsURLConnection test = (HttpsURLConnection) conn;
           SSLSocketFactory sf = test.getSSLSocketFactory();
           SSLSocketFactory d = HttpsURLConnection.getDefaultSSLSocketFactory();
-          ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());          
+          ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
           throw new IOException(e.getMessage());
         }
@@ -107,8 +101,8 @@ public class Utility {
       if (conn instanceof HttpURLConnection) {
         HttpURLConnection http = (HttpURLConnection) conn;
         int stat = http.getResponseCode();
-        if (stat >= 300 && stat <= 307 && stat != 306 &&
-            stat != HttpURLConnection.HTTP_NOT_MODIFIED) {
+        if (stat >= 300 && stat <= 307 && stat != 306
+            && stat != HttpURLConnection.HTTP_NOT_MODIFIED) {
           URL base = http.getURL();
           String loc = http.getHeaderField("Location");
           URL target = null;
@@ -118,9 +112,9 @@ public class Utility {
           http.disconnect();
           // Redirection should be allowed only for HTTP and HTTPS
           // and should be limited to 5 redirections at most.
-          if (target == null || !(target.getProtocol().equals("http") ||
-              target.getProtocol().equals("https")) ||
-              redirects >= 5) {
+          if (target == null
+              || !(target.getProtocol().equals("http") || target.getProtocol().equals("https"))
+              || redirects >= 5) {
             throw new SecurityException("illegal URL redirect");
           }
           redir = true;
@@ -131,17 +125,16 @@ public class Utility {
     } while (redir);
     return in;
   }
-  
+
   /**
-   * 
-   * 
+   *
+   *
    * @param url
    * @return
    * @throws IOException
    */
   public static InputSource openConnection(URL url) throws IOException {
-    InputSource inputSource = new InputSource(
-        Utility.openConnection(url.openConnection()));
+    InputSource inputSource = new InputSource(Utility.openConnection(url.openConnection()));
     URI uri = null;
     try {
       uri = url.toURI();

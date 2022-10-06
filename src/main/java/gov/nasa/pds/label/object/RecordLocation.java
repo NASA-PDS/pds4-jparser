@@ -34,39 +34,39 @@ import java.net.URL;
 
 /**
  * Class that holds table record location information.
- * 
+ *
  * @author mcayanan
  *
  */
 public final class RecordLocation {
-  
+
   /** The label associated with the data. */
   private URL label;
-  
+
   /** The data file associated with the record. */
   private URL dataFile;
-  
+
   /** The index of the table associated with the record. */
   private int table;
-  
+
   /** The index of the record. */
   private long record;
-  
+
   /**
    * Constructor.
-   * 
+   *
    * @param label The label.
    * @param dataFile The data file.
    * @param table The table index.
    * @param record The record index as integer.
    */
   public RecordLocation(URL label, URL dataFile, int table, int record) {
-    this(label, dataFile, table, (long)record);
+    this(label, dataFile, table, (long) record);
   }
-  
+
   /**
    * Constructor.
-   * 
+   *
    * @param label The label.
    * @param dataFile The data file.
    * @param table The table index.
@@ -78,33 +78,33 @@ public final class RecordLocation {
     this.table = table;
     this.record = record;
   }
-  
+
   /**
-   * 
+   *
    * @return the label.
    */
   public URL getLabel() {
     return this.label;
   }
-  
+
   /**
-   * 
+   *
    * @return the data file.
    */
   public URL getDataFile() {
     return this.dataFile;
   }
-  
+
   /**
-   * 
+   *
    * @return the table index.
    */
   public int getTable() {
     return this.table;
   }
-    
+
   /**
-   * 
+   *
    * @return the record index.
    */
   public long getRecord() {

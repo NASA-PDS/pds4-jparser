@@ -40,23 +40,24 @@ import gov.nasa.pds.objectAccess.InvalidTableException;
  */
 public enum AdapterFactory {
 
-	INSTANCE;
+  INSTANCE;
 
-	/**
-	 * Gets a table adapter facade object.
-	 * 
-	 * @param tableObject the table object for which we want an adapter
-	 * @return the facade adapter object
-	 */
-	public TableAdapter getTableAdapter(Object tableObject) throws InvalidTableException {
-		if (tableObject instanceof TableBinary) {
-			return new TableBinaryAdapter((TableBinary) tableObject);
-		} else if (tableObject instanceof TableDelimited) {
-			return new TableDelimitedAdapter((TableDelimited) tableObject);
-		} else {
-			// Must be TableCharacter
-			return new TableCharacterAdapter((TableCharacter) tableObject);
-		}
-	}
-	
+  /**
+   * Gets a table adapter facade object.
+   * 
+   * @param tableObject the table object for which we want an adapter
+   * @return the facade adapter object
+   */
+  public TableAdapter getTableAdapter(Object tableObject) throws InvalidTableException {
+    if (tableObject instanceof TableBinary) {
+      return new TableBinaryAdapter((TableBinary) tableObject);
+    }
+    if (tableObject instanceof TableDelimited) {
+      return new TableDelimitedAdapter((TableDelimited) tableObject);
+    } else {
+      // Must be TableCharacter
+      return new TableCharacterAdapter((TableCharacter) tableObject);
+    }
+  }
+
 }
