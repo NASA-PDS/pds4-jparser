@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
+import java.net.URISyntaxException;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.nio.MappedByteBuffer;
@@ -55,13 +56,16 @@ import gov.nasa.arc.pds.xml.generated.Offset;
 public class ArrayObjectTest {
 
   @Test
-  public void test2DDouble() throws IOException, InstantiationException, IllegalAccessException {
+  public void test2DDouble()
+      throws IOException, InstantiationException, IllegalAccessException, URISyntaxException {
     int[] expectedDimensions = {2, 3};
     File tempFile = createDoubleArray(expectedDimensions);
     gov.nasa.arc.pds.xml.generated.File fileObj = createFileObject(tempFile);
     Array arrayObj = createArrayObject(Array2D.class, expectedDimensions, "IEEE754MSBDouble");
 
     ArrayObject array = new ArrayObject(tempFile.getParentFile(), fileObj, arrayObj, 0);
+    array.open();
+
     checkDimensions(array, expectedDimensions);
 
     assertEquals(array.getElementSize(), Double.SIZE / Byte.SIZE);
@@ -92,16 +96,21 @@ public class ArrayObjectTest {
         ++expected;
       }
     }
+
+    array.close();
   }
 
   @Test
-  public void test3DDouble() throws IOException, InstantiationException, IllegalAccessException {
+  public void test3DDouble()
+      throws IOException, InstantiationException, IllegalAccessException, URISyntaxException {
     int[] expectedDimensions = {2, 3, 4};
     File tempFile = createDoubleArray(expectedDimensions);
     gov.nasa.arc.pds.xml.generated.File fileObj = createFileObject(tempFile);
     Array arrayObj = createArrayObject(Array2D.class, expectedDimensions, "IEEE754MSBDouble");
 
     ArrayObject array = new ArrayObject(tempFile.getParentFile(), fileObj, arrayObj, 0);
+    array.open();
+
     checkDimensions(array, expectedDimensions);
 
     assertEquals(array.getElementSize(), Double.SIZE / Byte.SIZE);
@@ -143,12 +152,14 @@ public class ArrayObjectTest {
         }
       }
     }
+
+    array.close();
   }
 
   @Test(dataProvider = "BadIndicesTests",
       expectedExceptions = {ArrayIndexOutOfBoundsException.class, IllegalArgumentException.class})
   public void testBadIndices(int[] position)
-      throws IOException, InstantiationException, IllegalAccessException {
+      throws IOException, InstantiationException, IllegalAccessException, URISyntaxException {
     int[] expectedDimensions = {2, 3};
     File tempFile = createDoubleArray(expectedDimensions);
     gov.nasa.arc.pds.xml.generated.File fileObj = createFileObject(tempFile);

@@ -155,7 +155,7 @@
 
             <Record_Binary>
 
-                <fields>6</fields>
+                <fields>7</fields>
                 <groups>1</groups>
 
                 <record_length unit="byte">34</record_length>

@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.URISyntaxException;
 import java.nio.Buffer;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -49,7 +50,7 @@ import gov.nasa.arc.pds.xml.generated.UnitsOfStorage;
 public class GenericObjectTest {
 
   @Test
-  public void testGetters() throws IOException {
+  public void testGetters() throws IOException, URISyntaxException {
     File f = createTempFile("hello");
     gov.nasa.arc.pds.xml.generated.File fileObject = getFileObject(f);
     GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 1, 2);
@@ -61,7 +62,7 @@ public class GenericObjectTest {
   }
 
   @Test
-  public void testReadStreamEntireFile() throws IOException {
+  public void testReadStreamEntireFile() throws IOException, URISyntaxException {
     File f = createTempFile("hello");
     gov.nasa.arc.pds.xml.generated.File fileObject = getFileObject(f);
     GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 0, f.length());
@@ -71,7 +72,7 @@ public class GenericObjectTest {
   }
 
   @Test
-  public void testReadBufferEntireFile() throws IOException {
+  public void testReadBufferEntireFile() throws IOException, URISyntaxException {
     File f = createTempFile("hello");
     gov.nasa.arc.pds.xml.generated.File fileObject = getFileObject(f);
     GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 0, f.length());
@@ -81,7 +82,7 @@ public class GenericObjectTest {
   }
 
   @Test
-  public void testReadStreamPartial() throws IOException {
+  public void testReadStreamPartial() throws IOException, URISyntaxException {
     File f = createTempFile("hello");
     gov.nasa.arc.pds.xml.generated.File fileObject = getFileObject(f);
     GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 1, 2);
@@ -91,7 +92,7 @@ public class GenericObjectTest {
   }
 
   @Test
-  public void testReadBufferPartial() throws IOException {
+  public void testReadBufferPartial() throws IOException, URISyntaxException {
     File f = createTempFile("hello");
     gov.nasa.arc.pds.xml.generated.File fileObject = getFileObject(f);
     GenericObject obj = new GenericObject(f.getParentFile(), fileObject, 1, 2);

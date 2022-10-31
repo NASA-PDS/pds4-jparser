@@ -49,13 +49,28 @@ public class ArrayAdapter {
    * data type name.
    * 
    * @param dimensions the array dimensions
+   * @param elementType the element type
+   */
+  public ArrayAdapter(int[] dimensions, ElementType elementType) {
+    this(dimensions, null, elementType);
+  }
+
+  /**
+   * Creates a new array adapter with given dimensions, a channel with the array data, and element
+   * data type name.
+   * 
+   * @param dimensions the array dimensions
    * @param channel the channel object containing the array data
-   * @param elementType the elmeent type
+   * @param elementType the element type
    */
   public ArrayAdapter(int[] dimensions, SeekableByteChannel channel, ElementType elementType) {
     this.dimensions = dimensions;
     this.elementType = elementType;
-    this.buf = new MappedBuffer(channel, elementType.getSize());
+
+    if (channel != null) {
+      this.open(channel);
+    }
+
   }
 
   /**
@@ -188,6 +203,7 @@ public class ArrayAdapter {
       index = index * dimensions[i] + position[i];
     }
     index = index * elementType.getSize();
+
     return buf.getBuffer(index);
   }
 
@@ -196,6 +212,18 @@ public class ArrayAdapter {
       throw new IllegalArgumentException("Array position as wrong number of dimensions: "
           + position.length + "!=" + dimensions.length);
     }
+  }
+
+  public MappedBuffer getBuf() {
+    return buf;
+  }
+
+  public void open(SeekableByteChannel channel) {
+    this.buf = new MappedBuffer(channel, this.elementType.getSize());
+  }
+
+  public void close() throws IOException {
+    this.buf.close();
   }
 
   /**
@@ -277,6 +305,17 @@ public class ArrayAdapter {
       ((Buffer) buf).flip();
       startPosition = index;
       return buf;
+    }
+
+    /**
+     * Get the buffer.
+     * 
+     * @param index The position of where to get the data.
+     * @return The ByteBuffer.
+     * @throws IOException an exception
+     */
+    public void close() throws IOException {
+      channel.close();
     }
   }
 }

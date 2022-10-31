@@ -54,7 +54,10 @@ public enum DelimiterType {
   VERTICAL_BAR("vertical bar", '|'),
 
   /** Carriage return and line feed (CRLF) record delimiter. */
-  CARRIAGE_RETURN_LINE_FEED("carriage-return line-feed", "\r\n");
+  CARRIAGE_RETURN_LINE_FEED("carriage-return line-feed", "\r\n"),
+
+  /** Line feed (LF) record delimiter. */
+  LINE_FEED("line-feed", "\n");
 
   private static Map<String, DelimiterType> xmlTypeMap = new HashMap<>();
   static {

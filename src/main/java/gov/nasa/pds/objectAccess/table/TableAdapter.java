@@ -30,6 +30,7 @@
 
 package gov.nasa.pds.objectAccess.table;
 
+import java.util.List;
 import gov.nasa.pds.label.object.FieldDescription;
 
 /**
@@ -48,6 +49,10 @@ public interface TableAdapter {
   /**
    * Gets the number of fields in each record.
    * 
+   * TODO This should really be a long value, but this would require a ton of changes in the code so
+   * we will attack this problem when we get there. Data with num fields larger than max int should
+   * not happen
+   * 
    * @return the number of fields
    */
   int getFieldCount();
@@ -63,11 +68,19 @@ public interface TableAdapter {
 
   /**
    * Gets the definitions of fields from the table. The fields will be a simple field or a bit
-   * field. All grouped fiels will have been expanded to their instances.
+   * field. All grouped fields will have been expanded to their instances.
    * 
    * @return an array of field descriptions
    */
   FieldDescription[] getFields();
+
+  /**
+   * Gets the definitions of fields from the table. The fields will be a simple field or a bit
+   * field. All grouped fields will have been expanded to their instances.
+   * 
+   * @return an array of field descriptions
+   */
+  List<FieldDescription> getFieldsList();
 
   /**
    * Gets the offset into the data file where the table starts.
@@ -77,11 +90,38 @@ public interface TableAdapter {
   long getOffset();
 
   /**
-   * Gets the length of each record. For delimited tables the record length is not defined, so zero
-   * is returned.
+   * Gets the length of each record. For delimited tables the record length is not defined, so -1 is
+   * returned.
+   * 
+   * TODO This should really be a long value, but this would require a ton of changes in the code we
+   * will attack this problem when we get there. Data with record length larger than max int should
+   * not happen
    * 
    * @return the record length, or zero for a delimited table
    */
   int getRecordLength();
+
+  /**
+   * Gets the maximum length of each record. Optional only for delimited tables. Will return -1 if
+   * not available.
+   * 
+   * @return the maximum record lengths
+   */
+  int getMaximumRecordLength();
+
+  /**
+   * Gets the record delimiter. For binary tables the record delimiter is not defined, so null is
+   * returned.
+   * 
+   * @return the record delimiter, or null for binary table
+   */
+  String getRecordDelimiter();
+
+  /**
+   * Gets the field delimiter. For non-delimited tables, will return 0.
+   * 
+   * @return the field delimiter, or 0 for non-delimited table
+   */
+  char getFieldDelimiter();
 
 }

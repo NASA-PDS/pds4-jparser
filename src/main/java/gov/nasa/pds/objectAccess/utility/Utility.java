@@ -41,6 +41,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import org.xml.sax.InputSource;
+import gov.nasa.pds.objectAccess.InvalidTableException;
 
 /**
  * Utility class.
@@ -143,5 +144,14 @@ public class Utility {
     }
     inputSource.setSystemId(uri.toString());
     return inputSource;
+  }
+
+  public static void validateCounts(int expected, int actual, String errorMessage)
+      throws InvalidTableException {
+    // Check fields count
+    if (expected != actual) {
+      throw new InvalidTableException(
+          errorMessage + " Expected: " + expected + ", Actual: " + actual);
+    }
   }
 }

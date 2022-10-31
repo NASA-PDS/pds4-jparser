@@ -38,7 +38,7 @@
             <offset unit="byte">0</offset>
             <records>4</records>
             <Record_Binary>
-                <fields>4</fields>
+                <fields>14</fields>
                 <groups>0</groups>
                 <record_length unit="byte">58</record_length>
                 <Field_Binary>

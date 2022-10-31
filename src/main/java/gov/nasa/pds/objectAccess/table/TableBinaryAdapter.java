@@ -35,15 +35,17 @@ import java.util.List;
 import gov.nasa.arc.pds.xml.generated.FieldBinary;
 import gov.nasa.arc.pds.xml.generated.FieldBit;
 import gov.nasa.arc.pds.xml.generated.GroupFieldBinary;
+import gov.nasa.arc.pds.xml.generated.RecordBinary;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
 import gov.nasa.pds.objectAccess.InvalidTableException;
+import gov.nasa.pds.objectAccess.utility.Utility;
 
 public class TableBinaryAdapter implements TableAdapter {
 
-  TableBinary table;
-  List<FieldDescription> fields;
+  private TableBinary table;
+  private List<FieldDescription> fields;
 
   /**
    * Creates a new instance for a particular table.
@@ -53,19 +55,39 @@ public class TableBinaryAdapter implements TableAdapter {
   public TableBinaryAdapter(TableBinary table) throws InvalidTableException {
     this.table = table;
 
-    fields = new ArrayList<>();
-    expandFields(table.getRecordBinary().getFieldBinariesAndGroupFieldBinaries(), 0);
+    this.fields = new ArrayList<FieldDescription>();
+
+    RecordBinary rb = this.table.getRecordBinary();
+
+    if (rb.getFields() == null) {
+      throw new InvalidTableException("Invalid label definition. Missing fields attribute.");
+    }
+
+    if (rb.getGroups() == null) {
+      throw new InvalidTableException("Invalid label definition. Missing groups attribute.");
+    }
+
+    expandFields(rb.getFieldBinariesAndGroupFieldBinaries(), 0, rb.getFields().intValueExact(),
+        rb.getGroups().intValueExact());
   }
 
-  private void expandFields(List<Object> fields, int baseOffset) throws InvalidTableException {
+  private void expandFields(List<Object> fields, int baseOffset, int expectedFieldCount,
+      int expectedGroupCount) throws InvalidTableException {
+    int fieldsCounter = 0;
+    int groupsCounter = 0;
     for (Object field : fields) {
       if (field instanceof FieldBinary) {
         expandField((FieldBinary) field, baseOffset);
+        fieldsCounter++;
       } else {
         // Must be GroupFieldBinary
         expandGroupField((GroupFieldBinary) field, baseOffset);
+        groupsCounter++;
       }
     }
+
+    Utility.validateCounts(expectedFieldCount, fieldsCounter, "Invalid fields count definition.");
+    Utility.validateCounts(expectedGroupCount, groupsCounter, "Invalid groups count definition.");
   }
 
   private void expandField(FieldBinary field, int baseOffset) {
@@ -101,7 +123,7 @@ public class TableBinaryAdapter implements TableAdapter {
       desc.setStartBit(0);
       desc.setStopBit(desc.getLength() - 1);
     }
-    fields.add(desc);
+    this.fields.add(desc);
   }
 
   private void expandPackedField(FieldBinary field, int baseOffset) {
@@ -131,7 +153,7 @@ public class TableBinaryAdapter implements TableAdapter {
       stopBit = bitField.getStopBitLocation().intValueExact();
     }
     desc.setStopBit(stopBit - 1);
-    fields.add(desc);
+    this.fields.add(desc);
   }
 
   private void expandGroupField(GroupFieldBinary group, int outerOffset)
@@ -144,25 +166,17 @@ public class TableBinaryAdapter implements TableAdapter {
     // Check that the group length is large enough for the contained fields.
     int actualGroupLength = getGroupExtent(group);
 
-    if (groupLength < actualGroupLength) {
-      groupLength = actualGroupLength;
+    if (groupLength != actualGroupLength) {
       String msg =
-          "ERROR: GroupFieldBinary attribute group_length is smaller than size of contained fields: "
-              + (groupLength * group.getRepetitions().intValueExact()) + "<"
-              + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
-      throw new InvalidTableException(msg);
-    }
-    if (groupLength > actualGroupLength) {
-      groupLength = actualGroupLength;
-      String msg =
-          "ERROR: GroupFieldBinary attribute group_length is larger than size of contained fields: "
-              + (groupLength * group.getRepetitions().intValueExact()) + ">"
-              + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
+          "GroupFieldBinary attribute group_length is not equal the total size of contained fields. Group length: "
+              + (groupLength * group.getRepetitions().longValueExact()) + ", Actual: "
+              + (actualGroupLength * group.getRepetitions().longValueExact());
       throw new InvalidTableException(msg);
     }
 
     for (int i = 0; i < group.getRepetitions().intValueExact(); ++i) {
-      expandFields(group.getFieldBinariesAndGroupFieldBinaries(), baseOffset);
+      expandFields(group.getFieldBinariesAndGroupFieldBinaries(), baseOffset,
+          group.getFields().intValueExact(), group.getGroups().intValueExact());
       baseOffset += groupLength;
     }
   }
@@ -209,6 +223,11 @@ public class TableBinaryAdapter implements TableAdapter {
   }
 
   @Override
+  public List<FieldDescription> getFieldsList() {
+    return fields;
+  }
+
+  @Override
   public long getOffset() {
     return table.getOffset().getValue().longValueExact();
   }
@@ -216,6 +235,21 @@ public class TableBinaryAdapter implements TableAdapter {
   @Override
   public int getRecordLength() {
     return table.getRecordBinary().getRecordLength().getValue().intValueExact();
+  }
+
+  @Override
+  public String getRecordDelimiter() {
+    return table.getRecordDelimiter();
+  }
+
+  @Override
+  public char getFieldDelimiter() {
+    return 0;
+  }
+
+  @Override
+  public int getMaximumRecordLength() {
+    return -1;
   }
 
 }

@@ -32,17 +32,20 @@ package gov.nasa.pds.objectAccess.table;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.GroupFieldCharacter;
+import gov.nasa.arc.pds.xml.generated.RecordCharacter;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
 import gov.nasa.pds.objectAccess.InvalidTableException;
 
 public class TableCharacterAdapter implements TableAdapter {
-
-  TableCharacter table;
-  List<FieldDescription> fields;
+  private static final Logger LOG = LoggerFactory.getLogger(TableCharacterAdapter.class);
+  private TableCharacter table;
+  private List<FieldDescription> fields;
 
   /**
    * Creates a new instance for a particular table.
@@ -50,13 +53,29 @@ public class TableCharacterAdapter implements TableAdapter {
    * @param table the table
    */
   public TableCharacterAdapter(TableCharacter table) throws InvalidTableException {
+    LOG.debug("START");
     this.table = table;
 
-    fields = new ArrayList<>();
-    expandFields(table.getRecordCharacter().getFieldCharactersAndGroupFieldCharacters(), 0);
+    this.fields = new ArrayList<FieldDescription>();
+
+    RecordCharacter rc = table.getRecordCharacter();
+
+    if (rc.getFields() == null) {
+      throw new InvalidTableException("Invalid label definition. Missing fields attribute.");
+    }
+
+    if (rc.getGroups() == null) {
+      throw new InvalidTableException("Invalid label definition. Missing groups attribute.");
+    }
+
+    expandFields(rc.getFieldCharactersAndGroupFieldCharacters(), 0, rc.getFields().intValueExact(),
+        rc.getGroups().intValueExact());
+
+    LOG.debug("END");
   }
 
-  private void expandFields(List<Object> fields, int baseOffset) throws InvalidTableException {
+  private void expandFields(List<Object> fields, int baseOffset, int expectedFieldCount,
+      int expectedGroupCount) throws InvalidTableException {
     for (Object field : fields) {
       if (field instanceof FieldCharacter) {
         expandField((FieldCharacter) field, baseOffset);
@@ -119,7 +138,8 @@ public class TableCharacterAdapter implements TableAdapter {
     }
 
     for (int i = 0; i < group.getRepetitions().intValueExact(); ++i) {
-      expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset);
+      expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset,
+          group.getFields().intValueExact(), group.getGroups().intValueExact());
       baseOffset += groupLength;
     }
   }
@@ -173,6 +193,26 @@ public class TableCharacterAdapter implements TableAdapter {
   @Override
   public int getRecordLength() {
     return table.getRecordCharacter().getRecordLength().getValue().intValueExact();
+  }
+
+  @Override
+  public String getRecordDelimiter() {
+    return table.getRecordDelimiter();
+  }
+
+  @Override
+  public char getFieldDelimiter() {
+    return 0;
+  }
+
+  @Override
+  public List<FieldDescription> getFieldsList() {
+    return this.fields;
+  }
+
+  @Override
+  public int getMaximumRecordLength() {
+    return -1;
   }
 
 }

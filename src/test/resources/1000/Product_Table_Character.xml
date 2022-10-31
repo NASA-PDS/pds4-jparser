@@ -70,7 +70,7 @@
           <record_delimiter>carriage-return line-feed</record_delimiter>
           <Record_Character>
             <fields>10</fields>
-            <groups>1</groups>
+            <groups>0</groups>
             <record_length unit="byte">88</record_length>
             <Field_Character>
               <name>SOL</name>

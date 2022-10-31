@@ -33,6 +33,7 @@ package gov.nasa.pds.objectAccess;
 import java.io.File;
 import java.net.URL;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
+import gov.nasa.pds.label.object.DataObjectLocation;
 
 /**
  * Factory pattern class to create specific object exporters.
@@ -222,5 +223,30 @@ public class ExporterFactory {
    */
   public static TableReader getTableReader(Object tableObject, URL dataFile) throws Exception {
     return new TableReader(tableObject, dataFile, true);
+  }
+
+  /**
+   * Gets a table reader object for a given table and data file.
+   *
+   * @param tableObject the table object, binary, character, or delimited
+   * @param dataFile the data file containing the table
+   * @return a table reader for the table
+   * @throws Exception if there is an error reading the file
+   */
+  public static TableReader getRawTableReader(Object tableObject, File dataFile) throws Exception {
+    return getTableReader(tableObject, dataFile.toURI().toURL());
+  }
+
+  /**
+   * Gets a table reader object for a given table and data file.
+   *
+   * @param tableObject the table object, binary, character, or delimited
+   * @param dataFile the data file containing the table
+   * @return a table reader for the table
+   * @throws Exception if there is an error reading the file
+   */
+  public static RawTableReader getRawTableReader(Object tableObject, URL dataFile,
+      DataObjectLocation location) throws Exception {
+    return new RawTableReader(tableObject, dataFile, location, true);
   }
 }
