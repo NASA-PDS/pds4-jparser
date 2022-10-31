@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
@@ -57,36 +58,37 @@ import gov.nasa.pds.objectAccess.utility.Utility;
  */
 public abstract class DataObject {
 
-  private URL parentDir;
-  private gov.nasa.arc.pds.xml.generated.File fileObject;
-  private long offset;
-  private long size;
-  private SeekableByteChannel channel;
+  protected URL parentDir;
+  protected gov.nasa.arc.pds.xml.generated.File fileObject;
+  protected long offset;
+  protected long size;
+  protected String name;
+  protected SeekableByteChannel channel;
+  protected DataObjectLocation dataObjectLocation;
+
+  protected DataObject(File parentDir, long offset, long size) throws IOException {
+    this(parentDir.toURI().toURL(), null, offset, size, null, null);
+  }
 
   protected DataObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
       long size) throws IOException {
-    this(parentDir.toURI().toURL(), fileObject, offset, size);
+    this(parentDir.toURI().toURL(), fileObject, offset, size, null, null);
   }
 
   protected DataObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
-      long size) throws IOException {
+      long size, DataObjectLocation location) throws IOException, URISyntaxException {
+    this(parentDir.toURI().toURL(), fileObject, offset, size, location, null);
+  }
+
+  protected DataObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
+      long size, DataObjectLocation location, String name) throws IOException {
     this.parentDir = parentDir;
     this.fileObject = fileObject;
     this.offset = offset;
     this.size = size;
+    this.name = name;
+    this.dataObjectLocation = location;
     this.channel = null;
-
-    if (size < 0) {
-      URL u = null;
-      URLConnection conn = null;
-      try {
-        u = getDataFile();
-        conn = u.openConnection();
-        size = conn.getContentLengthLong();
-      } finally {
-        IOUtils.closeQuietly(conn.getInputStream());
-      }
-    }
   }
 
   /**
@@ -96,7 +98,10 @@ public abstract class DataObject {
    * @throws MalformedURLException
    */
   public URL getDataFile() throws MalformedURLException {
-    return new URL(parentDir, fileObject.getFileName());
+    if (fileObject != null) {
+      return new URL(parentDir, fileObject.getFileName());
+    }
+    return null;
   }
 
   /**
@@ -145,8 +150,8 @@ public abstract class DataObject {
    */
   public InputStream getInputStream() throws IOException {
     ReadableByteChannel ch = null;
-    if (channel != null) {
-      ch = channel;
+    if (this.channel != null) {
+      ch = this.channel;
     } else {
       ch = getChannel();
     }
@@ -166,6 +171,12 @@ public abstract class DataObject {
     if (channel != null) {
       return channel;
     }
+
+    // If not file object exists, intentional or not, return null
+    if (this.fileObject == null) {
+      return null;
+    }
+
     URL u = getDataFile();
     long datasize = getDataSize(u);
     try {
@@ -250,5 +261,21 @@ public abstract class DataObject {
       IOUtils.closeQuietly(input);
     }
     return createdChannel;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public DataObjectLocation getDataObjectLocation() {
+    return dataObjectLocation;
+  }
+
+  public void setDataObjectLocation(DataObjectLocation dataObjectLocation) {
+    this.dataObjectLocation = dataObjectLocation;
   }
 }

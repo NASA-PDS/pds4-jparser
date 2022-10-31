@@ -37,22 +37,28 @@ import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.FieldType;
+import gov.nasa.pds.objectAccess.InvalidTableException;
+import gov.nasa.pds.objectAccess.utility.Utility;
 
 public class TableDelimitedAdapter implements TableAdapter {
 
-  TableDelimited table;
-  List<FieldDescription> fields;
+  private TableDelimited table;
+  private List<FieldDescription> fields;
 
   /**
    * Creates a new instance for a particular table.
    * 
    * @param table the table
+   * @throws InvalidTableException
    */
-  public TableDelimitedAdapter(TableDelimited table) {
+  public TableDelimitedAdapter(TableDelimited table) throws InvalidTableException {
     this.table = table;
 
-    fields = new ArrayList<>();
+    this.fields = new ArrayList<FieldDescription>();
     expandFields(table.getRecordDelimited().getFieldDelimitedsAndGroupFieldDelimiteds());
+
+    Utility.validateCounts(this.getFieldCount(), this.fields.size(),
+        "Invalid fields count definition.");
   }
 
   private void expandFields(List<Object> fields) {
@@ -126,10 +132,29 @@ public class TableDelimitedAdapter implements TableAdapter {
 
   @Override
   public int getRecordLength() {
-    return 0;
+    return -1;
   }
 
+  @Override
+  public String getRecordDelimiter() {
+    return this.table.getRecordDelimiter();
+  }
+
+  @Override
   public char getFieldDelimiter() {
     return DelimiterType.getDelimiterType(table.getFieldDelimiter()).getFieldDelimiter();
+  }
+
+  @Override
+  public List<FieldDescription> getFieldsList() {
+    return this.fields;
+  }
+
+  @Override
+  public int getMaximumRecordLength() {
+    if (this.table.getRecordDelimited().getMaximumRecordLength() != null) {
+      return this.table.getRecordDelimited().getMaximumRecordLength().getValue().intValueExact();
+    }
+    return -1;
   }
 }

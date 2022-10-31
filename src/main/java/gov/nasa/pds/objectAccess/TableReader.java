@@ -51,6 +51,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import gov.nasa.pds.label.object.DataObjectLocation;
 import gov.nasa.pds.label.object.FieldDescription;
 import gov.nasa.pds.label.object.TableRecord;
 import gov.nasa.pds.objectAccess.table.AdapterFactory;
@@ -77,6 +78,7 @@ public class TableReader implements Closeable {
   private InputStream inputStream = null;
   private long recordSize = 0;
   private char delimitedChar = ',';
+  protected DataObjectLocation dataObjectLocation = null;
 
   public TableReader(Object table, File dataFile) throws Exception {
     this(table, dataFile.toURI().toURL());
@@ -102,12 +104,12 @@ public class TableReader implements Closeable {
 
   public TableReader(Object table, URL dataFile, boolean checkSize, boolean readEntireFile)
       throws InvalidTableException, Exception {
-    this(table, dataFile, checkSize, readEntireFile, false);
+    this(table, dataFile, null, checkSize, readEntireFile, false);
   }
 
-  public TableReader(Object table, URL dataFile, boolean checkSize, boolean readEntireFile,
-      boolean keepQuotationsFlag) throws InvalidTableException, Exception {
-    this(table, dataFile, checkSize, readEntireFile, keepQuotationsFlag, null, null);
+  public TableReader(Object table, URL dataFile, DataObjectLocation location, boolean checkSize,
+      boolean readEntireFile, boolean keepQuotationsFlag) throws InvalidTableException, Exception {
+    this(table, dataFile, location, checkSize, readEntireFile, keepQuotationsFlag, null, null);
   }
 
 
@@ -124,10 +126,11 @@ public class TableReader implements Closeable {
    *
    * @throws NullPointerException if table offset is null
    */
-  public TableReader(Object table, URL dataFile, boolean checkSize, boolean readEntireFile,
-      boolean keepQuotationsFlag, RandomAccessFile raf, InputStream inputStream)
-      throws InvalidTableException, Exception {
-    adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
+  public TableReader(Object table, URL dataFile, DataObjectLocation location, boolean checkSize,
+      boolean readEntireFile, boolean keepQuotationsFlag, RandomAccessFile raf,
+      InputStream inputStream) throws InvalidTableException, Exception {
+    this.adapter = AdapterFactory.INSTANCE.getTableAdapter(table);
+    this.dataObjectLocation = location;
 
     LOGGER.debug("TableReader:dataFile {}, raf {}", dataFile, raf);
 
@@ -158,6 +161,7 @@ public class TableReader implements Closeable {
 
       // Use the flag keepQuotationsFlag to tell the CSVParserBuilder that we wish to keep the
       // starting/ending quotes.
+      LOGGER.debug("keepQuotationsFlag: {}", keepQuotationsFlag);
       CSVParser parser = new CSVParserBuilder().withSeparator(this.delimitedChar)
           .withKeepQuotations(keepQuotationsFlag).build();
       this.csvReader = new CSVReaderBuilder(this.bufferedReader).withCSVParser(parser).build();
@@ -501,5 +505,13 @@ public class TableReader implements Closeable {
     if (this.bufferedReader != null) {
       this.bufferedReader.close();
     }
+  }
+
+  public DataObjectLocation getDataObjectLocation() {
+    return dataObjectLocation;
+  }
+
+  public void setDataObjectLocation(DataObjectLocation dataObjectLocation) {
+    this.dataObjectLocation = dataObjectLocation;
   }
 }

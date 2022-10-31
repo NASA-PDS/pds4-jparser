@@ -122,11 +122,16 @@ public class TableBinaryAdapterTest {
     group.setRepetitions(BigInteger.valueOf(2));
     group.setGroupLocation(getGroupLocation(8));
     group.setGroupLength(getGroupLength(8));
+    group.setFields(BigInteger.valueOf(1));
+    group.setGroups(BigInteger.valueOf(0));
 
     List<Object> groupFields = group.getFieldBinariesAndGroupFieldBinaries();
     groupFields.add(f4);
 
     RecordBinary rec = new RecordBinary();
+    rec.setFields(BigInteger.valueOf(2));
+    rec.setGroups(BigInteger.valueOf(1));
+
     List<Object> fields = rec.getFieldBinariesAndGroupFieldBinaries();
     fields.add(f1);
     fields.add(packedField);

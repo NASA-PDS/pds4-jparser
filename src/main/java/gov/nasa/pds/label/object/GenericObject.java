@@ -32,6 +32,7 @@ package gov.nasa.pds.label.object;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -48,10 +49,11 @@ public class GenericObject extends DataObject {
    * @param offset the offset within the file of the start of the data object
    * @param size the size of the data object, in bytes
    * @throws IOException if an error occurred initializng the object
+   * @throws URISyntaxException
    */
   public GenericObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
-      long size) throws IOException {
-    this(parentDir.toURI().toURL(), fileObject, offset, size);
+      long size, DataObjectLocation location) throws IOException, URISyntaxException {
+    this(parentDir.toURI().toURL(), fileObject, offset, size, location);
   }
 
   /**
@@ -62,10 +64,29 @@ public class GenericObject extends DataObject {
    * @param offset the offset within the file of the start of the data object
    * @param size the size of the data object, in bytes
    * @throws IOException if an error occurred initializng the object
+   * @throws URISyntaxException
    */
   public GenericObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
-      long size) throws IOException {
-    super(parentDir, fileObject, offset, size);
+      long size, DataObjectLocation location) throws IOException, URISyntaxException {
+    super(parentDir, fileObject, offset, size, location);
+  }
+
+  /**
+   * Deprecated initializer. Missing DataObjectLocation
+   */
+  @Deprecated
+  public GenericObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
+      long size) throws IOException, URISyntaxException {
+    this(parentDir.toURI().toURL(), fileObject, offset, size, null);
+  }
+
+  /**
+   * Deprecated initializer. Missing DataObjectLocation
+   */
+  @Deprecated
+  public GenericObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, long offset,
+      long size) throws IOException, URISyntaxException {
+    this(parentDir, fileObject, offset, size, null);
   }
 
 }

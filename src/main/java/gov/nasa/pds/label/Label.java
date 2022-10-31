@@ -36,25 +36,55 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.ByteStream;
+import gov.nasa.arc.pds.xml.generated.EncodedBinary;
 import gov.nasa.arc.pds.xml.generated.EncodedByteStream;
+import gov.nasa.arc.pds.xml.generated.EncodedNative;
+import gov.nasa.arc.pds.xml.generated.FileAreaAncillary;
+import gov.nasa.arc.pds.xml.generated.FileAreaBinary;
+import gov.nasa.arc.pds.xml.generated.FileAreaBrowse;
+import gov.nasa.arc.pds.xml.generated.FileAreaEncodedImage;
+import gov.nasa.arc.pds.xml.generated.FileAreaInventory;
 import gov.nasa.arc.pds.xml.generated.FileAreaMetadata;
+import gov.nasa.arc.pds.xml.generated.FileAreaNative;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservationalSupplemental;
+import gov.nasa.arc.pds.xml.generated.FileAreaSIPDeepArchive;
+import gov.nasa.arc.pds.xml.generated.FileAreaSPICEKernel;
+import gov.nasa.arc.pds.xml.generated.FileAreaServiceDescription;
+import gov.nasa.arc.pds.xml.generated.FileAreaText;
+import gov.nasa.arc.pds.xml.generated.FileAreaXMLSchema;
+import gov.nasa.arc.pds.xml.generated.InformationPackageComponent;
 import gov.nasa.arc.pds.xml.generated.ParsableByteStream;
 import gov.nasa.arc.pds.xml.generated.Product;
+import gov.nasa.arc.pds.xml.generated.ProductAIP;
+import gov.nasa.arc.pds.xml.generated.ProductAncillary;
+import gov.nasa.arc.pds.xml.generated.ProductBrowse;
+import gov.nasa.arc.pds.xml.generated.ProductCollection;
+import gov.nasa.arc.pds.xml.generated.ProductFileRepository;
+import gov.nasa.arc.pds.xml.generated.ProductFileText;
 import gov.nasa.arc.pds.xml.generated.ProductMetadataSupplemental;
+import gov.nasa.arc.pds.xml.generated.ProductNative;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
+import gov.nasa.arc.pds.xml.generated.ProductSIP;
+import gov.nasa.arc.pds.xml.generated.ProductSIPDeepArchive;
+import gov.nasa.arc.pds.xml.generated.ProductSPICEKernel;
+import gov.nasa.arc.pds.xml.generated.ProductService;
+import gov.nasa.arc.pds.xml.generated.ProductThumbnail;
+import gov.nasa.arc.pds.xml.generated.ProductXMLSchema;
+import gov.nasa.arc.pds.xml.generated.ServiceDescription;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
 import gov.nasa.arc.pds.xml.generated.TableDelimited;
 import gov.nasa.pds.label.object.ArrayObject;
 import gov.nasa.pds.label.object.DataObject;
+import gov.nasa.pds.label.object.DataObjectLocation;
 import gov.nasa.pds.label.object.GenericObject;
 import gov.nasa.pds.label.object.TableObject;
 import gov.nasa.pds.objectAccess.ObjectAccess;
@@ -220,43 +250,163 @@ public class Label {
 
 
   private List<DataObject> getDataObjects(Product product) throws Exception {
-    if (product instanceof ProductObservational) {
-      return getDataObjects((ProductObservational) product);
-    }
-    if (product instanceof ProductMetadataSupplemental) {
+    if (product instanceof ProductAIP) {
+      return getDataObjects((ProductAIP) product);
+    } else if (product instanceof ProductAncillary) {
+      return getDataObjects((ProductAncillary) product);
+    } else if (product instanceof ProductBrowse) {
+      return getDataObjects((ProductBrowse) product);
+      // } else if (product instanceof ProductBundle) {
+      // return getDataObjects((ProductBundle) product);
+    } else if (product instanceof ProductCollection) {
+      return getDataObjects((ProductCollection) product);
+    } else if (product instanceof ProductFileRepository) {
+      return getDataObjects((ProductFileRepository) product);
+    } else if (product instanceof ProductFileText) {
+      return getDataObjects((ProductFileText) product);
+    } else if (product instanceof ProductMetadataSupplemental) {
       return getDataObjects((ProductMetadataSupplemental) product);
+    } else if (product instanceof ProductNative) {
+      return getDataObjects((ProductNative) product);
+    } else if (product instanceof ProductObservational) {
+      return getDataObjects((ProductObservational) product);
+    } else if (product instanceof ProductSIP) {
+      return getDataObjects((ProductSIP) product);
+    } else if (product instanceof ProductSIPDeepArchive) {
+      return getDataObjects((ProductSIPDeepArchive) product);
+    } else if (product instanceof ProductSPICEKernel) {
+      return getDataObjects((ProductSPICEKernel) product);
+    } else if (product instanceof ProductService) {
+      return getDataObjects((ProductService) product);
+    } else if (product instanceof ProductThumbnail) {
+      return getDataObjects((ProductThumbnail) product);
+    } else if (product instanceof ProductXMLSchema) {
+      return getDataObjects((ProductXMLSchema) product);
     } else {
-      throw new ClassCastException("Only objects from Product_Observational and "
-          + "Product_Metadata_Supplemental labels are supported.");
+      throw new ClassCastException("Unsupported product type.");
     }
   }
 
-
   /**
-   * Extract data objects from Product_Observational label
+   * Extract data objects from Product_AIP label
    *
-   * @param product Product_Observational label
+   * @param product Product_AIP label
    * @return a list of data objects
    * @throws Exception an exception
    */
-  private List<DataObject> getDataObjects(ProductObservational product) throws Exception {
+  private List<DataObject> getDataObjects(ProductAIP product) throws Exception {
     List<DataObject> objects = new ArrayList<>();
 
-    for (FileAreaObservational fileArea : product.getFileAreaObservationals()) {
-      for (ByteStream stream : fileArea.getDataObjects()) {
-        addObject(objects, fileArea.getFile(), stream);
-      }
-    }
-    for (FileAreaObservationalSupplemental supplementalArea : product
-        .getFileAreaObservationalSupplementals()) {
-      for (ByteStream stream : supplementalArea.getDataObjects()) {
-        addObject(objects, supplementalArea.getFile(), stream);
-      }
+    for (InformationPackageComponent comp : product.getInformationPackageComponents()) {
+      addObject(objects, comp.getFileAreaChecksumManifest().getFile(),
+          comp.getFileAreaChecksumManifest().getChecksumManifest(), new DataObjectLocation(1, 1));
+      addObject(objects, comp.getFileAreaTransferManifest().getFile(),
+          comp.getFileAreaTransferManifest().getTransferManifest(), new DataObjectLocation(2, 1));
     }
 
     return objects;
   }
 
+  /**
+   * Extract data objects from Product_Ancillary label
+   *
+   * @param product Product_Ancillary label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductAncillary product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    int fileAreaIndex = 0;
+    int dataObjectIndex = 0;
+    for (FileAreaAncillary fileArea : product.getFileAreaAncillaries()) {
+      fileAreaIndex++;
+      for (ByteStream bs : fileArea.getArraiesAndArray1DsAndArray2Ds()) {
+        addObject(objects, fileArea.getFile(), bs,
+            new DataObjectLocation(fileAreaIndex, ++dataObjectIndex));
+      }
+      dataObjectIndex = 0;
+    }
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_Browse label
+   *
+   * @param product Product_Browse label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductBrowse product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    int fileAreaIndex = 0;
+    int dataObjectIndex = 0;
+    for (FileAreaBrowse fileArea : product.getFileAreaBrowses()) {
+      fileAreaIndex++;
+      for (ByteStream bs : fileArea.getDataObjects()) {
+        addObject(objects, fileArea.getFile(), bs,
+            new DataObjectLocation(fileAreaIndex, ++dataObjectIndex));
+      }
+      dataObjectIndex = 0;
+    }
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_Collection label
+   *
+   * @param product Product_Collection label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductCollection product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    FileAreaInventory fileArea = product.getFileAreaInventory();
+    addObject(objects, fileArea.getFile(), fileArea.getInventory(), new DataObjectLocation(1, 1));
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_File_Repository label
+   *
+   * @param product Product_File_Repository label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductFileRepository product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    FileAreaBinary fileArea = product.getFileAreaBinary();
+
+    int dataObjectIndex = 0;
+    for (EncodedBinary eb : fileArea.getEncodedBinaries()) {
+      addObject(objects, fileArea.getFile(), eb, new DataObjectLocation(1, ++dataObjectIndex));
+    }
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_File_Text label
+   *
+   * @param product Product_File_Text label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductFileText product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    FileAreaText fileArea = product.getFileAreaText();
+
+    addObject(objects, fileArea.getFile(), fileArea.getStreamText(), new DataObjectLocation(1, 1));
+
+    return objects;
+  }
 
   /**
    * Extract data objects from Product_Metadata_Supplemental label
@@ -270,52 +420,227 @@ public class Label {
 
     FileAreaMetadata fileArea = product.getFileAreaMetadata();
 
+    int fileAreaIndex = 0;
+    int dataObjectIndex = 0;
     if (fileArea.getTableCharacter() != null) {
-      addObject(objects, fileArea.getFile(), fileArea.getTableCharacter());
+      addObject(objects, fileArea.getFile(), fileArea.getTableCharacter(),
+          new DataObjectLocation(++fileAreaIndex, ++dataObjectIndex));
     }
 
     if (fileArea.getTableDelimited() != null) {
-      addObject(objects, fileArea.getFile(), fileArea.getTableDelimited());
+      addObject(objects, fileArea.getFile(), fileArea.getTableDelimited(),
+          new DataObjectLocation(++fileAreaIndex, ++dataObjectIndex));
     }
 
     return objects;
   }
 
+  /**
+   * Extract data objects from Product_Native label
+   *
+   * @param product Product_Native label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductNative product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    int fileAreaIndex = 0;
+    int dataObjectIndex = 0;
+    for (FileAreaNative fileArea : product.getFileAreaNatives()) {
+      fileAreaIndex++;
+      for (EncodedNative en : fileArea.getEncodedNatives()) {
+        addObject(objects, fileArea.getFile(), en,
+            new DataObjectLocation(fileAreaIndex, ++dataObjectIndex));
+      }
+      dataObjectIndex = 0;
+    }
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_Observational label
+   *
+   * @param product Product_Observational label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductObservational product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    int fileAreaIndex = 0;
+    int dataObjectIndex = 0;
+    for (FileAreaObservational fileArea : product.getFileAreaObservationals()) {
+      fileAreaIndex++;
+      for (ByteStream stream : fileArea.getDataObjects()) {
+        addObject(objects, fileArea.getFile(), stream,
+            new DataObjectLocation(fileAreaIndex, ++dataObjectIndex));
+      }
+      dataObjectIndex = 0;
+    }
+    for (FileAreaObservationalSupplemental supplementalArea : product
+        .getFileAreaObservationalSupplementals()) {
+      fileAreaIndex++;
+      for (ByteStream stream : supplementalArea.getDataObjects()) {
+        addObject(objects, supplementalArea.getFile(), stream,
+            new DataObjectLocation(fileAreaIndex, dataObjectIndex));
+      }
+      dataObjectIndex = 0;
+    }
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_Service label
+   *
+   * @param product Product_Service label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductService product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    int fileAreaIndex = 0;
+    int dataObjectIndex = 0;
+    for (FileAreaServiceDescription fileArea : product.getFileAreaServiceDescriptions()) {
+      fileAreaIndex++;
+      for (ServiceDescription sd : fileArea.getServiceDescriptions()) {
+        addObject(objects, fileArea.getFile(), sd,
+            new DataObjectLocation(fileAreaIndex, ++dataObjectIndex));
+      }
+      dataObjectIndex = 0;
+    }
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_SIP label
+   *
+   * @param product Product_SIP label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductSIP product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    for (InformationPackageComponent comp : product.getInformationPackageComponents()) {
+      addObject(objects, comp.getFileAreaChecksumManifest().getFile(),
+          comp.getFileAreaChecksumManifest().getChecksumManifest(), new DataObjectLocation(1, 1));
+      addObject(objects, comp.getFileAreaTransferManifest().getFile(),
+          comp.getFileAreaTransferManifest().getTransferManifest(), new DataObjectLocation(2, 1));
+    }
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_SIP_Deep_Archive label
+   *
+   * @param product Product_SIP_Deep_Archive label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductSIPDeepArchive product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    FileAreaSIPDeepArchive fileArea =
+        product.getInformationPackageComponentDeepArchive().getFileAreaSIPDeepArchive();
+
+    addObject(objects, fileArea.getFile(), fileArea.getManifestSIPDeepArchive(),
+        new DataObjectLocation(1, 1));
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_SPICE_Kernel label
+   *
+   * @param product Product_SPICE_Kernel label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductSPICEKernel product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    FileAreaSPICEKernel fileArea = product.getFileAreaSPICEKernel();
+
+    addObject(objects, fileArea.getFile(), fileArea.getSPICEKernel(), new DataObjectLocation(1, 1));
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_Thumbnail label
+   *
+   * @param product Product_Thumbnail label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductThumbnail product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    FileAreaEncodedImage fileArea = product.getFileAreaEncodedImage();
+    addObject(objects, fileArea.getFile(), fileArea.getEncodedImage(),
+        new DataObjectLocation(1, 1));
+
+    return objects;
+  }
+
+  /**
+   * Extract data objects from Product_XML_Schema label
+   *
+   * @param product Product_XML_Schema label
+   * @return a list of data objects
+   * @throws Exception an exception
+   */
+  private List<DataObject> getDataObjects(ProductXMLSchema product) throws Exception {
+    List<DataObject> objects = new ArrayList<>();
+
+    int dataObjectIndex = 0;
+    for (FileAreaXMLSchema fileArea : product.getFileAreaXMLSchemas()) {
+      addObject(objects, fileArea.getFile(), fileArea.getXMLSchema(),
+          new DataObjectLocation(1, ++dataObjectIndex));
+    }
+
+    return objects;
+  }
 
   private void addObject(Collection<DataObject> objects, gov.nasa.arc.pds.xml.generated.File file,
-      ByteStream stream) throws Exception {
+      ByteStream stream, DataObjectLocation location) throws Exception {
     if (stream instanceof TableBinary) {
-      objects.add(makeTable(file, (TableBinary) stream));
+      objects.add(makeTable(file, (TableBinary) stream, location));
     } else if (stream instanceof TableCharacter) {
-      TableCharacter table = (TableCharacter) stream;
-      objects.add(makeTable(file, table));
+      objects.add(makeTable(file, (TableCharacter) stream, location));
     } else if (stream instanceof TableDelimited) {
-      objects.add(makeTable(file, (TableDelimited) stream));
+      objects.add(makeTable(file, (TableDelimited) stream, location));
     } else if (stream instanceof Array) {
-      objects.add(makeArray(file, (Array) stream));
+      objects.add(makeArray(file, (Array) stream, location));
     } else {
-      objects.add(makeGenericObject(file, stream));
+      objects.add(makeGenericObject(file, stream, location));
     }
   }
 
-  private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableBinary table)
-      throws Exception {
+  private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableBinary table,
+      DataObjectLocation location) throws Exception {
     BigInteger size =
         table.getRecords().multiply(table.getRecordBinary().getRecordLength().getValue());
     return new TableObject(parentDir, file, table, table.getOffset().getValue().longValueExact(),
-        size.longValueExact());
+        size.longValueExact(), location);
   }
 
-  private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableCharacter table)
-      throws Exception {
+  private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableCharacter table,
+      DataObjectLocation location) throws Exception {
     BigInteger size =
         table.getRecords().multiply(table.getRecordCharacter().getRecordLength().getValue());
     return new TableObject(parentDir, file, table, table.getOffset().getValue().longValueExact(),
-        size.longValueExact());
+        size.longValueExact(), location);
   }
 
-  private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableDelimited table)
-      throws Exception {
+  private DataObject makeTable(gov.nasa.arc.pds.xml.generated.File file, TableDelimited table,
+      DataObjectLocation location) throws Exception {
     // The range for a delimited table must be the rest of the file past the offset position.
     long offset = 0;
     if (table.getOffset() != null) {
@@ -325,16 +650,17 @@ public class Label {
     if (file.getFileSize() != null) {
       size = file.getFileSize().getValue().longValue() - offset;
     }
-    return new TableObject(parentDir, file, table, offset, size);
+    return new TableObject(parentDir, file, table, offset, size, location);
   }
 
-  private DataObject makeArray(gov.nasa.arc.pds.xml.generated.File file, Array array)
-      throws FileNotFoundException, IOException {
-    return new ArrayObject(parentDir, file, array, array.getOffset().getValue().longValueExact());
+  private DataObject makeArray(gov.nasa.arc.pds.xml.generated.File file, Array array,
+      DataObjectLocation location) throws FileNotFoundException, IOException, URISyntaxException {
+    return new ArrayObject(parentDir, file, array, array.getOffset().getValue().longValueExact(),
+        location);
   }
 
-  private DataObject makeGenericObject(gov.nasa.arc.pds.xml.generated.File file, ByteStream stream)
-      throws IOException {
+  private DataObject makeGenericObject(gov.nasa.arc.pds.xml.generated.File file, ByteStream stream,
+      DataObjectLocation location) throws IOException, URISyntaxException {
     long size = -1;
     long offset = -1;
     if (stream instanceof EncodedByteStream) {
@@ -343,9 +669,11 @@ public class Label {
       offset = ebs.getOffset().getValue().longValueExact();
     } else if (stream instanceof ParsableByteStream) {
       ParsableByteStream pbs = (ParsableByteStream) stream;
-      size = pbs.getObjectLength().getValue().longValueExact();
+      if (pbs.getObjectLength() != null) {
+        size = pbs.getObjectLength().getValue().longValueExact();
+      }
       offset = pbs.getOffset().getValue().longValueExact();
     }
-    return new GenericObject(parentDir, file, offset, size);
+    return new GenericObject(parentDir, file, offset, size, location);
   }
 }

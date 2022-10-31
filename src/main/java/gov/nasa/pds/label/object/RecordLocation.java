@@ -46,8 +46,8 @@ public final class RecordLocation {
   /** The data file associated with the record. */
   private URL dataFile;
 
-  /** The index of the table associated with the record. */
-  private int table;
+  /** The location of table associated with the record. */
+  private DataObjectLocation dataObjectLocation;
 
   /** The index of the record. */
   private long record;
@@ -60,8 +60,9 @@ public final class RecordLocation {
    * @param table The table index.
    * @param record The record index as integer.
    */
-  public RecordLocation(URL label, URL dataFile, int table, int record) {
-    this(label, dataFile, table, (long) record);
+  public RecordLocation(URL label, URL dataFile, DataObjectLocation dataObjectLocation,
+      int record) {
+    this(label, dataFile, dataObjectLocation, (long) record);
   }
 
   /**
@@ -72,10 +73,11 @@ public final class RecordLocation {
    * @param table The table index.
    * @param record The record index as a long.
    */
-  public RecordLocation(URL label, URL dataFile, int table, long record) {
+  public RecordLocation(URL label, URL dataFile, DataObjectLocation dataObjectLocation,
+      long record) {
     this.label = label;
     this.dataFile = dataFile;
-    this.table = table;
+    this.dataObjectLocation = dataObjectLocation;
     this.record = record;
   }
 
@@ -97,10 +99,10 @@ public final class RecordLocation {
 
   /**
    *
-   * @return the table index.
+   * @return the data object location.
    */
-  public int getTable() {
-    return this.table;
+  public DataObjectLocation getDataObjectLocation() {
+    return this.dataObjectLocation;
   }
 
   /**

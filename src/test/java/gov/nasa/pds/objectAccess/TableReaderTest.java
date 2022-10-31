@@ -253,6 +253,7 @@ public class TableReaderTest {
 
   private ProductObservational createProductLabel(ObjectAccess oa, String label) throws Exception {
     int cols = 2; // number of fields
+    int groups = 0; // number of groups
     int length = 11; // record length
     gov.nasa.arc.pds.xml.generated.File file = new gov.nasa.arc.pds.xml.generated.File();
     file.setFileName("CharTableReader.tab");
@@ -262,6 +263,7 @@ public class TableReaderTest {
     recLength.setValue(BigInteger.valueOf(length));
     record.setRecordLength(recLength);
     record.setFields(BigInteger.valueOf(cols));
+    record.setGroups(BigInteger.valueOf(groups));
 
     for (int i = 0; i < cols; i++) {
       String[] data = charData[0][i];
@@ -303,6 +305,7 @@ public class TableReaderTest {
   private ProductObservational createBinaryProductLabel(ObjectAccess oa, String label)
       throws Exception {
     int cols = 6;
+    int groups = 0;
 
     gov.nasa.arc.pds.xml.generated.File file = new gov.nasa.arc.pds.xml.generated.File();
     file.setFileName("BinaryTableReader.dat");
@@ -312,6 +315,7 @@ public class TableReaderTest {
     recLength.setValue(BigInteger.valueOf(28));
     record.setRecordLength(recLength);
     record.setFields(BigInteger.valueOf(cols));
+    record.setGroups(BigInteger.valueOf(groups));
 
     for (int i = 0; i < cols; i++) {
       String[] data = binData[0][i];

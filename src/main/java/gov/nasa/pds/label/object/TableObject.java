@@ -34,7 +34,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import com.opencsv.exceptions.CsvValidationException;
+import gov.nasa.arc.pds.xml.generated.ByteStream;
 import gov.nasa.pds.objectAccess.ExporterFactory;
+import gov.nasa.pds.objectAccess.RawTableReader;
 import gov.nasa.pds.objectAccess.TableReader;
 
 
@@ -58,8 +60,8 @@ public class TableObject extends DataObject {
    * @throws Exception if there is any error accessing the table
    */
   public TableObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject,
-      Object tableObject, long offset, long size) throws Exception {
-    this(parentDir.toURI().toURL(), fileObject, tableObject, offset, size);
+      Object tableObject, long offset, long size, DataObjectLocation location) throws Exception {
+    this(parentDir.toURI().toURL(), fileObject, tableObject, offset, size, location);
   }
 
   /**
@@ -73,10 +75,30 @@ public class TableObject extends DataObject {
    * @throws Exception if there is any error accessing the table
    */
   public TableObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject,
-      Object tableObject, long offset, long size) throws Exception {
-    super(parentDir, fileObject, offset, size);
+      Object tableObject, long offset, long size, DataObjectLocation location) throws Exception {
+    super(parentDir, fileObject, offset, size, location);
     this.tableObject = tableObject;
-    this.tableReader = getTableReader();
+    this.tableReader = null;
+
+    this.name = ((ByteStream) tableObject).getName();
+  }
+
+  /**
+   * Deprecated initializer. Missing DataObjectLocation
+   */
+  @Deprecated
+  public TableObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject,
+      Object tableObject, long offset, long size) throws Exception {
+    this(parentDir.toURI().toURL(), fileObject, tableObject, offset, size, null);
+  }
+
+  /**
+   * Deprecated initializer. Missing DataObjectLocation
+   */
+  @Deprecated
+  public TableObject(URL parentDir, gov.nasa.arc.pds.xml.generated.File fileObject,
+      Object tableObject, long offset, long size) throws Exception {
+    this(parentDir, fileObject, tableObject, offset, size, null);
   }
 
   /**
@@ -85,16 +107,31 @@ public class TableObject extends DataObject {
    * @return a table reader
    * @throws Exception if there is an error creating the table reader
    */
-  private TableReader getTableReader() throws Exception {
+  public TableReader getTableReader() throws Exception {
     return ExporterFactory.getTableReader(tableObject, getDataFile());
+  }
+
+  /**
+   * Returns a raw table reader for this table.
+   *
+   * @return a table reader
+   * @throws Exception if there is an error creating the table reader
+   */
+  public RawTableReader getRawTableReader() throws Exception {
+    // TODO update this with table index
+    return ExporterFactory.getRawTableReader(tableObject, getDataFile(), dataObjectLocation);
   }
 
   /**
    * Gets the field descriptions for fields in the table.
    *
    * @return an array of field descriptions
+   * @throws Exception
    */
-  public FieldDescription[] getFields() {
+  public FieldDescription[] getFields() throws Exception {
+    if (tableReader == null) {
+      this.tableReader = getTableReader();
+    }
     return tableReader.getFields();
   }
 
@@ -105,7 +142,10 @@ public class TableObject extends DataObject {
    * @throws IOException if there is an error reading from the data file
    * @throws CsvValidationException
    */
-  public TableRecord readNext() throws IOException, CsvValidationException {
+  public TableRecord readNext() throws IOException, CsvValidationException, Exception {
+    if (tableReader == null) {
+      this.tableReader = getTableReader();
+    }
     return tableReader.readNext();
   }
 
@@ -115,13 +155,20 @@ public class TableObject extends DataObject {
    *
    * @param index the record index (1-relative)
    * @return an instance of <code>TableRecord</code>
-   * @throws IllegalArgumentException if index is greater than the record number
-   * @throws IOException if there is an error reading from the data file
-   * @throws CsvValidationException
+   * @throws Exception
    */
-  public TableRecord getRecord(int index, boolean keepQuotationsFlag)
-      throws IllegalArgumentException, IOException, CsvValidationException {
+  public TableRecord getRecord(int index, boolean keepQuotationsFlag) throws Exception {
+    if (tableReader == null) {
+      this.tableReader = getTableReader();
+    }
     return tableReader.getRecord(index, keepQuotationsFlag);
   }
 
+  public Object getTableObject() {
+    return tableObject;
+  }
+
+  public void setTableObject(Object tableObject) {
+    this.tableObject = tableObject;
+  }
 }

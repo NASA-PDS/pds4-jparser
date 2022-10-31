@@ -161,6 +161,7 @@ public class ByteWiseFileAccessor implements Closeable {
       long fileSizeMinusOffset = Math.max(0, this.totalFileContentSize - offset);
 
       actualBytesToRead = expectedBytesToRead;
+
       if (expectedBytesToRead <= 0 || expectedBytesToRead > fileSizeMinusOffset) {
         actualBytesToRead = fileSizeMinusOffset;
       }
@@ -187,14 +188,20 @@ public class ByteWiseFileAccessor implements Closeable {
       this.curPosition = 0;
 
       // if for whatever reason we don't read in sufficient bytes
-      if (totalBytesRead < expectedBytesToRead) {
-        throw new InvalidTableException("Expected to read in " + expectedBytesToRead
-            + " bytes but only " + totalBytesRead + " bytes were read for " + url.toString());
+      if (this.totalBytesRead < expectedBytesToRead) {
+        if (expectedBytesToRead > fileSizeMinusOffset) {
+          throw new InvalidTableException(
+              "Cannot read object. Remaining file size: " + fileSizeMinusOffset
+                  + ", Expected bytes remaining for object: " + expectedBytesToRead);
+        } else {
+          throw new InvalidTableException("Expected to read in " + expectedBytesToRead
+              + " bytes but only " + totalBytesRead + " bytes were read for " + url.toString());
+        }
       }
 
       LOGGER.debug("ByteWiseFileAccessor: url {}", url);
       LOGGER.debug("ByteWiseFileAccessor: fileSize,sizeToRead {},{}", url, expectedBytesToRead);
-      LOGGER.debug("ByteWiseFileAccessor: totalBytesRead {}", totalBytesRead);
+      LOGGER.debug("ByteWiseFileAccessor: totalBytesRead {}", this.totalBytesRead);
       LOGGER.debug("ByteWiseFileAccessor: mappings.size() {}", mappings.size());
     } catch (java.nio.channels.NonWritableChannelException ex) {
       // don't do anything
@@ -329,7 +336,7 @@ public class ByteWiseFileAccessor implements Closeable {
     LOGGER.debug("readRecordBytes: mapN,offN {},{}", mapN, offN);
     LOGGER.debug("readRecordBytes: this.recordLength {}", this.recordLength);
     LOGGER.debug("readRecordBytes: bytesToReturn.length {}", bytesToReturn.length);
-    LOGGER.debug("readRecordBytes: bytesToReturn {}", new String(bytesToReturn));
+    LOGGER.debug("readRecordBytes: bytesToReturn '{}'", new String(bytesToReturn));
 
     return bytesToReturn;
   }

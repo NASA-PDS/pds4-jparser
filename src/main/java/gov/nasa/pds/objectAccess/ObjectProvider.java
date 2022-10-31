@@ -46,6 +46,7 @@ import gov.nasa.arc.pds.xml.generated.FileAreaBrowse;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 import gov.nasa.arc.pds.xml.generated.FileAreaObservationalSupplemental;
 import gov.nasa.arc.pds.xml.generated.GroupFieldDelimited;
+import gov.nasa.arc.pds.xml.generated.Product;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
@@ -71,6 +72,8 @@ public interface ObjectProvider {
    * @return the root file path of the object archive(s) for this ObjectProvider
    */
   URL getRoot();
+
+  public List<Object> getDataObjects(Product product) throws ParseException;
 
   /**
    * Gets a list of Array objects from a file area.
@@ -296,4 +299,7 @@ public interface ObjectProvider {
   void setObservationalProduct(String relativeXmlFilePath, ProductObservational product,
       XMLLabelContext context) throws Exception;
 
+  long getOffset(Object obj) throws Exception;
+
+  long getObjectLength(Object obj) throws Exception;
 }

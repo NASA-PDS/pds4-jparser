@@ -34,6 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.Array2DImage;
@@ -61,14 +62,16 @@ public class ArrayObject extends DataObject {
    * @param offset the offset within the data file
    * @throws IOException if there is an error opening the data file
    * @throws FileNotFoundException if the data file is not found
+   * @throws URISyntaxException
    */
   public ArrayObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, Array array,
-      long offset) throws FileNotFoundException, IOException {
-    this(parentDir.toURI().toURL(), fileObject, array, offset);
+      long offset, DataObjectLocation location)
+      throws FileNotFoundException, IOException, URISyntaxException {
+    this(parentDir.toURI().toURL(), fileObject, array, offset, location);
   }
 
   /**
-   * Creats a new array instance.
+   * Creates a new array instance.
    *
    * @param parent the parent directory for the data file
    * @param fileObject the file object metadata
@@ -76,16 +79,37 @@ public class ArrayObject extends DataObject {
    * @param offset the offset within the data file
    * @throws IOException if there is an error opening the data file
    * @throws FileNotFoundException if the data file is not found
+   * @throws URISyntaxException
    */
   public ArrayObject(URL parent, gov.nasa.arc.pds.xml.generated.File fileObject, Array array,
-      long offset) throws FileNotFoundException, IOException {
-    super(parent, fileObject, offset, 0);
+      long offset, DataObjectLocation location)
+      throws FileNotFoundException, IOException, URISyntaxException {
+    super(parent, fileObject, offset, 0, location);
     this.array = array;
 
     dimensions = findDimensions();
     elementType = ElementType.getTypeForName(array.getElementArray().getDataType());
     setSize(findSize(elementType.getSize()));
-    adapter = new ArrayAdapter(dimensions, getChannel(), elementType);
+
+    adapter = new ArrayAdapter(dimensions, elementType);
+  }
+
+  /**
+   * Deprecated initializer. Missing DataObjectLocation
+   */
+  @Deprecated
+  public ArrayObject(URL parent, gov.nasa.arc.pds.xml.generated.File fileObject, Array array,
+      long offset) throws FileNotFoundException, IOException, URISyntaxException {
+    this(parent, fileObject, array, offset, null);
+  }
+
+  /**
+   * Deprecated initializer. Missing DataObjectLocation
+   */
+  @Deprecated
+  public ArrayObject(File parentDir, gov.nasa.arc.pds.xml.generated.File fileObject, Array array,
+      long offset) throws FileNotFoundException, IOException, URISyntaxException {
+    this(parentDir.toURI().toURL(), fileObject, array, offset, null);
   }
 
   private int[] findDimensions() {
@@ -356,4 +380,21 @@ public class ArrayObject extends DataObject {
     return elementType;
   }
 
+  public Array getArray() {
+    return array;
+  }
+
+  public void setArray(Array array) {
+    this.array = array;
+  }
+
+  public void open() throws IOException {
+    if (this.adapter.getBuf() == null) {
+      this.adapter.open(getChannel());
+    }
+  }
+
+  public void close() throws IOException {
+    this.adapter.close();
+  }
 }
