@@ -468,7 +468,7 @@ POSSIBILITY OF SUCH DAMAGE.
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- PDS4 schema version -->
-    <model-version>1G00</model-version>
+    <model-version>1J00</model-version>
     <pds3-product-tools.version>4.0.1</pds3-product-tools.version>
     <maven.antrun.version>1.8</maven.antrun.version>
   </properties>
