@@ -239,9 +239,9 @@ public abstract class ImageExporter extends ObjectExporter {
     for (DisplaySettings ds : displaySettings) {
       if (ds.getLocalInternalReference() != null) {
         LocalInternalReference lir = ds.getLocalInternalReference();
-        if (lir.getLocalIdentifierReference() != null
-            && lir.getLocalIdentifierReference() instanceof Array) {
-          Array array = (Array) lir.getLocalIdentifierReference();
+        if (lir.getLocalIdentifierReferences() != null
+            && lir.getLocalIdentifierReferences() instanceof Array) {
+          Array array = (Array) lir.getLocalIdentifierReferences();
           if (id.equals(array.getLocalIdentifier())) {
             return ds;
           }
