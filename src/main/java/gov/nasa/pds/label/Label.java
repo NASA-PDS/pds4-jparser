@@ -665,7 +665,9 @@ public class Label {
     long offset = -1;
     if (stream instanceof EncodedByteStream) {
       EncodedByteStream ebs = (EncodedByteStream) stream;
-      size = ebs.getObjectLength().getValue().longValueExact();
+      if (ebs.getObjectLength() != null) {
+        size = ebs.getObjectLength().getValue().longValueExact();
+      }
       offset = ebs.getOffset().getValue().longValueExact();
     } else if (stream instanceof ParsableByteStream) {
       ParsableByteStream pbs = (ParsableByteStream) stream;
