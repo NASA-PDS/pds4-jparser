@@ -470,7 +470,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <!-- PDS4 schema version -->
     <model-version>1J00</model-version>
     <pds3-product-tools.version>4.0.1</pds3-product-tools.version>
-    <maven.antrun.version>1.8</maven.antrun.version>
+    <maven.antrun.version>3.1.0</maven.antrun.version>
   </properties>
   
   <developers />
