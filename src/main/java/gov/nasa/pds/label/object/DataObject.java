@@ -63,6 +63,7 @@ public abstract class DataObject {
   protected long offset;
   protected long size;
   protected String name;
+  protected String localIdentifier;
   protected SeekableByteChannel channel;
   protected DataObjectLocation dataObjectLocation;
 
@@ -277,5 +278,13 @@ public abstract class DataObject {
 
   public void setDataObjectLocation(DataObjectLocation dataObjectLocation) {
     this.dataObjectLocation = dataObjectLocation;
+  }
+
+  public String getLocalIdentifier() {
+    return localIdentifier;
+  }
+
+  public void setLocalIdentifier(String localIdentifier) {
+    this.localIdentifier = localIdentifier;
   }
 }

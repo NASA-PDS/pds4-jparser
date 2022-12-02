@@ -81,6 +81,7 @@ public class TableObject extends DataObject {
     this.tableReader = null;
 
     this.name = ((ByteStream) tableObject).getName();
+    this.localIdentifier = ((ByteStream) tableObject).getLocalIdentifier();
   }
 
   /**
