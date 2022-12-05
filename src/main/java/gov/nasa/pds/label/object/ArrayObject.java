@@ -92,6 +92,9 @@ public class ArrayObject extends DataObject {
     setSize(findSize(elementType.getSize()));
 
     adapter = new ArrayAdapter(dimensions, elementType);
+
+    this.name = array.getName();
+    this.localIdentifier = array.getLocalIdentifier();
   }
 
   /**
@@ -128,15 +131,6 @@ public class ArrayObject extends DataObject {
    */
   public int[] getDimensions() {
     return dimensions;
-  }
-
-  /**
-   * return the name of this array.
-   *
-   * @return the name of this array.
-   */
-  public String getName() {
-    return array.getName();
   }
 
   private long findSize(int elementSize) {

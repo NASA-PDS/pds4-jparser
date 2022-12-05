@@ -191,8 +191,9 @@ public class ByteWiseFileAccessor implements Closeable {
       if (this.totalBytesRead < expectedBytesToRead) {
         if (expectedBytesToRead > fileSizeMinusOffset) {
           throw new InvalidTableException(
-              "Cannot read object. Remaining file size: " + fileSizeMinusOffset
-                  + ", Expected bytes remaining for object: " + expectedBytesToRead);
+              "Data object is truncated. Expected bytes as defined by label: " + expectedBytesToRead
+                  + " (" + records + " records)" + ", Actual bytes remaining in file: "
+                  + fileSizeMinusOffset + " (" + (fileSizeMinusOffset / length) + " records)");
         } else {
           throw new InvalidTableException("Expected to read in " + expectedBytesToRead
               + " bytes but only " + totalBytesRead + " bytes were read for " + url.toString());
