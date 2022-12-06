@@ -1,6 +1,14 @@
 # Changelog
 
-## [v2.4.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.4.0-SNAPSHOT) (2022-12-05)
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2022-12-06)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.4.0-SNAPSHOT...«unknown»)
+
+**Other closed issues:**
+
+- Investigate if PR\#63 is appropriate [\#64](https://github.com/NASA-PDS/pds4-jparser/issues/64)
+
+## [v2.4.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.4.0-SNAPSHOT) (2022-12-06)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.3.1...v2.4.0-SNAPSHOT)
 
