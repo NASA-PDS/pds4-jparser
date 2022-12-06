@@ -290,7 +290,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.21</version>
+      <version>1.7.22.jbossorg-1</version>
     </dependency>    
 
     <!-- XML -->
