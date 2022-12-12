@@ -285,7 +285,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
+      <version>1.7.22.jbossorg-1</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
