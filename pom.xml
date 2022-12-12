@@ -355,7 +355,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>stringtemplate</artifactId>
-      <version>3.2</version>
+      <version>4.0.2</version>
     </dependency>
 
     <!-- Google -->
