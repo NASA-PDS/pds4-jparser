@@ -136,7 +136,7 @@ public class TableCharacterAdapter implements TableAdapter {
     for (int i = 0; i < group.getRepetitions().intValueExact(); ++i) {
       expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset,
           group.getFields().intValueExact(), group.getGroups().intValueExact());
-      baseOffset += groupLength;
+      baseOffset += groupLength / group.getRepetitions().intValueExact();
     }
   }
 

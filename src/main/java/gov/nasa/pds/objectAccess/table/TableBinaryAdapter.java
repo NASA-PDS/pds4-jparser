@@ -174,7 +174,7 @@ public class TableBinaryAdapter implements TableAdapter {
     for (int i = 0; i < group.getRepetitions().intValueExact(); ++i) {
       expandFields(group.getFieldBinariesAndGroupFieldBinaries(), baseOffset,
           group.getFields().intValueExact(), group.getGroups().intValueExact());
-      baseOffset += groupLength;
+      baseOffset += groupLength / group.getRepetitions().intValueExact();
     }
   }
 
