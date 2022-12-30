@@ -114,24 +114,20 @@ public class TableCharacterAdapter implements TableAdapter {
       throws InvalidTableException {
     int baseOffset = outerOffset + group.getGroupLocation().getValue().intValueExact() - 1;
 
-    int groupLength =
-        group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
-
+    int groupLength = group.getGroupLength().getValue().intValueExact();
     // Check that the group length is large enough for the contained fields.
     int actualGroupLength = getGroupExtent(group);
     if (groupLength < actualGroupLength) {
       String msg =
           "ERROR: GroupFieldCharacter attribute group_length is smaller than size of contained fields: "
-              + (groupLength * group.getRepetitions().intValueExact()) + "<"
-              + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
+              + (groupLength) + " < " + (actualGroupLength) + ".";
       groupLength = actualGroupLength;
       throw new InvalidTableException(msg);
     }
     if (groupLength > actualGroupLength) {
       String msg =
           "ERROR: GroupFieldCharacter attribute group_length is larger than size of contained fields: "
-              + (groupLength * group.getRepetitions().intValueExact()) + ">"
-              + (actualGroupLength * group.getRepetitions().intValueExact()) + ".";
+              + (groupLength) + " > " + (actualGroupLength) + ".";
       groupLength = actualGroupLength;
       throw new InvalidTableException(msg);
 
@@ -140,29 +136,34 @@ public class TableCharacterAdapter implements TableAdapter {
     for (int i = 0; i < group.getRepetitions().intValueExact(); ++i) {
       expandFields(group.getFieldCharactersAndGroupFieldCharacters(), baseOffset,
           group.getFields().intValueExact(), group.getGroups().intValueExact());
-      baseOffset += groupLength;
+      baseOffset += groupLength / group.getRepetitions().intValueExact();
     }
   }
 
-  private int getGroupExtent(GroupFieldCharacter group) {
-    int groupExtent = 0;
+  private int getGroupExtent(GroupFieldCharacter group)
+  {
+	  int extent, groupExtent = 0;
 
-    for (Object o : group.getFieldCharactersAndGroupFieldCharacters()) {
-      if (o instanceof GroupFieldCharacter) {
-        GroupFieldCharacter field = (GroupFieldCharacter) o;
-        int fieldEnd =
-            field.getGroupLocation().getValue().intValueExact() + getGroupExtent(field) - 1;
-        groupExtent = Math.max(groupExtent, fieldEnd);
-      } else {
-        // Must be FieldCharacter
-        FieldCharacter field = (FieldCharacter) o;
-        int fieldEnd = field.getFieldLocation().getValue().intValueExact()
-            + field.getFieldLength().getValue().intValueExact() - 1;
-        groupExtent = Math.max(groupExtent, fieldEnd);
-      }
-    }
+	  for (Object o : group.getFieldCharactersAndGroupFieldCharacters())
+	  {
+		  if (o instanceof GroupFieldCharacter)
+		  {
+			  GroupFieldCharacter child = (GroupFieldCharacter) o;
+			  extent = getGroupExtent(child) + child.getGroupLocation().getValue().intValueExact()-1;
+			 
+		  }
+		  else
+		  {
+			  // Must be FieldCharacter
+			  FieldCharacter field = (FieldCharacter) o;
+			  extent = field.getFieldLocation().getValue().intValueExact()-1 +
+					  field.getFieldLength().getValue().intValueExact();
+		  }
+		  
+		  groupExtent = Math.max (extent, groupExtent);
+	  }
 
-    return groupExtent;
+	  return groupExtent * group.getRepetitions().intValue();
   }
 
   @Override

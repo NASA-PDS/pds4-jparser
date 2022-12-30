@@ -159,9 +159,7 @@ public class TableBinaryAdapter implements TableAdapter {
   private void expandGroupField(GroupFieldBinary group, int outerOffset)
       throws InvalidTableException {
     int baseOffset = outerOffset + group.getGroupLocation().getValue().intValueExact() - 1;
-
-    int groupLength =
-        group.getGroupLength().getValue().intValueExact() / group.getRepetitions().intValueExact();
+    int groupLength = group.getGroupLength().getValue().intValueExact();
 
     // Check that the group length is large enough for the contained fields.
     int actualGroupLength = getGroupExtent(group);
@@ -169,37 +167,41 @@ public class TableBinaryAdapter implements TableAdapter {
     if (groupLength != actualGroupLength) {
       String msg =
           "GroupFieldBinary attribute group_length is not equal the total size of contained fields. Group length: "
-              + (groupLength * group.getRepetitions().longValueExact()) + ", Actual: "
-              + (actualGroupLength * group.getRepetitions().longValueExact());
+              + (groupLength) + ", Actual: " + (actualGroupLength);
       throw new InvalidTableException(msg);
     }
 
     for (int i = 0; i < group.getRepetitions().intValueExact(); ++i) {
       expandFields(group.getFieldBinariesAndGroupFieldBinaries(), baseOffset,
           group.getFields().intValueExact(), group.getGroups().intValueExact());
-      baseOffset += groupLength;
+      baseOffset += groupLength / group.getRepetitions().intValueExact();
     }
   }
 
-  private int getGroupExtent(GroupFieldBinary group) {
-    int groupExtent = 0;
+  private int getGroupExtent(GroupFieldBinary group)
+  {
+	  int extent, groupExtent = 0;
 
-    for (Object o : group.getFieldBinariesAndGroupFieldBinaries()) {
-      if (o instanceof GroupFieldBinary) {
-        GroupFieldBinary field = (GroupFieldBinary) o;
-        int fieldEnd =
-            field.getGroupLocation().getValue().intValueExact() + getGroupExtent(field) - 1;
-        groupExtent = Math.max(groupExtent, fieldEnd);
-      } else {
-        // Must be FieldBinary
-        FieldBinary field = (FieldBinary) o;
-        int fieldEnd = field.getFieldLocation().getValue().intValueExact()
-            + field.getFieldLength().getValue().intValueExact() - 1;
-        groupExtent = Math.max(groupExtent, fieldEnd);
-      }
-    }
+	  for (Object o : group.getFieldBinariesAndGroupFieldBinaries())
+	  {
+		  if (o instanceof GroupFieldBinary)
+		  {
+			  GroupFieldBinary child = (GroupFieldBinary) o;
+			  extent = getGroupExtent(child) + child.getGroupLocation().getValue().intValueExact()-1;
+			 
+		  }
+		  else
+		  {
+			  // Must be FieldCharacter
+			  FieldBinary field = (FieldBinary) o;
+			  extent = field.getFieldLocation().getValue().intValueExact()-1 +
+					  field.getFieldLength().getValue().intValueExact();
+		  }
+		  
+		  groupExtent = Math.max (extent, groupExtent);
+	  }
 
-    return groupExtent;
+	  return groupExtent * group.getRepetitions().intValue();
   }
 
   @Override
