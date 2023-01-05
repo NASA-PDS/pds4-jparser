@@ -42,7 +42,7 @@ public class NumericTextFieldAdapterTest {
   private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
   private ByteBuffer buffer = ByteBuffer.allocate(50);
-  private FieldAdapter adapter = new NumericTextFieldAdapter();
+  private FieldAdapter adapter = new NumericTextFieldAdapter(10);
 
   @Test
   public void testGoodInt() {

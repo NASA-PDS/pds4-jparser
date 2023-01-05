@@ -38,7 +38,13 @@ import java.nio.ByteBuffer;
  */
 public class NumericTextFieldAdapter extends DefaultFieldAdapter {
 
-  @Override
+  final public int radix;
+  public NumericTextFieldAdapter(int radix) {
+		super();
+		this.radix = radix;
+	}
+
+@Override
   public byte getByte(byte[] buf, int offset, int length, int startBit, int stopBit) {
     int value = Integer.parseInt(getString(buf, offset, length, startBit, stopBit).trim());
     if (value < Byte.MIN_VALUE || value > Byte.MAX_VALUE) {
