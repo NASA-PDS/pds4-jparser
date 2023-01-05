@@ -1,12 +1,16 @@
 # Changelog
 
-## [v2.4.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.4.0-SNAPSHOT) (2022-12-30)
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2023-01-05)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/release/2.4.0...v2.4.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.4.0...«unknown»)
 
-## [release/2.4.0](https://github.com/NASA-PDS/pds4-jparser/tree/release/2.4.0) (2022-12-30)
+**Defects:**
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.3.1...release/2.4.0)
+- Parse failure for table fields of type ASCII\_Numeric\_Base16 [\#57](https://github.com/NASA-PDS/pds4-jparser/issues/57) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
+
+## [v2.4.0](https://github.com/NASA-PDS/pds4-jparser/tree/v2.4.0) (2023-01-03)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.3.1...v2.4.0)
 
 **Other closed issues:**
 
@@ -58,35 +62,23 @@
 
 ## [v2.0.1](https://github.com/NASA-PDS/pds4-jparser/tree/v2.0.1) (2021-05-03)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.1.0-SNAPSHOT...v2.0.1)
-
-## [v2.1.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.1.0-SNAPSHOT) (2021-04-26)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.0.0...v2.1.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.0.0...v2.0.1)
 
 ## [v2.0.0](https://github.com/NASA-PDS/pds4-jparser/tree/v2.0.0) (2021-04-08)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.12.0-SNAPSHOT...v2.0.0)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.11.0...v2.0.0)
 
 **Defects:**
 
 - NoSuchMethodError: java.nio.ByteBuffer with Java9 Builds [\#36](https://github.com/NASA-PDS/pds4-jparser/issues/36) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
 
-## [v1.12.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v1.12.0-SNAPSHOT) (2021-04-03)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.11.0...v1.12.0-SNAPSHOT)
-
 ## [v1.11.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.11.0) (2021-04-03)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.10.0-SNAPSHOT...v1.11.0)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0...v1.11.0)
 
 **Improvements:**
 
 - Upgrade pds4-jparser to build with Java11+ [\#33](https://github.com/NASA-PDS/pds4-jparser/issues/33)
-
-## [1.10.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.10.0-SNAPSHOT) (2020-11-18)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0...1.10.0-SNAPSHOT)
 
 **Defects:**
 
@@ -108,11 +100,7 @@
 
 ## [v1.8.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.8.1) (2020-08-04)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.9.0-SNAPSHOT...v1.8.1)
-
-## [1.9.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.9.0-SNAPSHOT) (2020-05-16)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.0...1.9.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.8.0...v1.8.1)
 
 ## [v1.8.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.8.0) (2020-05-16)
 
@@ -120,19 +108,11 @@
 
 ## [v1.7.1](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.1) (2020-05-16)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.8.0-SNAPSHOT...v1.7.1)
-
-## [1.8.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.8.0-SNAPSHOT) (2020-05-08)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.7.0...1.8.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.7.0...v1.7.1)
 
 ## [v1.7.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.7.0) (2020-05-08)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/1.7.0-SNAPSHOT...v1.7.0)
-
-## [1.7.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/1.7.0-SNAPSHOT) (2020-04-18)
-
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.6.0...1.7.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v1.6.0...v1.7.0)
 
 ## [v1.6.0](https://github.com/NASA-PDS/pds4-jparser/tree/v1.6.0) (2020-04-18)
 
