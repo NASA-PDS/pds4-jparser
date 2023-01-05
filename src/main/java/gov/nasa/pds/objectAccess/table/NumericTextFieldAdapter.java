@@ -86,7 +86,7 @@ public class NumericTextFieldAdapter extends DefaultFieldAdapter {
 
   @Override
   public BigInteger getBigInteger(byte[] buf, int offset, int length, int startBit, int stopBit) {
-    return new BigInteger(getString(buf, offset, length, startBit, stopBit), this.radix);
+    return new BigInteger(getString(buf, offset, length, startBit, stopBit).trim(), this.radix);
   }
 
   //
