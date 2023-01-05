@@ -61,4 +61,18 @@ public class FieldTypeTest {
     assertTrue(FieldType.SIGNEDMSB4.isRightJustified());
   }
 
+  @Test
+  public void testIntConversions()
+  {
+	  FieldType bin = FieldType.ASCII_NUMERIC_BASE2;
+	  FieldType dec = FieldType.ASCII_INTEGER;
+	  FieldType oct = FieldType.ASCII_NUMERIC_BASE8;
+	  FieldType hex = FieldType.ASCII_NUMERIC_BASE16;
+	  String value = "10101";
+
+	  assertEquals (21, bin.getAdapter().getInt(value.getBytes(), 0, value.length(), 0, value.length()*8));
+	  assertEquals (10101, dec.getAdapter().getInt(value.getBytes(), 0, value.length(), 0, value.length()*8));
+	  assertEquals (4161, oct.getAdapter().getInt(value.getBytes(), 0, value.length(), 0, value.length()*8));
+	  assertEquals (65793, hex.getAdapter().getInt(value.getBytes(), 0, value.length(), 0, value.length()*8));
+  }
 }

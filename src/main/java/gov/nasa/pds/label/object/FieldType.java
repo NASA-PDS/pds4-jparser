@@ -96,7 +96,7 @@ public enum FieldType {
   ASCII_FILE_SPECIFICATION_NAME("ASCII_File_Specification_Name"),
 
   /** An integer. */
-  ASCII_INTEGER("ASCII_Integer", new NumericTextFieldAdapter(), true),
+  ASCII_INTEGER("ASCII_Integer", new NumericTextFieldAdapter(10), true),
 
   /** A logical identifier. */
   ASCII_LID("ASCII_LID"),
@@ -111,19 +111,19 @@ public enum FieldType {
   ASCII_MD5_CHECKSUM("ASCII_MD5_Checksum"),
 
   /** A nonnegative integer. */
-  ASCII_NONNEGATIVE_INTEGER("ASCII_NonNegative_Integer", new NumericTextFieldAdapter(), true),
+  ASCII_NONNEGATIVE_INTEGER("ASCII_NonNegative_Integer", new NumericTextFieldAdapter(10), true),
 
   /** A hexadecimal integer. */
-  ASCII_NUMERIC_BASE16("ASCII_Numeric_Base16", new NumericTextFieldAdapter(), true),
+  ASCII_NUMERIC_BASE16("ASCII_Numeric_Base16", new NumericTextFieldAdapter(16), true),
 
   /** A base 2 integer. */
-  ASCII_NUMERIC_BASE2("ASCII_Numeric_Base2"),
+  ASCII_NUMERIC_BASE2("ASCII_Numeric_Base2", new NumericTextFieldAdapter(2), true),
 
   /** A base 8 integer. */
-  ASCII_NUMERIC_BASE8("ASCII_Numeric_Base8"),
+  ASCII_NUMERIC_BASE8("ASCII_Numeric_Base8", new NumericTextFieldAdapter(8), true),
 
   /** A floating-point value. */
-  ASCII_REAL("ASCII_Real", new NumericTextFieldAdapter(), true),
+  ASCII_REAL("ASCII_Real", new NumericTextFieldAdapter(10), true),
 
   /** An ASCII string. */
   ASCII_STRING("ASCII_String"),
