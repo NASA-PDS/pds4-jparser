@@ -63,6 +63,14 @@ jobs:
             -
                 name: 🩺 Test Software
                 run: mvn test
+                
+            -
+                name: 🩺 Test Integration with Validate
+                run: |
+                    mvn install
+                    git clone https://github.com/NASA-PDS/validate.git
+                    cd validate
+                    mvn test
 
 ...
 
