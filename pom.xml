@@ -453,7 +453,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
-      <version>2.3.31</version>
+      <version>2.3.32</version>
       <scope>test</scope>
     </dependency>
     <dependency>
