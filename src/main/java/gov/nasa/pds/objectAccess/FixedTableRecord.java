@@ -107,6 +107,9 @@ public class FixedTableRecord implements TableRecord {
   }
 
   @Override
+  public int length() { return this.recordBytes.length; }
+
+  @Override
   public int findColumn(String name) {
     checkFieldName(name);
     return this.fieldMap.get(name);

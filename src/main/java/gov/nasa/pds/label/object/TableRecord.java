@@ -371,6 +371,11 @@ public interface TableRecord {
   void clear();
 
   /**
+   * @returns Length of the record in bytes.
+   */
+  int length();
+
+  /**
    * 
    * @return Gets the record location.
    */

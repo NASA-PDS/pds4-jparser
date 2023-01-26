@@ -190,10 +190,21 @@ public class ByteWiseFileAccessor implements Closeable {
       // if for whatever reason we don't read in sufficient bytes
       if (this.totalBytesRead < expectedBytesToRead) {
         if (expectedBytesToRead > fileSizeMinusOffset) {
+          if ((fileSizeMinusOffset / length) * length == fileSizeMinusOffset)
+            throw new InvalidTableException(
+                "Data object is truncated. Expected bytes as defined by label: " + expectedBytesToRead
+                    + " (" + records + " records times " + length + " bytes per record)" + ", Actual bytes in file: "
+                    + fileSizeMinusOffset + " (" + (fileSizeMinusOffset / length) + " records times " + length + " bytes per record)");
+          if ((fileSizeMinusOffset / records) * records == fileSizeMinusOffset)
+              throw new InvalidTableException(
+                      "Data object is truncated. Expected bytes as defined by label: " + expectedBytesToRead
+                          + " (" + records + " records times " + length + " bytes per record)" + ", Actual bytes in file: "
+                          + fileSizeMinusOffset + " (" + records + " records times " + (fileSizeMinusOffset/records) + " bytes per record)");
           throw new InvalidTableException(
-              "Data object is truncated. Expected bytes as defined by label: " + expectedBytesToRead
-                  + " (" + records + " records)" + ", Actual bytes remaining in file: "
-                  + fileSizeMinusOffset + " (" + (fileSizeMinusOffset / length) + " records)");
+                  "Data object is truncated. Expected bytes as defined by label: " + expectedBytesToRead
+                      + " (" + records + " records times " + length + " bytes per record)" + ", Actual bytes in file: "
+                      + fileSizeMinusOffset + " (" + ((float)(fileSizeMinusOffset) / (float)length) + " records times " + length + " bytes per record)"
+                      + " OR (" + records + " records times " + ((float)fileSizeMinusOffset / (float)records) + " bytes per record)");
         } else {
           throw new InvalidTableException("Expected to read in " + expectedBytesToRead
               + " bytes but only " + totalBytesRead + " bytes were read for " + url.toString());

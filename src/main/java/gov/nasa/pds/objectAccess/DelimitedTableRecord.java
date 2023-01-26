@@ -86,6 +86,12 @@ public class DelimitedTableRecord implements TableRecord {
   }
 
   @Override
+  public int length() {
+	int len = 0;
+	for (String rv : this.recordValue) len += rv.length();
+	return len;
+  }
+  @Override
   public int findColumn(String name) {
     checkFieldName(name);
     return this.fieldMap.get(name);
