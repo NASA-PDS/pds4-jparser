@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.opencsv.exceptions.CsvValidationException;
@@ -169,6 +171,25 @@ public class RawTableReader extends TableReader {
     }
 
     return line;
+  }
+
+  /**
+   * Previews the next fixed length line in the data file.
+   * 
+   * @return the next line, or null if no further lines.
+   * 
+   * @throws IOException
+   */
+  public String readNextFixedLine() throws IOException {
+	byte[] line = null;
+	int recordLength = this.getAdapter().getRecordLength();
+	long next_row = this.getCurrentRow() + 1;
+
+	if (0 <= this.accessor.getTotalFileContentSize() - (next_row * recordLength)) {
+      line = this.accessor.readRecordBytes(next_row, 0, recordLength);
+      this.setCurrentRow(next_row);
+    }
+    return line == null ? null : new String(line, StandardCharsets.UTF_8);
   }
 
   /**
