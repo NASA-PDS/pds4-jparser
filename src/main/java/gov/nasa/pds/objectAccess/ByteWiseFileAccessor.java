@@ -406,6 +406,10 @@ public class ByteWiseFileAccessor implements Closeable {
     return this.totalFileContentSize;
   }
 
+  public long getTotalBytesRead() {
+    return this.totalBytesRead;
+  }
+
   @Override
   public void close() throws IOException {
     LOGGER.debug("Closing ByteWiseFileAccessor");
