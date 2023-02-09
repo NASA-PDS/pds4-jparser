@@ -185,7 +185,7 @@ public class RawTableReader extends TableReader {
 	int recordLength = this.getAdapter().getRecordLength();
 	long next_row = this.getCurrentRow() + 1;
 
-	if (0 <= this.accessor.getTotalFileContentSize() - (next_row * recordLength)) {
+	if (0 <= this.accessor.getTotalBytesRead() - (next_row * recordLength)) {
       line = this.accessor.readRecordBytes(next_row, 0, recordLength);
       this.setCurrentRow(next_row);
     }
