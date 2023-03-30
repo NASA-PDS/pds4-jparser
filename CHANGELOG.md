@@ -1,8 +1,8 @@
 # Changelog
 
-## [v2.5.0-SNAPSHOT](https://github.com/NASA-PDS/pds4-jparser/tree/v2.5.0-SNAPSHOT) (2023-02-09)
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2023-03-30)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.4.0...v2.5.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.4.0...«unknown»)
 
 **Defects:**
 
