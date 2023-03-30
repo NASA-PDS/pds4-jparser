@@ -652,6 +652,8 @@ public class Label {
       RecordDelimited definition = table.getRecordDelimited();
       if (definition.getMaximumRecordLength() != null) {
         size = definition.getMaximumRecordLength().getValue().longValue() * table.getRecords().longValue();
+      } else if (file.getFileSize() != null) {
+        size = file.getFileSize().getValue().longValue() - offset;
       }
     } else if (file.getFileSize() != null) {
       size = file.getFileSize().getValue().longValue() - offset;
