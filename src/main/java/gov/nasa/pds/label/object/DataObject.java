@@ -61,7 +61,7 @@ public abstract class DataObject {
   protected URL parentDir;
   protected gov.nasa.arc.pds.xml.generated.File fileObject;
   protected long offset;
-  protected long size;
+  private long size;
   protected String name;
   protected String localIdentifier;
   protected SeekableByteChannel channel;
