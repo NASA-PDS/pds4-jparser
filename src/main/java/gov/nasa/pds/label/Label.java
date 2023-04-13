@@ -78,6 +78,7 @@ import gov.nasa.arc.pds.xml.generated.ProductSPICEKernel;
 import gov.nasa.arc.pds.xml.generated.ProductService;
 import gov.nasa.arc.pds.xml.generated.ProductThumbnail;
 import gov.nasa.arc.pds.xml.generated.ProductXMLSchema;
+import gov.nasa.arc.pds.xml.generated.RecordDelimited;
 import gov.nasa.arc.pds.xml.generated.ServiceDescription;
 import gov.nasa.arc.pds.xml.generated.TableBinary;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
@@ -647,7 +648,14 @@ public class Label {
       offset = table.getOffset().getValue().longValueExact();
     }
     long size = -1;
-    if (file.getFileSize() != null) {
+    if (table.getRecordDelimited() != null) {
+      RecordDelimited definition = table.getRecordDelimited();
+      if (definition.getMaximumRecordLength() != null) {
+        size = definition.getMaximumRecordLength().getValue().longValue() * table.getRecords().longValue();
+      } else if (file.getFileSize() != null) {
+        size = file.getFileSize().getValue().longValue() - offset;
+      }
+    } else if (file.getFileSize() != null) {
       size = file.getFileSize().getValue().longValue() - offset;
     }
     return new TableObject(parentDir, file, table, offset, size, location);
