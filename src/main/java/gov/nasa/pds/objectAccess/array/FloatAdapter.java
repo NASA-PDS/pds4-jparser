@@ -65,7 +65,7 @@ public class FloatAdapter implements DataTypeAdapter {
     return getValue(buf);
   }
 
-  private double getValue(ByteBuffer buf) {
+  protected double getValue(ByteBuffer buf) {
     int bits = valueAdapter.getInt(buf);
     return Float.intBitsToFloat(bits);
   }

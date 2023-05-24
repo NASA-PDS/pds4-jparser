@@ -41,6 +41,14 @@ public class ElementType {
 
   private static final Map<String, ElementType> TYPES = new HashMap<>();
   static {
+    TYPES.put("ComplexLSB8",
+        new ElementType(Float.SIZE / Byte.SIZE * 2, new ComplexFloatAdapter(false)));
+    TYPES.put("ComplexMSB8",
+        new ElementType(Float.SIZE / Byte.SIZE * 2, new ComplexFloatAdapter(true)));
+    TYPES.put("ComplexLSB16",
+        new ElementType(Double.SIZE / Byte.SIZE * 2, new ComplexDoubleAdapter(false)));
+    TYPES.put("ComplexMSB16",
+        new ElementType(Double.SIZE / Byte.SIZE * 2, new ComplexDoubleAdapter(true)));
     TYPES.put("IEEE754LSBDouble",
         new ElementType(Double.SIZE / Byte.SIZE, new DoubleAdapter(false)));
     TYPES.put("IEEE754MSBDouble",
