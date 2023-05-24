@@ -32,6 +32,7 @@ package gov.nasa.pds.objectAccess.array;
 
 import java.util.HashMap;
 import java.util.Map;
+import gov.nasa.pds.label.NameNotKnownException;
 
 /**
  * Implements an object that represents the type of an array element.
@@ -91,7 +92,8 @@ public class ElementType {
    * @return the element type for that type name
    */
   public static ElementType getTypeForName(String typeName) {
-    return TYPES.get(typeName);
+    if (TYPES.containsKey (typeName)) return TYPES.get(typeName);
+    throw new NameNotKnownException("Cannot determine the ElementType from the name: " + typeName);
   }
 
   private ElementType(int size, DataTypeAdapter adapter) {
