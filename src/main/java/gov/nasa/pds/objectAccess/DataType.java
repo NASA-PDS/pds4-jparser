@@ -48,7 +48,8 @@ public interface DataType {
             64), SignedMSB2(16, "HALF"), SignedMSB4(32, "FULL"), SignedMSB8(64), UnsignedMSB2(16,
                 "HALF"), UnsignedMSB4(32, "FULL"), UnsignedMSB8(64), IEEE754LSBSingle(32,
                     "REAL"), IEEE754LSBDouble(64, "DOUBLE"), IEEE754MSBSingle(32,
-                        "REAL"), IEEE754MSBDouble(64, "DOUBLE"), ASCII_Integer(32), ASCII_Real(64);
+                        "REAL"), IEEE754MSBDouble(64, "DOUBLE"), ASCII_Integer(32), ASCII_Real(64),
+    ComplexLSB8(8),ComplexMSB8(8),ComplexLSB16(16),ComplexMSB16(16);
 
     private int bits;
     private String vicarAlias;

@@ -32,6 +32,7 @@ package gov.nasa.pds.objectAccess.array;
 
 import java.util.HashMap;
 import java.util.Map;
+import gov.nasa.pds.label.NameNotKnownException;
 
 /**
  * Implements an object that represents the type of an array element.
@@ -40,6 +41,14 @@ public class ElementType {
 
   private static final Map<String, ElementType> TYPES = new HashMap<>();
   static {
+    TYPES.put("ComplexLSB8",
+        new ElementType(Float.SIZE / Byte.SIZE * 2, new ComplexFloatAdapter(false)));
+    TYPES.put("ComplexMSB8",
+        new ElementType(Float.SIZE / Byte.SIZE * 2, new ComplexFloatAdapter(true)));
+    TYPES.put("ComplexLSB16",
+        new ElementType(Double.SIZE / Byte.SIZE * 2, new ComplexDoubleAdapter(false)));
+    TYPES.put("ComplexMSB16",
+        new ElementType(Double.SIZE / Byte.SIZE * 2, new ComplexDoubleAdapter(true)));
     TYPES.put("IEEE754LSBDouble",
         new ElementType(Double.SIZE / Byte.SIZE, new DoubleAdapter(false)));
     TYPES.put("IEEE754MSBDouble",
@@ -91,7 +100,8 @@ public class ElementType {
    * @return the element type for that type name
    */
   public static ElementType getTypeForName(String typeName) {
-    return TYPES.get(typeName);
+    if (TYPES.containsKey (typeName)) return TYPES.get(typeName);
+    throw new NameNotKnownException("Cannot determine the ElementType from the name: " + typeName);
   }
 
   private ElementType(int size, DataTypeAdapter adapter) {

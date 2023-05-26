@@ -63,7 +63,7 @@ public class DoubleAdapter implements DataTypeAdapter {
     return getValue(buf);
   }
 
-  private double getValue(ByteBuffer buf) {
+  protected double getValue(ByteBuffer buf) {
     long bits = valueAdapter.getLong(buf);
     return Double.longBitsToDouble(bits);
   }
