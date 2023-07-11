@@ -1,5 +1,13 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2023-07-11)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.5.0...«unknown»)
+
+**Other closed issues:**
+
+- remove antlr dependency in POM [\#95](https://github.com/NASA-PDS/pds4-jparser/issues/95)
+
 ## [v2.5.0](https://github.com/NASA-PDS/pds4-jparser/tree/v2.5.0) (2023-04-13)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.4.0...v2.5.0)
