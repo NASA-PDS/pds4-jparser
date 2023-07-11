@@ -336,28 +336,6 @@ POSSIBILITY OF SUCH DAMAGE.
       </exclusions>
     </dependency>
 
-    <!-- ANTLR -->
-    <dependency>
-      <groupId>antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>2.7.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr-runtime</artifactId>
-      <version>3.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>3.4.1-preview-jbossorg-0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>stringtemplate</artifactId>
-      <version>3.2</version>
-    </dependency>
-
     <!-- Google -->
     <dependency>
       <groupId>com.google.guava</groupId>
