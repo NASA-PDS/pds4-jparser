@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2023-07-11)
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2023-08-23)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.5.0...«unknown»)
 
