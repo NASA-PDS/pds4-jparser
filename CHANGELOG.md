@@ -1,8 +1,16 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2023-09-14)
+## [2.6.0](https://github.com/NASA-PDS/pds4-jparser/tree/2.6.0) (2023-09-14)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.5.0...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/release/2.6.0...2.6.0)
+
+**Defects:**
+
+- \[SECURITY\] Migrate to log4j-core / log4j-api [\#47](https://github.com/NASA-PDS/pds4-jparser/issues/47) [[s.low](https://github.com/NASA-PDS/pds4-jparser/labels/s.low)]
+
+## [release/2.6.0](https://github.com/NASA-PDS/pds4-jparser/tree/release/2.6.0) (2023-09-14)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.5.0...release/2.6.0)
 
 **Other closed issues:**
 
