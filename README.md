@@ -13,7 +13,6 @@ Please visit the website https://NASA-PDS.github.io/pds4-jparser/ for informatio
 
 # System Requirements
 Current software requires:
-* Java 1.8 — the Ant build does not appear to complete succcessfully in later versions of Java
 * Maven 3
 
 # Documentation
