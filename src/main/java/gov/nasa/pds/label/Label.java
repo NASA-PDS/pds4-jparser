@@ -655,7 +655,7 @@ public class Label {
       } else if (table.getObjectLength() != null) {
         size = table.getObjectLength().getValue().longValueExact();
       } else if (file.getFileSize() != null) {
-        size = file.getFileSize().getValue().longValue() - offset;
+        size = 0;//file.getFileSize().getValue().longValue() - offset;
       }
     } else if (table.getObjectLength() != null) {
       size = table.getObjectLength().getValue().longValueExact();
