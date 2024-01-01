@@ -403,7 +403,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <dependency>
       <groupId>gov.nasa.gsfc.heasarc</groupId>
       <artifactId>nom-tam-fits</artifactId>
-      <version>1.13.1</version>
+      <version>1.18.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
