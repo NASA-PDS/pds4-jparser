@@ -381,7 +381,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.25.0</version>
+      <version>1.26.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
