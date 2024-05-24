@@ -37,7 +37,6 @@ on:
             - 'CHANGELOG.md'
             - 'docs/requirements/**'
     workflow_dispatch:
-concurrency: roundup
 
 
 # What to Do
@@ -76,6 +75,9 @@ jobs:
                 with:
                     assembly: unstable
                     packages: openjdk11-jdk
+                    maven-build-phases: install
+                    maven-doc-phases: clean,site,site:stage
+                    maven-unstable-artifact-phases: clean,site,site:stage,deploy
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}

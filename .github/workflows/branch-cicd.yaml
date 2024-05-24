@@ -62,9 +62,9 @@ jobs:
                     distribution: 'adopt'
                     java-version: ${{matrix.java-version}}
             -
-                name: 🩺 Test Software
-                run: mvn test
-                
+                name: 🩺 Install and Test Software
+                run: mvn install
+
             -
                 name: 🩺 Test Integration with Validate
                 run: |
