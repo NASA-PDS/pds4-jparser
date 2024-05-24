@@ -6,7 +6,7 @@
   <parent>
     <groupId>gov.nasa</groupId>
     <artifactId>pds</artifactId>
-    <version>1.17.0</version>
+    <version>1.18.0</version>
   </parent>
 
   <groupId>gov.nasa.pds</groupId>
@@ -101,7 +101,8 @@
             <id>make-source-jar</id>
             <phase>prepare-package</phase>
             <goals>
-              <goal>jar-no-fork</goal>
+              <goal>jar</goal>
+              <goal>test-jar</goal>
             </goals>
             <configuration>
               <excludeResources>true</excludeResources>
