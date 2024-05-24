@@ -1,5 +1,7 @@
-gov.nasa.pds.objectAccess
+gov.nasa.arc.pds.tools.util
+gov.nasa.arc.pds.tools.container
 gov.nasa.pds.objectAccess.table
+gov.nasa.pds.objectAccess
 gov.nasa.pds.objectAccess.array
 gov.nasa.pds.objectAccess.utility
 gov.nasa.pds.objectAccess.example
@@ -7,6 +9,4 @@ gov.nasa.pds.label
 gov.nasa.pds.label.object
 gov.nasa.pds.label.io
 gov.nasa.pds.label.jaxb
-gov.nasa.arc.pds.tools.container
-gov.nasa.arc.pds.tools.util
 gov.nasa.arc.pds.xml.generated
