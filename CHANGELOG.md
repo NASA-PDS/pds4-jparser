@@ -1,8 +1,8 @@
 # Changelog
 
-## [release/2.8.3](https://github.com/NASA-PDS/pds4-jparser/tree/release/2.8.3) (2024-05-24)
+## [release/2.8.4](https://github.com/NASA-PDS/pds4-jparser/tree/release/2.8.4) (2024-05-24)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.7.1...release/2.8.3)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.7.1...release/2.8.4)
 
 ## [v2.7.1](https://github.com/NASA-PDS/pds4-jparser/tree/v2.7.1) (2023-12-13)
 
