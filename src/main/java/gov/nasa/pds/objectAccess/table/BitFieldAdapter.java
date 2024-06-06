@@ -188,22 +188,10 @@ public class BitFieldAdapter implements FieldAdapter {
     }
 
     int startByte = startBit / Byte.SIZE;
-    int stopByte = stopBit / Byte.SIZE;
 
-    if (stopByte - startByte + 1 > Long.SIZE / Byte.SIZE) {
-      String msg = "Bit field spans bytes that are wider than a long " + "("
-          + (stopByte - startByte + 1) + " > " + (Long.SIZE / Byte.SIZE) + ")";
-      LOGGER.error(msg);
-      throw new NumberFormatException(msg);
-    }
-
-    long bytesValue = getBytesAsLong(b, offset, startByte, stopByte);
-
-    // Now shift right to get rid of the extra bits.
-    int extraRightBits = (stopByte + 1) * Byte.SIZE - stopBit - 1;
-    long shiftedValue = bytesValue >> extraRightBits;
-
-    return rightmostBits(shiftedValue, stopBit - startBit + 1, isSigned);
+    // hint: startBit & Byte.SIZE-1 == startBit & Byte.Size but can be faster
+    long bytesValue = getBytesAsLong(b, offset+startByte, startBit & (Byte.SIZE-1), stopBit - startBit + 1);
+    return rightmostBits(bytesValue, stopBit - startBit + 1, isSigned);
   }
 
   // Default scope, for unit testing.
@@ -225,14 +213,16 @@ public class BitFieldAdapter implements FieldAdapter {
     return maskedValue;
   }
 
-  static long getBytesAsLong(byte[] source, int off, int startByte, int stopByte) {
-    long value = 0;
-
-    for (int i = off + startByte; i <= off + stopByte; ++i) {
-      value = (value << Byte.SIZE) | (source[i] & 0xFF);
+  static long getBytesAsLong(byte[] source, int startByte, int firstBitOffset, int numOfBits) {
+    int offset = firstBitOffset;
+    StringBuffer bitPattern = new StringBuffer();
+    for (int bit = 0 ; bit < numOfBits ; bit++) {
+      byte byt = source[startByte + (bit+firstBitOffset)/8];
+      boolean zero = (byt & (1<<(7-offset))) == 0;
+      bitPattern.append(zero ? "0" : "1");
+      offset = (offset + 1) & (Byte.SIZE-1); // modulo Byte.SIZE but quicker
     }
-
-    return value;
+    return new BigInteger(bitPattern.toString(), 2).longValue();
   }
 
   @Override
