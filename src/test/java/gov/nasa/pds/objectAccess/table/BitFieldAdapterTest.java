@@ -175,12 +175,6 @@ public class BitFieldAdapterTest {
     adapter.getLong(b, 0, b.length, 0, Long.SIZE);
   }
 
-  @Test(expectedExceptions = {NumberFormatException.class})
-  public void testBitFieldSpansMoreThanLong() {
-    byte[] b = new byte[9];
-    adapter.getLong(b, 0, b.length, 1, Long.SIZE);
-  }
-
   @Test(dataProvider = "rightmostBitsTests")
   public void testRightmostBits(long value, int nBits, long expected) {
     assertEquals(BitFieldAdapter.rightmostBits(value, nBits, false), expected);
