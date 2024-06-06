@@ -222,9 +222,9 @@ public class BitFieldAdapter implements FieldAdapter {
   static long getBytesAsLong(byte[] source, int startByte, int firstBitOffset, int numOfBits) {
     StringBuffer bitPattern = new StringBuffer();
     for (int bit = 0 ; bit < numOfBits ; bit++) {
-      byte b = source[startByte + (bit+firstBitOffset)/8];
-      int offset = (b + firstBitOffset) & (Byte.SIZE-1); // modulo Byte.SIZE but quicker
-      boolean zero = (b & (1<<offset)) == 0;
+      byte byt = source[startByte + (bit+firstBitOffset)/8];
+      int offset = (bit + firstBitOffset) & (Byte.SIZE-1); // modulo Byte.SIZE but quicker
+      boolean zero = (byt & (1<<(7-offset))) == 0;
       bitPattern.append(zero ? "0" : "1");
     }
     return new BigInteger(bitPattern.toString(), 2).longValue();
