@@ -237,7 +237,7 @@ public class BitFieldAdapterTest {
   @Test(dataProvider = "bytesAsLongTests")
   public void testGetbytesAsLong(byte[] buf, int off, int len, int startByte, int stopByte,
       long expected) {
-    assertEquals(BitFieldAdapter.getBytesAsLong(buf, off + startByte, 0, len*Byte.SIZE), expected);
+    assertEquals(BitFieldAdapter.getBytesAsLong(buf, off + startByte, 0, (stopByte - startByte + 1)*Byte.SIZE), expected);
   }
 
   @SuppressWarnings("unused")
