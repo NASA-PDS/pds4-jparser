@@ -156,6 +156,67 @@ public class ArrayObjectTest {
     array.close();
   }
 
+  @Test
+  public void test4DDouble()
+      throws IOException, InstantiationException, IllegalAccessException, URISyntaxException {
+    int[] expectedDimensions = {2, 3, 4, 5};
+    File tempFile = createDoubleArray(expectedDimensions);
+    gov.nasa.arc.pds.xml.generated.File fileObj = createFileObject(tempFile);
+    Array arrayObj = createArrayObject(Array2D.class, expectedDimensions, "IEEE754MSBDouble");
+
+    ArrayObject array = new ArrayObject(tempFile.getParentFile(), fileObj, arrayObj, 0);
+    array.open();
+
+    checkDimensions(array, expectedDimensions);
+
+    assertEquals(array.getElementSize(), Double.SIZE / Byte.SIZE);
+    assertEquals(array.getOffset(), 0);
+    assertEquals(array.getSize(), tempFile.length());
+    assertFalse(array.isImage());
+
+    // Access the array element by element.
+    int expected = 1;
+    for (int i = 0; i < 2; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        for (int k = 0; k < 4; ++k) {
+          for (int l = 0; l < 5; ++l) {
+              assertEquals(array.getDouble(i, j, k, l), (double) expected);
+              assertEquals(array.getInt(i, j, k, l), expected);
+              assertEquals(array.getLong(i, j, k, l), expected);
+
+              int[] position = {i, j, k, l};
+              assertEquals(array.getDouble(position), (double) expected);
+              assertEquals(array.getInt(position), expected);
+              assertEquals(array.getLong(position), expected);
+
+              ++expected;
+          }
+        }
+      }
+    }
+
+    // Get the entire array.
+    double[][][][] actual = array.getElements4D();
+    assertEquals(actual.length, 2);
+
+    expected = 1;
+    for (int i = 0; i < 2; ++i) {
+      assertEquals(actual[i].length, 3);
+      for (int j = 0; j < 3; ++j) {
+        assertEquals(actual[i][j].length, 4);
+        for (int k = 0; k < 4; ++k) {
+          assertEquals(actual[i][j][k].length, 5 );
+          for (int l = 0; l < 5; ++l) {
+            assertEquals(actual[i][j][k][l], (double) expected);
+            ++expected;
+          }
+        }
+      }
+    }
+
+    array.close();
+  }
+  
   @Test(dataProvider = "BadIndicesTests",
       expectedExceptions = {ArrayIndexOutOfBoundsException.class, IllegalArgumentException.class})
   public void testBadIndices(int[] position)
