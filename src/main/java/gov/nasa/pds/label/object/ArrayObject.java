@@ -236,6 +236,49 @@ public class ArrayObject extends DataObject {
   }
 
   /**
+   * Gets an element of a 4-D array, as an int.
+   *
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @param i4 the fourth index
+   * @return the element value, as an int
+   * @throws IOException
+   */
+  public int getInt(int i1, int i2, int i3, int i4) throws IOException {
+    return getInt(new int[] {i1, i2, i3, i4});
+  }
+
+  /**
+   * Gets an element of a 4-D array, as a long.
+   *
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @param i4 the fourth index
+   * @return the element value, as a long
+   * @throws IOException
+   */
+  public long getLong(int i1, int i2, int i3, int i4) throws IOException {
+    return getLong(new int[] {i1, i2, i3, i4});
+  }
+
+  /**
+   * Gets an element of a 4-D array, as a double.
+   *
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @param i4 the fourth index
+   * @return the element value, as a double
+   * @throws IOException
+   */
+  public double getDouble(int i1, int i2, int i3, int i4) throws IOException {
+    return adapter.getDouble(i1, i2, i3, i4);
+  }
+
+
+  /**
    * Gets an array element, as an int.
    *
    * @param position the indices of the element
@@ -339,6 +382,30 @@ public class ArrayObject extends DataObject {
     return values;
   }
 
+  
+  /**
+   * Gets the entire 4-D array, as doubles.
+   *
+   * @return an array of double with all array elements
+   * @throws IOException
+   */
+  public double[][][][] getElements4D() throws IOException {
+    checkDimensions(4);
+
+    double[][][][] values = new double[dimensions[0]][dimensions[1]][dimensions[2]][dimensions[3]];
+    for (int i = 0; i < dimensions[0]; ++i) {
+      for (int j = 0; j < dimensions[1]; ++j) {
+        for (int k = 0; k < dimensions[2]; ++k) {
+          for (int l = 0; l < dimensions[3]; ++l) {
+            values[i][j][k][l] = getDouble(i, j, k, l);
+          }
+        }
+      }
+    }
+
+    return values;
+  }
+  
   private void checkDimensions(int expected) {
     if (expected != dimensions.length) {
       throw new IllegalArgumentException(

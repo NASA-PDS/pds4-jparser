@@ -157,6 +157,48 @@ public class ArrayAdapter {
     return getDouble(new int[] {i1, i2, i3});
   }
 
+    /**
+   * Gets an element of a 3-D array, as an int.
+   * 
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @param i4 the fourth index
+   * @return the element value, as an int
+   * @throws IOException an exception
+   */
+  public int getInt(int i1, int i2, int i3, int i4) throws IOException {
+    return getInt(new int[] {i1, i2, i3, i4});
+  }
+
+  /**
+   * Gets an element of a 3-D array, as a long.
+   * 
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @param i4 the fourth index
+   * @return the element value, as a long
+   * @throws IOException an exception
+   */
+  public long getLong(int i1, int i2, int i3, int i4) throws IOException {
+    return getLong(new int[] {i1, i2, i3, i4});
+  }
+
+  /**
+   * Gets an element of a 3-D array, as a double.
+   * 
+   * @param i1 the first index
+   * @param i2 the second index
+   * @param i3 the third index
+   * @param i4 the fourth index
+   * @return the element value, as a double
+   * @throws IOException an exception
+   */
+  public double getDouble(int i1, int i2, int i3, int i4) throws IOException {
+    return getDouble(new int[] {i1, i2, i3, i4});
+  }
+  
   /**
    * Gets an array element, as an int.
    * 
