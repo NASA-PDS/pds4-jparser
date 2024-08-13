@@ -1,5 +1,13 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2024-08-13)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.8.4...«unknown»)
+
+**Requirements:**
+
+- As a user, I want to read 4D arrays [\#142](https://github.com/NASA-PDS/pds4-jparser/issues/142)
+
 ## [v2.8.4](https://github.com/NASA-PDS/pds4-jparser/tree/v2.8.4) (2024-05-24)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v2.7.1...v2.8.4)
