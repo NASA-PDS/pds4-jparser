@@ -364,7 +364,7 @@
     <dependency>
       <groupId>gov.nasa.pds</groupId>
       <artifactId>opencsv</artifactId>
-      <version>5.4-SNAPSHOT</version>
+      <version>5.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>gov.nasa.gsfc.heasarc</groupId>
