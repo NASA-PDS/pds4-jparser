@@ -42,13 +42,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
@@ -104,6 +97,13 @@ import gov.nasa.arc.pds.xml.generated.TableDelimited;
 import gov.nasa.pds.label.jaxb.PDSXMLEventReader;
 import gov.nasa.pds.label.jaxb.XMLLabelContext;
 import gov.nasa.pds.objectAccess.utility.Utility;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The <code>ObjectAccess</code> class is a point of entry into parsed PDS (including PDS
