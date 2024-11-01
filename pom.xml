@@ -412,7 +412,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- PDS4 schema version -->
     <model-version>1K00</model-version>
-    <pds3-product-tools.version>4.4.0</pds3-product-tools.version>
+    <pds3-product-tools.version>4.4.1</pds3-product-tools.version>
     <maven.antrun.version>3.1.0</maven.antrun.version>
   </properties>
   
