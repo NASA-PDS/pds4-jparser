@@ -31,7 +31,7 @@
           <ul class="breadcrumb">
         <li id="publishDate">$i18n.getString( "site-renderer", $locale, "template.lastpublished" ): $dateValue<span class="divider">|</span>
 </li>
-          <li id="projectVersion">$i18n.getString( "site-renderer", $locale, "template.version" ): 2.9.0</li>
+          <li id="projectVersion">$i18n.getString( "site-renderer", $locale, "template.version" ): 2.10.1</li>
       <li class="pull-right"><a href="https://github.com/NASA-PDS/pds4-jparser" class="externalLink" title="PDS4 JParser Github Repo">PDS4 JParser Github Repo</a></li>
           </ul>
         </div>
@@ -46,11 +46,11 @@
     <li><a href="../develop/index.html" title="Development"><span class="none"></span>Development</a></li>
     <li><a href="../operate/index.html" title="Operation"><span class="none"></span>Operation</a></li>
    <li class="nav-header">Downloads</li>
-    <li><a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/v2.9.0/pds4-jparser-2.9.0-bin.tar.gz" class="externalLink" title="Current Release (tar.gz)"><span class="none"></span>Current Release (tar.gz)</a></li>
-    <li><a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/v2.9.0/pds4-jparser-2.9.0-bin.zip" class="externalLink" title="Current Release (zip)"><span class="none"></span>Current Release (zip)</a></li>
+    <li><a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/v2.10.1/pds4-jparser-2.10.1-bin.tar.gz" class="externalLink" title="Current Release (tar.gz)"><span class="none"></span>Current Release (tar.gz)</a></li>
+    <li><a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/v2.10.1/pds4-jparser-2.10.1-bin.zip" class="externalLink" title="Current Release (zip)"><span class="none"></span>Current Release (zip)</a></li>
     <li><a href="https://pds-engineering.jpl.nasa.gov/development/pds4/current/release/rdd.html" class="externalLink" title="Past Releases"><span class="none"></span>Past Releases</a></li>
    <li class="nav-header">Change Log</li>
-    <li><a href="https://github.com/NASA-PDS/pds4-jparser/blob/v2.9.0/CHANGELOG.md#v2.9.0" class="externalLink" title="Since v1.0.1"><span class="none"></span>Since v1.0.1</a></li>
+    <li><a href="https://github.com/NASA-PDS/pds4-jparser/blob/v2.10.1/CHANGELOG.md#v2.10.1" class="externalLink" title="Since v1.0.1"><span class="none"></span>Since v1.0.1</a></li>
     <li><a href="../changes-report.html" title="Prior to v1.0.1"><span class="none"></span>Prior to v1.0.1</a></li>
    <li class="nav-header">Project Documentation</li>
     <li><a href="../project-info.html" title="Project Information"><span class="icon-chevron-right"></span>Project Information</a></li>
@@ -110,14 +110,14 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.101-b13, mixed mode)
     <section><a id="Unpacking_the_Package"></a>
 <h1>Unpacking the Package</h1>
       
-<p>Download the <i>pds4-jparser</i> package from Github (<a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/2.9.0/pds4-jparser-2.9.0.zip" target="_blank" class="externalLink">ZIP</a> <a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/2.9.0/pds4-jparser-2.9.0.tar.gz" target="_blank" class="externalLink">TAR.GZ</a>). The binary distribution is available in identical zip or tar/gzip packages. The installation directory may vary from environment to environment but in UNIX-based environments it is typical to install software packages in the <i>/usr/local</i> directory and in Windows-based environments it is typical to install software packages in the <i>C:\Program Files</i> directory. Unpack the selected binary distribution file with one of the following commands:
+<p>Download the <i>pds4-jparser</i> package from Github (<a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/2.10.1/pds4-jparser-2.10.1.zip" target="_blank" class="externalLink">ZIP</a> <a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/2.10.1/pds4-jparser-2.10.1.tar.gz" target="_blank" class="externalLink">TAR.GZ</a>). The binary distribution is available in identical zip or tar/gzip packages. The installation directory may vary from environment to environment but in UNIX-based environments it is typical to install software packages in the <i>/usr/local</i> directory and in Windows-based environments it is typical to install software packages in the <i>C:\Program Files</i> directory. Unpack the selected binary distribution file with one of the following commands:
       </p>
 
       
 <pre><code>
-% unzip pds4-jparser-2.9.0.zip
+% unzip pds4-jparser-2.10.1.zip
 or
-% tar -xzvf pds4-jparser-2.9.0.tar.gz
+% tar -xzvf pds4-jparser-2.10.1.tar.gz
       </code></pre>
 
       
@@ -125,7 +125,7 @@ or
       </p>
 
       
-<p>The commands above result in the creation of the <i>pds4-jparser-2.9.0</i> directory with the following directory structure:
+<p>The commands above result in the creation of the <i>pds4-jparser-2.10.1</i> directory with the following directory structure:
       </p>
 
       
@@ -187,7 +187,7 @@ or
         
         
 <pre><code>
-% export PATH=${PATH}:/usr/local/pds4-jparser-2.9.0/bin
+% export PATH=${PATH}:/usr/local/pds4-jparser-2.10.1/bin
         </code></pre>
         
         
@@ -216,7 +216,7 @@ or
         
         
 <pre><code>
-C:\&gt; set PATH = %PATH%;C:\Program Files\pds4-jparser-2.9.0\bin
+C:\&gt; set PATH = %PATH%;C:\Program Files\pds4-jparser-2.10.1\bin
         </code></pre>
         
         
@@ -246,7 +246,7 @@ PARENT_DIR=`cd ${SCRIPT_DIR}/.. &amp;&amp; pwd`
 
 should be replaced with:
 
-PARENT_DIR=/usr/local/pds4-jparser-2.9.0
+PARENT_DIR=/usr/local/pds4-jparser-2.10.1
         </code></pre>
         
         
@@ -260,7 +260,7 @@ set PARENT_DIR=%SCRIPT_DIR%..
 
 should be replaced with:
 
-set PARENT_DIR=C:\Program Files\pds4-jparser-2.9.0
+set PARENT_DIR=C:\Program Files\pds4-jparser-2.10.1
         </code></pre>
       </section>
       <section><a id="Verifying_the_Installation"></a>
