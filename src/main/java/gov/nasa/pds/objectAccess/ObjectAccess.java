@@ -113,6 +113,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  */
 public class ObjectAccess implements ObjectProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(ObjectAccess.class);
+  private static JAXBContext context = null;
   private String archiveRoot;
   private URL root;
   private final XMLInputFactory xif = XMLInputFactory.newInstance();
@@ -173,14 +174,21 @@ public class ObjectAccess implements ObjectProvider {
     this.labelContext = new XMLLabelContext();
   }
 
-  private JAXBContext getJAXBContext(String pkgName) throws JAXBException {
+  private static JAXBContext getJAXBContext(String pkgName) throws JAXBException {
     ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
     if (!(currentLoader instanceof WorkaroundClassLoader)) {
       ClassLoader loader = new WorkaroundClassLoader(
-          currentLoader != null ? currentLoader : getClass().getClassLoader());
+          currentLoader != null ? currentLoader : ObjectAccess.class.getClassLoader());
       Thread.currentThread().setContextClassLoader(loader);
     }
     return JAXBContext.newInstance(pkgName);
+  }
+
+  private static JAXBContext fetchJAXBContext() throws JAXBException {
+    if (context == null) {
+      context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
+    }
+    return context;
   }
 
   @Override
@@ -196,8 +204,8 @@ public class ObjectAccess implements ObjectProvider {
   @Override
   public <T> T getProduct(URL label, Class<T> productClass) throws ParseException {
     try {
-      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
-      Unmarshaller u = context.createUnmarshaller();
+
+      Unmarshaller u = fetchJAXBContext().createUnmarshaller();
       u.setEventHandler(new LenientEventHandler());
       return productClass.cast(u.unmarshal(Utility.openConnection(label)));
     } catch (JAXBException je) {
@@ -215,8 +223,7 @@ public class ObjectAccess implements ObjectProvider {
   public ProductObservational getObservationalProduct(String relativeXmlFilePath) {
     InputStream in = null;
     try {
-      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
-      Unmarshaller u = context.createUnmarshaller();
+      Unmarshaller u = fetchJAXBContext().createUnmarshaller();
       u.setEventHandler(new LenientEventHandler());
       URL url = new URL(getRoot(), relativeXmlFilePath);
       in = url.openStream();
@@ -271,8 +278,7 @@ public class ObjectAccess implements ObjectProvider {
   public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product,
       XMLLabelContext labelContext) throws Exception {
     try {
-      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
-      Marshaller m = context.createMarshaller();
+      Marshaller m = fetchJAXBContext().createMarshaller();
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       if (labelContext != null) {
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper", labelContext.getNamespaces());
