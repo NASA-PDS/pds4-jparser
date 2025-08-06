@@ -113,7 +113,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  */
 public class ObjectAccess implements ObjectProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(ObjectAccess.class);
-  private static final JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
+  private static final String JAXB_CONTEXT_PACKAGE = "gov.nasa.arc.pds.xml.generated";
+  private static final JAXBContext context = getJAXBContext(JAXB_CONTEXT_PACKAGE);
   private String archiveRoot;
   private URL root;
   private final XMLInputFactory xif = XMLInputFactory.newInstance();
@@ -220,7 +221,7 @@ public class ObjectAccess implements ObjectProvider {
   public ProductObservational getObservationalProduct(String relativeXmlFilePath) {
     InputStream in = null;
     try {
-      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
+      JAXBContext context = getJAXBContext(JAXB_CONTEXT_PACKAGE);
       Unmarshaller u = context.createUnmarshaller();
       u.setEventHandler(new LenientEventHandler());
       URL url = new URL(getRoot(), relativeXmlFilePath);
@@ -276,7 +277,7 @@ public class ObjectAccess implements ObjectProvider {
   public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product,
       XMLLabelContext labelContext) throws Exception {
     try {
-      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
+      JAXBContext context = getJAXBContext(JAXB_CONTEXT_PACKAGE);
       Marshaller m = context.createMarshaller();
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       if (labelContext != null) {
