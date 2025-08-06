@@ -221,7 +221,7 @@ public class ObjectAccess implements ObjectProvider {
   public ProductObservational getObservationalProduct(String relativeXmlFilePath) {
     InputStream in = null;
     try {
-      JAXBContext context = getJAXBContext(JAXB_CONTEXT_PACKAGE);
+      JAXBContext localContext = getJAXBContext(JAXB_CONTEXT_PACKAGE);
       Unmarshaller u = context.createUnmarshaller();
       u.setEventHandler(new LenientEventHandler());
       URL url = new URL(getRoot(), relativeXmlFilePath);
@@ -277,8 +277,8 @@ public class ObjectAccess implements ObjectProvider {
   public void setObservationalProduct(String relativeXmlFilePath, ProductObservational product,
       XMLLabelContext labelContext) throws Exception {
     try {
-      JAXBContext context = getJAXBContext(JAXB_CONTEXT_PACKAGE);
-      Marshaller m = context.createMarshaller();
+      JAXBContext localContext = getJAXBContext(JAXB_CONTEXT_PACKAGE);
+      Marshaller m = localContext.createMarshaller();
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       if (labelContext != null) {
         m.setProperty("com.sun.xml.bind.namespacePrefixMapper", labelContext.getNamespaces());
