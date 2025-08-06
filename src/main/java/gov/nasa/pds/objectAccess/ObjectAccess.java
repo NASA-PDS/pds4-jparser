@@ -113,6 +113,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  */
 public class ObjectAccess implements ObjectProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(ObjectAccess.class);
+  private static final JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
   private String archiveRoot;
   private URL root;
   private final XMLInputFactory xif = XMLInputFactory.newInstance();
@@ -173,14 +174,18 @@ public class ObjectAccess implements ObjectProvider {
     this.labelContext = new XMLLabelContext();
   }
 
-  private JAXBContext getJAXBContext(String pkgName) throws JAXBException {
+  private static JAXBContext getJAXBContext(String pkgName)  {
     ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
     if (!(currentLoader instanceof WorkaroundClassLoader)) {
       ClassLoader loader = new WorkaroundClassLoader(
-          currentLoader != null ? currentLoader : getClass().getClassLoader());
+          currentLoader != null ? currentLoader : ObjectAccess.class.getClassLoader());
       Thread.currentThread().setContextClassLoader(loader);
     }
-    return JAXBContext.newInstance(pkgName);
+    try {
+      return JAXBContext.newInstance(pkgName);
+    } catch (JAXBException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -196,7 +201,7 @@ public class ObjectAccess implements ObjectProvider {
   @Override
   public <T> T getProduct(URL label, Class<T> productClass) throws ParseException {
     try {
-      JAXBContext context = getJAXBContext("gov.nasa.arc.pds.xml.generated");
+
       Unmarshaller u = context.createUnmarshaller();
       u.setEventHandler(new LenientEventHandler());
       return productClass.cast(u.unmarshal(Utility.openConnection(label)));
