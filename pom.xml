@@ -239,6 +239,12 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+    <!-- software-issues-repo#141: local repostory for problematic jars -->
+    <repository>
+      <id>project.local</id>
+      <name>project</name>
+      <url>file:${project.basedir}/repo</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -364,7 +370,7 @@
     <dependency>
       <groupId>gov.nasa.pds</groupId>
       <artifactId>opencsv</artifactId>
-      <version>5.5-SNAPSHOT</version>
+      <version>5.5</version>
     </dependency>
     <dependency>
       <groupId>gov.nasa.gsfc.heasarc</groupId>
@@ -375,7 +381,7 @@
     <dependency>
       <groupId>gov.nasa.pds</groupId>
       <artifactId>vicario</artifactId>
-      <version>48.0.3-SNAPSHOT</version>
+      <version>48.0.3</version>
       <scope>compile</scope>
     </dependency>
 

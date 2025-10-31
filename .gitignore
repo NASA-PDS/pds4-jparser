@@ -52,6 +52,10 @@
 # Sublime Text files
 *.sublime-workspace
 
+# Cursor/VSCode files
+.cursor/
+.vscode/
+
 # Shared objects (inc. Windows DLLs)
 *.dll
 *.so
