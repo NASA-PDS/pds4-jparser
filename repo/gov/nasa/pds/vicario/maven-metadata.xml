@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>gov.nasa.pds</groupId>
+  <artifactId>vicario</artifactId>
+  <versioning>
+    <release>48.0.3</release>
+    <versions>
+      <version>48.0.3</version>
+    </versions>
+    <lastUpdated>20251031200912</lastUpdated>
+  </versioning>
+</metadata>
