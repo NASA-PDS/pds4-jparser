@@ -80,6 +80,7 @@
 *.javac
 .gwt/
 target/
+dependency-reduced-pom.xml
 
 # macOS specific stuff
 .DS_Store
