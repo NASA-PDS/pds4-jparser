@@ -31,7 +31,7 @@
           <ul class="breadcrumb">
         <li id="publishDate">$i18n.getString( "site-renderer", $locale, "template.lastpublished" ): $dateValue<span class="divider">|</span>
 </li>
-          <li id="projectVersion">$i18n.getString( "site-renderer", $locale, "template.version" ): 2.11.0</li>
+          <li id="projectVersion">$i18n.getString( "site-renderer", $locale, "template.version" ): 2.12.0</li>
       <li class="pull-right"><a href="https://github.com/NASA-PDS/pds4-jparser" class="externalLink" title="PDS4 JParser Github Repo">PDS4 JParser Github Repo</a></li>
           </ul>
         </div>
@@ -46,11 +46,11 @@
     <li><a href="../develop/index.html" title="Development"><span class="none"></span>Development</a></li>
     <li><a href="../operate/index.html" title="Operation"><span class="none"></span>Operation</a></li>
    <li class="nav-header">Downloads</li>
-    <li><a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/v2.11.0/pds4-jparser-2.11.0-bin.tar.gz" class="externalLink" title="Current Release (tar.gz)"><span class="none"></span>Current Release (tar.gz)</a></li>
-    <li><a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/v2.11.0/pds4-jparser-2.11.0-bin.zip" class="externalLink" title="Current Release (zip)"><span class="none"></span>Current Release (zip)</a></li>
+    <li><a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/v2.12.0/pds4-jparser-2.12.0-bin.tar.gz" class="externalLink" title="Current Release (tar.gz)"><span class="none"></span>Current Release (tar.gz)</a></li>
+    <li><a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/v2.12.0/pds4-jparser-2.12.0-bin.zip" class="externalLink" title="Current Release (zip)"><span class="none"></span>Current Release (zip)</a></li>
     <li><a href="https://pds-engineering.jpl.nasa.gov/development/pds4/current/release/rdd.html" class="externalLink" title="Past Releases"><span class="none"></span>Past Releases</a></li>
    <li class="nav-header">Change Log</li>
-    <li><a href="https://github.com/NASA-PDS/pds4-jparser/blob/v2.11.0/CHANGELOG.md#v2.11.0" class="externalLink" title="Since v1.0.1"><span class="none"></span>Since v1.0.1</a></li>
+    <li><a href="https://github.com/NASA-PDS/pds4-jparser/blob/v2.12.0/CHANGELOG.md#v2.12.0" class="externalLink" title="Since v1.0.1"><span class="none"></span>Since v1.0.1</a></li>
     <li><a href="../changes-report.html" title="Prior to v1.0.1"><span class="none"></span>Prior to v1.0.1</a></li>
    <li class="nav-header">Project Documentation</li>
     <li><a href="../project-info.html" title="Project Information"><span class="icon-chevron-right"></span>Project Information</a></li>
@@ -88,7 +88,7 @@
     <section>
 <h1>System Requirements</h1>
       
-<p>The PDS4 Tools software was developed using Java and will run on any platform with a supported Java Runtime Environment (JRE). The software was specifically compiled for and tested in Java version 1.8. The following commands test the local Java installation in a UNIX-based environment:
+<p>The PDS4 Tools software was developed using Java and will run on any platform with a supported Java Runtime Environment (JRE). The software requires Java version 17 or higher. The following commands test the local Java installation in a UNIX-based environment:
       </p>
 
         
@@ -98,28 +98,28 @@
 /usr/bin/java
 
 % java -version
-java version &quot;1.8.0_101&quot;
-Java(TM) SE Runtime Environment (build 1.8.0_101-b13)
-Java HotSpot(TM) 64-Bit Server VM (build 25.101-b13, mixed mode)
+openjdk version &quot;17.0.16&quot; 2025-07-15
+OpenJDK Runtime Environment (build 17.0.16+0)
+OpenJDK 64-Bit Server VM (build 17.0.16+0, mixed mode, sharing)
         </pre></div>
 
         
-<p>The first command above checks whether the <i>java</i> executable is in the environment's path and the second command reports the version. If Java is not installed or the version is not at least 1.8, Java will need to be downloaded and installed in the current environment. Consult the local system administrator for installation of this software. For the do-it-yourself crowd, the Java software can be downloaded from the <a href="http://www.oracle.com/technetwork/java/javase/downloads/" target="_blank" class="externalLink">Oracle Java Download</a> page. The suggested software package is the Java Standard Edition (SE) 8, either the JDK or the JRE package. The JDK package is not necessary to run the software but could be useful if development and compilation of Java software will also occur in the current environment.
+<p>The first command above checks whether the <i>java</i> executable is in the environment's path and the second command reports the version. If Java is not installed or the version is not at least 17, Java will need to be downloaded and installed in the current environment. Consult the local system administrator for installation of this software. For the do-it-yourself crowd, the Java software can be downloaded from the <a href="https://adoptium.net/" target="_blank" class="externalLink">Eclipse Adoptium</a> page or the <a href="https://www.oracle.com/java/technologies/downloads/" target="_blank" class="externalLink">Oracle Java Download</a> page. The suggested software package is the Java Standard Edition (SE) 17 or higher, either the JDK or the JRE package. The JDK package is not necessary to run the software but could be useful if development and compilation of Java software will also occur in the current environment.
         </p>
     </section>
 
     <section>
 <h1>Unpacking the Package</h1>
       
-<p>Download the <i>pds4-jparser</i> package from Github (<a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/2.11.0/pds4-jparser-2.11.0.zip" target="_blank" class="externalLink">ZIP</a> <a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/2.11.0/pds4-jparser-2.11.0.tar.gz" target="_blank" class="externalLink">TAR.GZ</a>). The binary distribution is available in identical zip or tar/gzip packages. The installation directory may vary from environment to environment but in UNIX-based environments it is typical to install software packages in the <i>/usr/local</i> directory and in Windows-based environments it is typical to install software packages in the <i>C:\Program Files</i> directory. Unpack the selected binary distribution file with one of the following commands:
+<p>Download the <i>pds4-jparser</i> package from Github (<a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/2.12.0/pds4-jparser-2.12.0.zip" target="_blank" class="externalLink">ZIP</a> <a href="https://github.com/NASA-PDS/pds4-jparser/releases/download/2.12.0/pds4-jparser-2.12.0.tar.gz" target="_blank" class="externalLink">TAR.GZ</a>). The binary distribution is available in identical zip or tar/gzip packages. The installation directory may vary from environment to environment but in UNIX-based environments it is typical to install software packages in the <i>/usr/local</i> directory and in Windows-based environments it is typical to install software packages in the <i>C:\Program Files</i> directory. Unpack the selected binary distribution file with one of the following commands:
       </p>
 
       
 <div class="verbatim source">
 <pre>
-% unzip pds4-jparser-2.11.0.zip
+% unzip pds4-jparser-2.12.0.zip
 or
-% tar -xzvf pds4-jparser-2.11.0.tar.gz
+% tar -xzvf pds4-jparser-2.12.0.tar.gz
       </pre></div>
 
       
@@ -127,7 +127,7 @@ or
       </p>
 
       
-<p>The commands above result in the creation of the <i>pds4-jparser-2.11.0</i> directory with the following directory structure:
+<p>The commands above result in the creation of the <i>pds4-jparser-2.12.0</i> directory with the following directory structure:
       </p>
 
       
@@ -190,7 +190,7 @@ or
         
 <div class="verbatim source">
 <pre>
-% export PATH=${PATH}:/usr/local/pds4-jparser-2.11.0/bin
+% export PATH=${PATH}:/usr/local/pds4-jparser-2.12.0/bin
         </pre></div>
         
         
@@ -221,7 +221,7 @@ or
         
 <div class="verbatim source">
 <pre>
-C:\&gt; set PATH = %PATH%;C:\Program Files\pds4-jparser-2.11.0\bin
+C:\&gt; set PATH = %PATH%;C:\Program Files\pds4-jparser-2.12.0\bin
         </pre></div>
         
         
@@ -253,7 +253,7 @@ PARENT_DIR=`cd ${SCRIPT_DIR}/.. &amp;&amp; pwd`
 
 should be replaced with:
 
-PARENT_DIR=/usr/local/pds4-jparser-2.11.0
+PARENT_DIR=/usr/local/pds4-jparser-2.12.0
         </pre></div>
         
         
@@ -268,7 +268,7 @@ set PARENT_DIR=%SCRIPT_DIR%..
 
 should be replaced with:
 
-set PARENT_DIR=C:\Program Files\pds4-jparser-2.11.0
+set PARENT_DIR=C:\Program Files\pds4-jparser-2.12.0
         </pre></div>
       </section>
       <section>
