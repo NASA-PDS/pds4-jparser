@@ -32,7 +32,7 @@ package gov.nasa.pds.objectAccess.table;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 /**
  * Defines a set of field and record delimiters for a table. Indicates the type string that will be
