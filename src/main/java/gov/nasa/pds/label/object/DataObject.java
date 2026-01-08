@@ -46,6 +46,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -181,9 +182,16 @@ public abstract class DataObject {
     URL u = getDataFile();
     long datasize = getDataSize(u);
     try {
-      channel = createChannel(u, offset, datasize);
+      if ("file".equalsIgnoreCase(u.getProtocol())) {
+        channel = Files.newByteChannel(Paths.get(u.toURI()), StandardOpenOption.READ);
+        channel.position(offset);
+      } else {
+        channel = createChannel(u, offset, datasize);
+      }
     } catch (IOException io) {
       throw new IOException("Error reading data file '" + u.toString() + "': " + io.getMessage());
+    } catch (URISyntaxException use) {
+      throw new IOException("Error could not translaate '" + u.toString() + "' to a valid file path: " + use.getMessage());
     }
     return channel;
   }
