@@ -1,8 +1,16 @@
 # Changelog
 
-## [release/3.0.1](https://github.com/NASA-PDS/pds4-jparser/tree/release/3.0.1) (2025-11-03)
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2026-01-10)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.0.0...release/3.0.1)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.0.1...«unknown»)
+
+**Other closed issues:**
+
+- Upgrade to Java 17+ per downstream validate dependency upgrades [\#180](https://github.com/NASA-PDS/pds4-jparser/issues/180)
+
+## [v3.0.1](https://github.com/NASA-PDS/pds4-jparser/tree/v3.0.1) (2025-11-03)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.0.0...v3.0.1)
 
 ## [v3.0.0](https://github.com/NASA-PDS/pds4-jparser/tree/v3.0.0) (2025-11-03)
 
