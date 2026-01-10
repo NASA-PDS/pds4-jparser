@@ -40,12 +40,14 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -57,6 +59,52 @@ import gov.nasa.pds.objectAccess.utility.Utility;
  * Defines a base type for objects within a label.
  */
 public abstract class DataObject {
+  private class CappedSeekable implements SeekableByteChannel {
+    private final long cap;
+    private final long offset;
+    private final SeekableByteChannel parent;
+    CappedSeekable (SeekableByteChannel parent, long offset, long cap) throws IOException {
+      this.cap = cap;
+      this.offset = offset;
+      this.parent = parent;
+      this.parent.position(this.offset);
+    }
+    @Override
+    public void close() throws IOException {
+      this.parent.close();
+    }
+    @Override
+    public boolean isOpen() {
+      return this.parent.isOpen();
+    }
+    @Override
+    public long position() throws IOException {
+      return this.parent.position() - this.offset;
+    }
+    @Override
+    public SeekableByteChannel position(long newPosition) throws IOException {
+      this.parent.position(newPosition + offset);
+      return this;
+    }
+    @Override
+    public int read(ByteBuffer dst) throws IOException {
+      dst.limit((int)(this.cap - this.position()));
+      return this.parent.read(dst);
+    }
+    @Override
+    public long size() throws IOException {
+      return this.cap;
+    }
+    @Override
+    public SeekableByteChannel truncate(long size) throws IOException {
+      this.parent.truncate(size + offset);
+      return this;
+    }
+    @Override
+    public int write(ByteBuffer src) throws IOException {
+      return this.parent.write(src);
+    }
+  }
 
   protected URL parentDir;
   protected gov.nasa.arc.pds.xml.generated.File fileObject;
@@ -181,9 +229,15 @@ public abstract class DataObject {
     URL u = getDataFile();
     long datasize = getDataSize(u);
     try {
-      channel = createChannel(u, offset, datasize);
+      if ("file".equalsIgnoreCase(u.getProtocol())) {
+        channel = new CappedSeekable(Files.newByteChannel(Paths.get(u.toURI()), StandardOpenOption.READ), offset, datasize);
+      } else {
+        channel = createChannel(u, offset, datasize);
+      }
     } catch (IOException io) {
       throw new IOException("Error reading data file '" + u.toString() + "': " + io.getMessage());
+    } catch (URISyntaxException use) {
+      throw new IOException("Error could not translaate '" + u.toString() + "' to a valid file path: " + use.getMessage());
     }
     return channel;
   }
