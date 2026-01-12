@@ -88,7 +88,8 @@ public abstract class DataObject {
     }
     @Override
     public int read(ByteBuffer dst) throws IOException {
-      dst.limit((int)(this.cap - this.position()));
+      long remaining =this.cap - this.position(); 
+      dst.limit(dst.limit() < remaining ? dst.limit() : (int)remaining);
       return this.parent.read(dst);
     }
     @Override
