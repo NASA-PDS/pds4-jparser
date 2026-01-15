@@ -460,7 +460,7 @@
     <!-- PDS4 schema version -->
     <model-version>1K00</model-version>
     <pds3-product-tools.version>4.4.2</pds3-product-tools.version>
-    <maven.antrun.version>3.1.0</maven.antrun.version>
+    <maven.antrun.version>3.2.0</maven.antrun.version>
   </properties>
   
   <developers />
