@@ -33,6 +33,7 @@ package gov.nasa.pds.objectAccess.utility;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -40,6 +41,8 @@ import java.net.URLConnection;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import gov.nasa.pds.objectAccess.InvalidTableException;
 
@@ -50,6 +53,8 @@ import gov.nasa.pds.objectAccess.InvalidTableException;
  *
  */
 public class Utility {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
 
   // Implementation is needed since pds.nasa.gov currently uses SNI
   // which is not supported in Java 6, but is supported in Java 7.
@@ -67,7 +72,27 @@ public class Utility {
   }
 
   /**
-   * Method that opens a connection. Supports redirects.
+   * Converts an HTTP URL to HTTPS to ensure secure connections. When converting, if the HTTP URL
+   * uses the default HTTP port (80), the resulting HTTPS URL will use the default HTTPS port (443).
+   * Custom ports are preserved.
+   *
+   * @param url The URL to convert.
+   * @return The HTTPS URL if the input was HTTP, otherwise the original URL.
+   * @throws MalformedURLException If the URL conversion fails.
+   */
+  public static URL toHttpsUrl(URL url) throws MalformedURLException {
+    if ("http".equalsIgnoreCase(url.getProtocol())) {
+      // Use -1 (default port) when the HTTP URL uses the default HTTP port (80),
+      // so that HTTPS uses its default port (443) instead.
+      int port = (url.getPort() == 80 || url.getPort() == -1) ? -1 : url.getPort();
+      return new URL("https", url.getHost(), port, url.getFile());
+    }
+    return url;
+  }
+
+  /**
+   * Method that opens a connection. Supports redirects. HTTP connections are upgraded to HTTPS to
+   * ensure secure communications (CWE-311).
    *
    * @param conn URL Connection
    *
@@ -78,6 +103,15 @@ public class Utility {
     boolean redir;
     int redirects = 0;
     InputStream in = null;
+    // Upgrade HTTP to HTTPS for secure connections
+    if ("http".equalsIgnoreCase(conn.getURL().getProtocol())) {
+      LOGGER.warn("Upgrading insecure HTTP connection to HTTPS: {}", conn.getURL());
+      try {
+        conn = toHttpsUrl(conn.getURL()).openConnection();
+      } catch (MalformedURLException e) {
+        throw new IOException("Failed to upgrade HTTP connection to HTTPS: " + e.getMessage(), e);
+      }
+    }
     do {
       if (conn instanceof HttpURLConnection) {
         ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
@@ -119,7 +153,7 @@ public class Utility {
             throw new SecurityException("illegal URL redirect");
           }
           redir = true;
-          conn = target.openConnection();
+          conn = toHttpsUrl(target).openConnection();
           redirects++;
         }
       }
