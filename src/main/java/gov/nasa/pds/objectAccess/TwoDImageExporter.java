@@ -30,15 +30,25 @@
 
 package gov.nasa.pds.objectAccess;
 
+import java.math.BigInteger;
 import java.awt.geom.AffineTransform;
+import java.math.BigInteger;
 import java.awt.image.AffineTransformOp;
+import java.math.BigInteger;
 import java.awt.image.BufferedImage;
+import java.math.BigInteger;
 import java.awt.image.ColorModel;
+import java.math.BigInteger;
 import java.awt.image.DataBuffer;
+import java.math.BigInteger;
 import java.awt.image.IndexColorModel;
+import java.math.BigInteger;
 import java.awt.image.PixelInterleavedSampleModel;
+import java.math.BigInteger;
 import java.awt.image.SampleModel;
+import java.math.BigInteger;
 import java.awt.image.WritableRaster;
+import java.math.BigInteger;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -152,7 +162,7 @@ public class TwoDImageExporter extends ImageExporter implements Exporter<Array2D
     if (array2DImage.getAxes() == 2) {
       for (AxisArray axis : array2DImage.getAxisArraies()) {
         // TODO axis ordering -- how does axis order related to index order?
-        if (axis.getSequenceNumber().intValueExact() == 2) {
+        if (BigInteger.valueOf(2).equals(axis.getSequenceNumber())) {
           samples = axis.getElements().intValueExact();
         } else {
           lines = axis.getElements().intValueExact();
@@ -568,7 +578,7 @@ public class TwoDImageExporter extends ImageExporter implements Exporter<Array2D
       if (pdsImage.getAxes() == 2) {
         for (AxisArray axis : pdsImage.getAxisArraies()) {
           // TODO axis ordering -- how does axis order related to index order?
-          if (axis.getSequenceNumber().intValueExact() == 2) {
+          if (BigInteger.valueOf(2).equals(axis.getSequenceNumber())) {
             cols = axis.getElements().intValueExact();
           } else {
             rows = axis.getElements().intValueExact();
