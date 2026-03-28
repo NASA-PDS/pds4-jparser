@@ -458,7 +458,7 @@
     <!-- Java version -->
     <maven.compiler.release>17</maven.compiler.release>
     <!-- PDS4 schema version -->
-    <model-version>1M00</model-version>
+    <model-version>1L00</model-version>
     <pds3-product-tools.version>4.4.2</pds3-product-tools.version>
     <maven.antrun.version>3.1.0</maven.antrun.version>
   </properties>
