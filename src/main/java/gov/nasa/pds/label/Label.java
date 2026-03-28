@@ -72,6 +72,7 @@ import gov.nasa.arc.pds.xml.generated.ProductFileText;
 import gov.nasa.arc.pds.xml.generated.ProductMetadataSupplemental;
 import gov.nasa.arc.pds.xml.generated.ProductNative;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
+import gov.nasa.arc.pds.xml.generated.ProductResource;
 import gov.nasa.arc.pds.xml.generated.ProductSIP;
 import gov.nasa.arc.pds.xml.generated.ProductSIPDeepArchive;
 import gov.nasa.arc.pds.xml.generated.ProductSPICEKernel;
@@ -277,6 +278,8 @@ public class Label {
       return getDataObjects((ProductSIPDeepArchive) product);
     } else if (product instanceof ProductSPICEKernel) {
       return getDataObjects((ProductSPICEKernel) product);
+    } else if (product instanceof ProductResource) {
+      return getDataObjects((ProductResource) product);
     } else if (product instanceof ProductService) {
       return getDataObjects((ProductService) product);
     } else if (product instanceof ProductThumbnail) {
@@ -322,7 +325,7 @@ public class Label {
     int dataObjectIndex = 0;
     for (FileAreaAncillary fileArea : product.getFileAreaAncillaries()) {
       fileAreaIndex++;
-      for (ByteStream bs : fileArea.getArraiesAndArray1DsAndArray2Ds()) {
+      for (ByteStream bs : fileArea.getArraiesAndArray1DsAndArray1DSpectra()) {
         addObject(objects, fileArea.getFile(), bs,
             new DataObjectLocation(fileAreaIndex, ++dataObjectIndex));
       }
@@ -491,6 +494,21 @@ public class Label {
     }
 
     return objects;
+  }
+
+  /**
+   * Extract data objects from Product_Resource label.
+   *
+   * <p>Product_Resource has no File_Area children in the PDS4 IM schema (it contains only
+   * Archive_Resource and an optional Reference_List), so this method returns an empty list.
+   * It is present so that JAXB can unmarshal Product_Resource labels without throwing an
+   * UnmarshalException.
+   *
+   * @param product Product_Resource label
+   * @return an empty list (no binary/table data objects)
+   */
+  private List<DataObject> getDataObjects(ProductResource product) {
+    return new ArrayList<>();
   }
 
   /**

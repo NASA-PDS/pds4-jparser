@@ -47,6 +47,7 @@
       <ul>
         <li><a href="#API Entry Points">API Entry Points</a></li>
         <li><a href="#Logging">Logging</a></li>
+        <li><a href="#Upgrading the PDS4 Information Model Version">Upgrading the PDS4 Information Model Version</a></li>
       </ul>
     </section>
        
@@ -58,14 +59,123 @@
     <section name="Logging">
       <p>The PDS4 Tools library can be configured to write log messages to a log file, if desired. It uses the logging library SLF4J. Two JAR files are needed to configure SLF4J:
       </p>
-      
+
       <ul>
         <li>slf4j-api-n.n.n.jar - The SLF4J API library. Here, n.n.n means the SLF4J version number used.</li>
         <li>An SLF4J implementation library. There are multiple implementations which use various lower-level logging libraries. The one used in this toolkit is slf4j-jdk14-n.n.n.jar, the library that binds SLF4J with java.util.logging. You can replace this JAR file with an implementation that uses Log4J, Jakarta Commons Logging, or other logging library.</li>
       </ul>
-      
+
       <p>See the <a href="http://www.slf4j.org/">SJF4J web site</a> for more information about configuring SLF4J.
       </p>
+    </section>
+
+    <section name="Upgrading the PDS4 Information Model Version">
+      <subsection name="Why this matters">
+        <p>
+          <code>${project.artifactId}</code> generates its JAXB Java classes from a pinned PDS4
+          Information Model (IM) schema version. When a new IM release introduces new root product
+          types (for example, <code>Product_Resource</code> in IM 1Q00), no corresponding Java class
+          exists in the generated sources. Any downstream tool that processes a label with that root
+          element receives a JAXB <code>UnmarshalException</code>, causing product-level processing
+          to be silently skipped. Keeping this library in sync with the IM ensures all current PDS4
+          product types can be parsed correctly.
+        </p>
+      </subsection>
+
+      <subsection name="When to upgrade">
+        <p>Upgrade the IM version when:</p>
+        <ul>
+          <li>A new PDS4 IM release introduces product types or schema structures not covered by the current version.</li>
+          <li>A downstream tool reports <code>UnmarshalException: unexpected element ... local:"Product_Xyz"</code>.</li>
+          <li>The PDS release cycle requires support for a new IM version.</li>
+        </ul>
+      </subsection>
+
+      <subsection name="Step-by-step upgrade procedure">
+        <p><b>Step 1 — Add the new schema files</b></p>
+        <p>
+          Download the new XSD files from the
+          <a href="https://pds.nasa.gov/datastandards/schema/released/">PDS4 IM release page</a>
+          and place them in a new versioned directory:
+        </p>
+        <source>
+src/build/resources/schema/&lt;NEW_VERSION&gt;/
+  PDS4_PDS_&lt;NEW_VERSION&gt;.xsd
+  PDS4_DISP_&lt;NEW_VERSION&gt;.xsd
+        </source>
+
+        <p><b>Step 2 — Update <code>model-version</code> in <code>pom.xml</code></b></p>
+        <p>
+          In the <code>&lt;properties&gt;</code> section of <code>pom.xml</code>, update the
+          pinned version:
+        </p>
+        <source>
+&lt;model-version&gt;NEW_VERSION&lt;/model-version&gt;
+        </source>
+
+        <p><b>Step 3 — Regenerate JAXB classes</b></p>
+        <source>
+mvn clean generate-sources
+        </source>
+        <p>
+          Inspect <code>target/generated-sources/main/java/gov/nasa/arc/pds/xml/generated/</code>
+          for new <code>Product*.java</code> classes introduced by the new IM version.
+        </p>
+
+        <p><b>Step 4 — Wire new product types into <code>Label.java</code></b></p>
+        <p>
+          For each new <code>Product_Xyz</code> class, add a dispatch branch in the
+          <code>getDataObjects(Product)</code> method:
+        </p>
+        <source>
+} else if (product instanceof ProductXyz) {
+    return getDataObjects((ProductXyz) product);
+}
+        </source>
+        <p>
+          Then add a private handler method. If the product type has <code>File_Area_*</code>
+          children, iterate over them (see existing handlers for <code>ProductAncillary</code> or
+          <code>ProductObservational</code> as templates). If it has no file areas, return an empty
+          list and document why (see <code>getDataObjects(ProductResource)</code> as an example).
+        </p>
+
+        <p><b>Step 5 — Update <code>ProductType.java</code></b></p>
+        <p>
+          Add an enum constant for each new product type that should be individually identified,
+          and import the generated class:
+        </p>
+        <source>
+/** A PDS4 Xyz product (introduced in IM X000). */
+PRODUCT_XYZ(ProductXyz.class),
+        </source>
+
+        <p><b>Step 6 — Fix type-change compilation errors (if any)</b></p>
+        <p>
+          Occasionally a schema upgrade changes the Java type of a generated field (for example,
+          a field previously mapped to <code>int</code> may become <code>BigInteger</code>).
+          Compile the project to surface these errors:
+        </p>
+        <source>
+mvn compile
+        </source>
+        <p>
+          Update the affected source files to use the new type (e.g. replace
+          <code>field == 3</code> with <code>field.intValueExact() == 3</code> for
+          <code>BigInteger</code> fields).
+        </p>
+
+        <p><b>Step 7 — Verify</b></p>
+        <source>
+mvn clean package
+        </source>
+        <p>Run the full test suite. If test labels for the new product type are available,
+        validate them manually:</p>
+        <source>
+Label label = Label.open(new File("Product_Xyz_label.xml"));
+System.out.println(label.getProductType());   // should print PRODUCT_XYZ
+System.out.println(label.getObjects().size()); // 0 or more, depending on file areas
+        </source>
+      </subsection>
     </section>
   </body>
 </document>
