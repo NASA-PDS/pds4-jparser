@@ -152,7 +152,7 @@ public class TwoDImageExporter extends ImageExporter implements Exporter<Array2D
     if (array2DImage.getAxes() == 2) {
       for (AxisArray axis : array2DImage.getAxisArraies()) {
         // TODO axis ordering -- how does axis order related to index order?
-        if (axis.getSequenceNumber() == 2) {
+        if (axis.getSequenceNumber().intValueExact() == 2) {
           samples = axis.getElements().intValueExact();
         } else {
           lines = axis.getElements().intValueExact();
@@ -568,7 +568,7 @@ public class TwoDImageExporter extends ImageExporter implements Exporter<Array2D
       if (pdsImage.getAxes() == 2) {
         for (AxisArray axis : pdsImage.getAxisArraies()) {
           // TODO axis ordering -- how does axis order related to index order?
-          if (axis.getSequenceNumber() == 2) {
+          if (axis.getSequenceNumber().intValueExact() == 2) {
             cols = axis.getElements().intValueExact();
           } else {
             rows = axis.getElements().intValueExact();

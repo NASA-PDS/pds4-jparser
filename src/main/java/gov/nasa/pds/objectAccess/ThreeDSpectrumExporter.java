@@ -161,9 +161,9 @@ public class ThreeDSpectrumExporter extends ImageExporter implements Exporter<Ar
     if (array3DSpectrum.getAxes() == 3) {
       for (AxisArray axis : array3DSpectrum.getAxisArraies()) {
         // TODO axis ordering -- how does axis order related to index order?
-        if (axis.getSequenceNumber() == 3) {
+        if (axis.getSequenceNumber().intValueExact() == 3) {
           samples = axis.getElements().intValueExact();
-        } else if (axis.getSequenceNumber() == 2) {
+        } else if (axis.getSequenceNumber().intValueExact() == 2) {
           lines = axis.getElements().intValueExact();
         } else {
           bands = axis.getElements().intValueExact();
@@ -509,9 +509,9 @@ public class ThreeDSpectrumExporter extends ImageExporter implements Exporter<Ar
       if (pdsImage.getAxes() == 3) {
         for (AxisArray axis : pdsImage.getAxisArraies()) {
           // TODO axis ordering -- how does axis order related to index order?
-          if (axis.getSequenceNumber() == 3) {
+          if (axis.getSequenceNumber().intValueExact() == 3) {
             cols = axis.getElements().intValueExact();
-          } else if (axis.getSequenceNumber() == 2) {
+          } else if (axis.getSequenceNumber().intValueExact() == 2) {
             rows = axis.getElements().intValueExact();
           } else {
             bands = axis.getElements().intValueExact();
