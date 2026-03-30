@@ -40,6 +40,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import gov.nasa.arc.pds.xml.generated.Array;
 import gov.nasa.arc.pds.xml.generated.ByteStream;
@@ -508,7 +509,7 @@ public class Label {
    * @return an empty list (no binary/table data objects)
    */
   private List<DataObject> getDataObjects(ProductResource product) {
-    return new ArrayList<>();
+    return Collections.emptyList();
   }
 
   /**
