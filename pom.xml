@@ -457,8 +457,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Java version -->
     <maven.compiler.release>17</maven.compiler.release>
-    <!-- PDS4 schema version -->
-    <model-version>1K00</model-version>
+    <!-- PDS4 Information Model (IM) schema version used to generate JAXB classes.
+         Update this when a new IM version is released and the schema XSDs have been
+         added to src/build/resources/schema/<VERSION>/. See CLAUDE.md for the full
+         IM upgrade procedure. -->
+    <model-version>1Q00</model-version>
     <pds3-product-tools.version>4.4.2</pds3-product-tools.version>
     <maven.antrun.version>3.1.0</maven.antrun.version>
   </properties>
