@@ -36,6 +36,7 @@ import gov.nasa.arc.pds.xml.generated.ProductBundle;
 import gov.nasa.arc.pds.xml.generated.ProductCollection;
 import gov.nasa.arc.pds.xml.generated.ProductDocument;
 import gov.nasa.arc.pds.xml.generated.ProductObservational;
+import gov.nasa.arc.pds.xml.generated.ProductResource;
 import gov.nasa.arc.pds.xml.generated.ProductThumbnail;
 
 /**
@@ -65,6 +66,9 @@ public enum ProductType {
 
   /** A PDS4 collection product. */
   PRODUCT_COLLECTION(ProductCollection.class),
+
+  /** A PDS4 resource product (introduced in IM 1Q00). */
+  PRODUCT_RESOURCE(ProductResource.class),
 
   /** Another product type not specifically handled by the object access library. */
   PRODUCT_OTHER(null);
