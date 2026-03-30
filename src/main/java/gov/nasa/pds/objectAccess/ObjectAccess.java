@@ -324,7 +324,7 @@ public class ObjectAccess implements ObjectProvider {
       }
     } else if (product instanceof ProductAncillary) {
       for (FileAreaAncillary fileArea : ((ProductAncillary) product).getFileAreaAncillaries()) {
-        list.addAll(fileArea.getArraiesAndArray1DsAndArray2Ds());
+        list.addAll(fileArea.getArraiesAndArray1DsAndArray1DSpectra());
       }
     } else if (product instanceof ProductBrowse) {
       for (FileAreaBrowse fileArea : ((ProductBrowse) product).getFileAreaBrowses()) {
@@ -473,7 +473,7 @@ public class ObjectAccess implements ObjectProvider {
   public List<Object> getHeaderObjects(FileAreaAncillary anciilaryFileArea) {
     Class<?> clazz;
     ArrayList<Object> list = new ArrayList<>();
-    for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray2Ds()) {
+    for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray1DSpectra()) {
       clazz = obj.getClass();
       if (clazz.equals(Header.class)) {
         list.add(obj);
@@ -591,7 +591,7 @@ public class ObjectAccess implements ObjectProvider {
   public List<Object> getTableObjects(FileAreaAncillary anciilaryFileArea) {
     Class<?> clazz;
     ArrayList<Object> list = new ArrayList<>();
-    for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray2Ds()) {
+    for (Object obj : anciilaryFileArea.getArraiesAndArray1DsAndArray1DSpectra()) {
       clazz = obj.getClass();
       if (clazz.equals(TableCharacter.class) || clazz.equals(TableBinary.class)
           || clazz.equals(TableDelimited.class)) {
