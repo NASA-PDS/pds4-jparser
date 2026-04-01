@@ -1,8 +1,13 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2026-03-28)
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2026-03-30)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.0.1...«unknown»)
+
+**Defects:**
+
+- AxisArray.getSequenceNumber\(\) does not compile after IM upgrade from 1L00 to 1M00 [\#193](https://github.com/NASA-PDS/pds4-jparser/issues/193) [[s.high](https://github.com/NASA-PDS/pds4-jparser/labels/s.high)]
+- Support new PDS4 IM product types \(e.g. Product\_Resource\) and document IM upgrade process [\#192](https://github.com/NASA-PDS/pds4-jparser/issues/192) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
 
 **Other closed issues:**
 
