@@ -3,11 +3,13 @@ package gov.nasa.pds.objectAccess;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.testng.annotations.AfterMethod;
@@ -32,7 +34,6 @@ public class RawTableReaderBufferedReadTest {
 
   private static final int BUFFER_SIZE = 8192; // Must match RawTableReader.READ_BUFFER_SIZE
   private File tempDataFile;
-  private File tempDir;
 
   @AfterMethod
   public void cleanup() {
@@ -129,7 +130,7 @@ public class RawTableReaderBufferedReadTest {
    */
   @Test
   public void testLfAtStartOfSecondBuffer() throws Exception {
-    // Build data: BUFFER_SIZE bytes of 'D', then \n, then "after\n"
+    // Build data: BUFFER_SIZE bytes of 'A', then \n, then "after\n"
     byte[] data = buildDataWithDelimiterAt(BUFFER_SIZE, 'A', "\n", "after\n");
 
     RawTableReader reader = createReaderForData(data);
@@ -182,6 +183,30 @@ public class RawTableReaderBufferedReadTest {
     createReaderForData(data);
   }
 
+  /**
+   * Tests that a 0xFF byte in the data is treated as regular data, not as EOF.
+   * The old readByte()-based loop sign-extended 0xFF to -1, which hit the EOF case.
+   * The new buffered implementation must pass 0xFF through unchanged.
+   */
+  @Test
+  public void testFfBytePassesThroughReadNextLine() throws Exception {
+    // "HELLO\xFF WORLD\n" — 0xFF must not truncate the line
+    byte[] data = new byte[]{'H','E','L','L','O',(byte)0xFF,' ','W','O','R','L','D','\n'};
+    RawTableReader reader = createReaderForData(data);
+    try {
+      String line = reader.readNextLine();
+      assertNotNull(line, "Line should not be null");
+      // The 0xFF byte is decoded as part of the UTF-8 string.
+      // Main assertion: reading does NOT stop at the 0xFF byte.
+      assertTrue(line.contains("WORLD"), "Line must not be truncated at 0xFF");
+      assertTrue(line.endsWith("\n"), "Line must end with newline");
+
+      assertNull(reader.readNextLine(), "Should return null after first line");
+    } finally {
+      reader.close();
+    }
+  }
+
   // --- Helper methods ---
 
   private byte[] buildDataWithDelimiterAt(int prefixLen, char fillChar, String delimiter, String suffix) {
@@ -201,8 +226,7 @@ public class RawTableReaderBufferedReadTest {
    * Uses a TableCharacter with a single field spanning the entire record.
    */
   private RawTableReader createReaderForData(byte[] data) throws Exception {
-    tempDir = new File("./src/test/resources/dph_example_products/product_table_character/");
-    tempDataFile = File.createTempFile("rawreader_test_", ".tab", tempDir);
+    tempDataFile = Files.createTempFile("rawreader_test_", ".tab").toFile();
     tempDataFile.deleteOnExit();
 
     try (FileOutputStream fos = new FileOutputStream(tempDataFile)) {
