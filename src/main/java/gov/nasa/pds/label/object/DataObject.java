@@ -182,7 +182,7 @@ public abstract class DataObject {
     }
     URLConnection conn = null;
     try {
-      conn = u.openConnection();
+      conn = Utility.toHttpsUrl(u).openConnection();
       return conn.getContentLengthLong() - offset;
     } finally {
       IOUtils.closeQuietly(conn.getInputStream());

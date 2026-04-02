@@ -292,7 +292,7 @@ public class ObjectAccess implements ObjectProvider {
       } else {
         OutputStream os = null;
         try {
-          URL u = new URL(getRoot(), relativeXmlFilePath);
+          URL u = Utility.toHttpsUrl(new URL(getRoot(), relativeXmlFilePath));
           URLConnection conn = u.openConnection();
           conn.setDoOutput(true);
           os = conn.getOutputStream();
