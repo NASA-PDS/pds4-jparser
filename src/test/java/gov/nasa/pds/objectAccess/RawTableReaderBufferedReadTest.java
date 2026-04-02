@@ -18,9 +18,7 @@ import org.testng.annotations.Test;
 import gov.nasa.arc.pds.xml.generated.FieldCharacter;
 import gov.nasa.arc.pds.xml.generated.FieldLength;
 import gov.nasa.arc.pds.xml.generated.FieldLocation;
-import gov.nasa.arc.pds.xml.generated.FileAreaObservational;
 import gov.nasa.arc.pds.xml.generated.Offset;
-import gov.nasa.arc.pds.xml.generated.ProductObservational;
 import gov.nasa.arc.pds.xml.generated.RecordCharacter;
 import gov.nasa.arc.pds.xml.generated.RecordLength;
 import gov.nasa.arc.pds.xml.generated.TableCharacter;
@@ -184,24 +182,31 @@ public class RawTableReaderBufferedReadTest {
   }
 
   /**
-   * Tests that a 0xFF byte in the data is treated as regular data, not as EOF.
-   * The old readByte()-based loop sign-extended 0xFF to -1, which hit the EOF case.
-   * The new buffered implementation must pass 0xFF through unchanged.
+   * Tests that a 0xFF byte mid-line is treated as data, not as EOF.
+   *
+   * Old behavior (readByte()-based): 0xFF sign-extended to int -1, hit case -1, truncated line.
+   * New behavior (readBytes()-based): 0xFF passes through as raw data and is decoded by UTF-8
+   * as the replacement character U+FFFD. The line is NOT truncated.
+   *
+   * See NASA-PDS/pds4-jparser#197 for the upstream tracking note.
    */
   @Test
   public void testFfBytePassesThroughReadNextLine() throws Exception {
-    // "HELLO\xFF WORLD\n" — 0xFF must not truncate the line
+    // "HELLO\xFF WORLD\n" — 13 bytes; 0xFF is invalid UTF-8, decoded as U+FFFD (1 Java char)
     byte[] data = new byte[]{'H','E','L','L','O',(byte)0xFF,' ','W','O','R','L','D','\n'};
+
     RawTableReader reader = createReaderForData(data);
     try {
       String line = reader.readNextLine();
-      assertNotNull(line, "Line should not be null");
-      // The 0xFF byte is decoded as part of the UTF-8 string.
-      // Main assertion: reading does NOT stop at the 0xFF byte.
-      assertTrue(line.contains("WORLD"), "Line must not be truncated at 0xFF");
-      assertTrue(line.endsWith("\n"), "Line must end with newline");
+      assertNotNull(line, "Line must not be null — 0xFF must not be treated as EOF");
+      // 5 + 1 (U+FFFD) + 1 + 5 + 1 (\n) = 13 chars
+      assertEquals(line.length(), 13, "Line must not be truncated at the 0xFF byte");
+      assertEquals(line.charAt(5), '\ufffd',
+          "0xFF should decode to UTF-8 replacement char U+FFFD, not stop reading");
+      assertEquals(line.charAt(6), ' ', "Byte after 0xFF must not be skipped");
+      assertEquals(line.charAt(12), '\n', "Line terminator must be present");
 
-      assertNull(reader.readNextLine(), "Should return null after first line");
+      assertNull(reader.readNextLine(), "No further lines expected");
     } finally {
       reader.close();
     }
@@ -223,7 +228,8 @@ public class RawTableReaderBufferedReadTest {
 
   /**
    * Creates a RawTableReader backed by a temporary file containing the given data.
-   * Uses a TableCharacter with a single field spanning the entire record.
+   * The temp file is created in the system temp directory so tests work regardless
+   * of Maven working directory.
    */
   private RawTableReader createReaderForData(byte[] data) throws Exception {
     tempDataFile = Files.createTempFile("rawreader_test_", ".tab").toFile();
