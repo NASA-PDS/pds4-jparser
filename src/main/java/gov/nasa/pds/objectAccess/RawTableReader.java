@@ -17,6 +17,12 @@ import gov.nasa.pds.label.object.TableRecord;
  * Table reader that provides the capability to read a table line by line rather than record by
  * record, which is more strict as it relies on the label metadata.
  *
+ * <p><b>Important:</b> {@link #readNextLine()} uses an internal 8 KB read buffer that advances
+ * {@code accessor.curPosition} ahead of what has been logically consumed. Do not interleave
+ * {@code readNextLine()} calls with direct accessor methods ({@code readByte()}, {@code mark()},
+ * {@code reset()}) on the same instance — the positions will desync. {@link #readNextFixedLine()}
+ * is safe to use independently because it uses row-offset-based {@code readRecordBytes()}.</p>
+ *
  * @author mcayanan
  *
  */
@@ -29,6 +35,10 @@ public class RawTableReader extends TableReader {
   /** The label associated with the table. */
   private URL label;
 
+  /**
+   * EOF sentinel: set to -1 when the end of data has been reached.
+   * Only used as a state flag (SOL or -1) in the buffered implementation.
+   */
   private int nextCh = SOL;
 
   private static final int SOL = -10;
@@ -114,12 +124,6 @@ public class RawTableReader extends TableReader {
 
     StringBuilder lineBuffer = new StringBuilder();
 
-    // If we have a leftover character from the previous call, append it
-    if (nextCh != SOL) {
-      lineBuffer.append((char) nextCh);
-      nextCh = SOL;
-    }
-
     boolean newLine = false;
     boolean eof = false;
 
@@ -161,7 +165,6 @@ public class RawTableReader extends TableReader {
             } else if (bufferLimit <= 0) {
               lineBuffer.append("\r");
               nextCh = -1;
-              eof = true;
             } else {
               lineBuffer.append("\r");
             }
