@@ -35,6 +35,85 @@ mvn site
 mvn package
 ```
 
+# Upgrading the PDS4 Information Model (IM) Version
+
+pds4-jparser generates its JAXB Java classes from a pinned PDS4 IM schema version. When a new IM release introduces new root product types, no corresponding Java class exists in the generated sources. Any downstream tool that processes a label with that root element will receive a JAXB `UnmarshalException`, causing product-level processing to be silently skipped. Keeping this library in sync with the IM ensures all current PDS4 product types can be parsed correctly.
+
+**When to upgrade:** a new IM release introduces product types not covered by the current version, a downstream tool reports `UnmarshalException: unexpected element ... local:"Product_Xyz"`, or the PDS release cycle requires support for a new IM version.
+
+## Step-by-step upgrade procedure
+
+**Step 1 — Add the new schema files**
+
+Download the new XSD files from the [PDS4 IM release page](https://pds.nasa.gov/datastandards/schema/released/) and place them in a new versioned directory:
+
+```
+src/build/resources/schema/<NEW_VERSION>/
+  PDS4_PDS_<NEW_VERSION>.xsd
+  PDS4_DISP_<NEW_VERSION>.xsd
+```
+
+**Step 2 — Update `model-version` in `pom.xml`**
+
+In the `<properties>` section, update the pinned version:
+
+```xml
+<model-version>NEW_VERSION</model-version>
+```
+
+**Step 3 — Regenerate JAXB classes**
+
+```bash
+mvn clean generate-sources
+```
+
+Inspect `target/generated-sources/main/java/gov/nasa/arc/pds/xml/generated/` for new `Product*.java` classes introduced by the new IM version.
+
+**Step 4 — Wire new product types into `Label.java`**
+
+For each new `Product_Xyz` class, add a dispatch branch in `getDataObjects(Product)`:
+
+```java
+} else if (product instanceof ProductXyz) {
+    return getDataObjects((ProductXyz) product);
+}
+```
+
+Then add a private handler method. If the product type has `File_Area_*` children, iterate over them (see existing handlers for `ProductAncillary` or `ProductObservational` as templates). If it has no file areas, return `Collections.emptyList()` and document why (see `getDataObjects(ProductResource)` as an example).
+
+**Step 5 — Update `ProductType.java`**
+
+Add an enum constant for each new product type and import the generated class:
+
+```java
+/** A PDS4 Xyz product (introduced in IM X000). */
+PRODUCT_XYZ(ProductXyz.class),
+```
+
+**Step 6 — Fix type-change compilation errors (if any)**
+
+Occasionally a schema upgrade changes the Java type of a generated field (e.g. `int` → `BigInteger`). Compile to surface these:
+
+```bash
+mvn compile
+```
+
+Update affected source files to use the new type (e.g. replace `field == 3` with `field.intValueExact() == 3` for `BigInteger` fields).
+
+**Step 7 — Verify**
+
+```bash
+mvn clean package
+```
+
+Run the full test suite. If test labels for the new product type are available, validate them manually:
+
+```java
+Label label = Label.open(new File("Product_Xyz_label.xml"));
+System.out.println(label.getProductType());    // should print PRODUCT_XYZ
+System.out.println(label.getObjects().size()); // 0 or more, depending on file areas
+```
+
 # Operational Release
 
 ## Run pre-build software

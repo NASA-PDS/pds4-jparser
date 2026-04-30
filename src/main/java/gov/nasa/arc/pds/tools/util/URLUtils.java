@@ -38,11 +38,29 @@ public class URLUtils {
     }
   }
 
+  /**
+   * Converts an HTTP URL to HTTPS to ensure a secure connection. Non-HTTP URLs
+   * (e.g. file://, https://) are returned unchanged.
+   *
+   * @param url the URL to convert
+   * @return an HTTPS URL if the input uses HTTP, otherwise the original URL
+   */
+  public static URL toSecureUrl(final URL url) {
+    if (url != null && "http".equalsIgnoreCase(url.getProtocol())) { //$NON-NLS-1$
+      try {
+        return new URL("https" + url.toString().substring(4)); //$NON-NLS-1$
+      } catch (MalformedURLException e) {
+        // fall through and return the original url
+      }
+    }
+    return url;
+  }
+
   public static boolean exists(final URL url) {
     HttpURLConnection.setFollowRedirects(false);
 
     try {
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      HttpURLConnection connection = (HttpURLConnection) toSecureUrl(url).openConnection();
       connection.setRequestMethod("HEAD"); //$NON-NLS-1$
       boolean exists = (connection.getResponseCode() == HttpURLConnection.HTTP_OK);
       connection.disconnect();
@@ -186,7 +204,7 @@ public class URLUtils {
     }
 
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    URLConnection connection = url.openConnection();
+    URLConnection connection = toSecureUrl(url).openConnection();
     connection.setReadTimeout(10000); // 10 seconds
     connection.setConnectTimeout(10000); // 10 seconds
     InputStream is = new BufferedInputStream(connection.getInputStream());
@@ -219,7 +237,7 @@ public class URLUtils {
   }
 
   public static String getContentType(final URL url) throws IOException {
-    final URLConnection connection = url.openConnection();
+    final URLConnection connection = toSecureUrl(url).openConnection();
     final InputStream is = connection.getInputStream();
     final String contentType = getContentType(connection, url, is);
     is.close();
@@ -271,7 +289,7 @@ public class URLUtils {
   public static int getContentLength(final URL url) {
     int size = -1;
     try {
-      final URLConnection connection = url.openConnection();
+      final URLConnection connection = toSecureUrl(url).openConnection();
       size = connection.getContentLength();
 
       connection.getInputStream().close();
