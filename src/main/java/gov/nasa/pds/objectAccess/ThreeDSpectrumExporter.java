@@ -30,6 +30,7 @@
 
 package gov.nasa.pds.objectAccess;
 
+import java.math.BigInteger;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BandedSampleModel;
@@ -161,9 +162,9 @@ public class ThreeDSpectrumExporter extends ImageExporter implements Exporter<Ar
     if (array3DSpectrum.getAxes() == 3) {
       for (AxisArray axis : array3DSpectrum.getAxisArraies()) {
         // TODO axis ordering -- how does axis order related to index order?
-        if (axis.getSequenceNumber() == 3) {
+        if (BigInteger.valueOf(3).equals(axis.getSequenceNumber())) {
           samples = axis.getElements().intValueExact();
-        } else if (axis.getSequenceNumber() == 2) {
+        } else if (BigInteger.valueOf(2).equals(axis.getSequenceNumber())) {
           lines = axis.getElements().intValueExact();
         } else {
           bands = axis.getElements().intValueExact();
@@ -509,9 +510,9 @@ public class ThreeDSpectrumExporter extends ImageExporter implements Exporter<Ar
       if (pdsImage.getAxes() == 3) {
         for (AxisArray axis : pdsImage.getAxisArraies()) {
           // TODO axis ordering -- how does axis order related to index order?
-          if (axis.getSequenceNumber() == 3) {
+          if (BigInteger.valueOf(3).equals(axis.getSequenceNumber())) {
             cols = axis.getElements().intValueExact();
-          } else if (axis.getSequenceNumber() == 2) {
+          } else if (BigInteger.valueOf(2).equals(axis.getSequenceNumber())) {
             rows = axis.getElements().intValueExact();
           } else {
             bands = axis.getElements().intValueExact();
