@@ -1,8 +1,23 @@
 # Changelog
 
-## [release/3.0.1](https://github.com/NASA-PDS/pds4-jparser/tree/release/3.0.1) (2025-11-03)
+## [release/3.1.0](https://github.com/NASA-PDS/pds4-jparser/tree/release/3.1.0) (2026-04-02)
 
-[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.0.0...release/3.0.1)
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.0.1...release/3.1.0)
+
+**Defects:**
+
+- AxisArray.getSequenceNumber\(\) does not compile after IM upgrade from 1L00 to 1M00 [\#193](https://github.com/NASA-PDS/pds4-jparser/issues/193) [[s.high](https://github.com/NASA-PDS/pds4-jparser/labels/s.high)]
+- Support new PDS4 IM product types \(e.g. Product\_Resource\) and document IM upgrade process [\#192](https://github.com/NASA-PDS/pds4-jparser/issues/192) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
+- Update URLUtils to ensure secure connection [\#44](https://github.com/NASA-PDS/pds4-jparser/issues/44) [[s.low](https://github.com/NASA-PDS/pds4-jparser/labels/s.low)]
+- Update HTTPServletResponse to ensure secure connections [\#14](https://github.com/NASA-PDS/pds4-jparser/issues/14) [[s.low](https://github.com/NASA-PDS/pds4-jparser/labels/s.low)]
+
+**Other closed issues:**
+
+- Upgrade to Java 17+ per downstream validate dependency upgrades [\#180](https://github.com/NASA-PDS/pds4-jparser/issues/180)
+
+## [v3.0.1](https://github.com/NASA-PDS/pds4-jparser/tree/v3.0.1) (2025-11-03)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.0.0...v3.0.1)
 
 ## [v3.0.0](https://github.com/NASA-PDS/pds4-jparser/tree/v3.0.0) (2025-11-03)
 

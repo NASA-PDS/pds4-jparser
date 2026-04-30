@@ -58,12 +58,12 @@
     <section name="Logging">
       <p>The PDS4 Tools library can be configured to write log messages to a log file, if desired. It uses the logging library SLF4J. Two JAR files are needed to configure SLF4J:
       </p>
-      
+
       <ul>
         <li>slf4j-api-n.n.n.jar - The SLF4J API library. Here, n.n.n means the SLF4J version number used.</li>
         <li>An SLF4J implementation library. There are multiple implementations which use various lower-level logging libraries. The one used in this toolkit is slf4j-jdk14-n.n.n.jar, the library that binds SLF4J with java.util.logging. You can replace this JAR file with an implementation that uses Log4J, Jakarta Commons Logging, or other logging library.</li>
       </ul>
-      
+
       <p>See the <a href="http://www.slf4j.org/">SJF4J web site</a> for more information about configuring SLF4J.
       </p>
     </section>
