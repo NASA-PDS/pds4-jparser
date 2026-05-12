@@ -1,5 +1,17 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/pds4-jparser/tree/«unknown») (2026-05-11)
+
+[Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.1.0...«unknown»)
+
+**Requirements:**
+
+- As a PDS data engineer, I want RawTableReader to use buffered bulk I/O so that large table products with millions of records can be validated without extreme performance degradation [\#197](https://github.com/NASA-PDS/pds4-jparser/issues/197)
+
+**Defects:**
+
+- RawTableReader readNextLine\(\) treats 0xFF data bytes as EOF due to byte-to-int sign-extension [\#200](https://github.com/NASA-PDS/pds4-jparser/issues/200) [[s.medium](https://github.com/NASA-PDS/pds4-jparser/labels/s.medium)]
+
 ## [v3.1.0](https://github.com/NASA-PDS/pds4-jparser/tree/v3.1.0) (2026-04-22)
 
 [Full Changelog](https://github.com/NASA-PDS/pds4-jparser/compare/v3.0.1...v3.1.0)

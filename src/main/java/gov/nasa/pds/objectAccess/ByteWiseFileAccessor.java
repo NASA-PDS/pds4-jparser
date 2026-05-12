@@ -366,6 +366,39 @@ public class ByteWiseFileAccessor implements Closeable {
   }
 
   /**
+   * Reads up to len bytes starting from the current position into the provided buffer.
+   * Returns the number of bytes actually read, or -1 if at end of data.
+   *
+   * @param buf the buffer to read bytes into
+   * @param off the offset within buf to start writing at
+   * @param len the maximum number of bytes to read
+   * @return the number of bytes actually read, or -1 if at end of data
+   */
+  public int readBytes(byte[] buf, int off, int len) {
+    if (this.curPosition >= this.totalBytesRead) {
+      return -1;
+    }
+    int bytesRead = 0;
+    while (bytesRead < len && this.curPosition < this.totalBytesRead) {
+      int mapN = (int) (this.curPosition / MAPPING_SIZE);
+      int offN = (int) (this.curPosition % MAPPING_SIZE);
+      ByteBuffer mapping = mappings.get(mapN);
+      // Calculate how many bytes we can read from this mapping in one go
+      int remainingInMapping = mapping.capacity() - offN;
+      int remainingToRead = len - bytesRead;
+      int remainingInFile = (int) Math.min(this.totalBytesRead - this.curPosition, Integer.MAX_VALUE);
+      int toRead = Math.min(Math.min(remainingInMapping, remainingToRead), remainingInFile);
+      // Bulk get from the ByteBuffer - use a duplicate to avoid mutating the shared position
+      ByteBuffer dup = mapping.duplicate();
+      ((Buffer) dup).position(offN);
+      dup.get(buf, off + bytesRead, toRead);
+      this.curPosition += toRead;
+      bytesRead += toRead;
+    }
+    return bytesRead > 0 ? bytesRead : -1;
+  }
+
+  /**
    * Marks the buffer.
    * 
    */
