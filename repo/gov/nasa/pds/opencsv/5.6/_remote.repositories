@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Tue May 26 16:49:46 PDT 2026
+opencsv-5.6-sources.jar>=
+opencsv-5.6-javadoc.jar>=
+opencsv-5.6.pom>=
+opencsv-5.6.jar>=
