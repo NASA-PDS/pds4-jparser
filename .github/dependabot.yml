@@ -11,8 +11,11 @@ updates:
     schedule:
       interval: "monthly"
       
-  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
