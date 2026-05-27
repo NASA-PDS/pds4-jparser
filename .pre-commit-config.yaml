@@ -16,21 +16,14 @@
 ---
 
 repos:
-    -
-        repo: https://github.com/NASA-AMMOS/slim-detect-secrets
-        # using commit id for now, will change to tag when official version is released
-        rev: 91e097ad4559ae6ab785c883dc5ed989202c7fbe
-        hooks:
-          - id: detect-secrets
-            args:
-              - '--baseline'
-              - '.secrets.baseline'
-              - '--disable-plugin'
-              - 'AbsolutePathDetectorExperimental'
-              - --exclude-files '\.secrets..*'
-              - --exclude-files '\.git.*'
-              - --exclude-files '\.pre-commit-config\.yaml'
-              - --exclude-files 'target'
+
+-   repo: local
+    hooks:
+    - id: detect-secrets
+      name: detect-secrets
+      entry: scripts/detect_secrets_baseline.sh
+      language: script
+      pass_filenames: false
 
 ...
 
