@@ -81,6 +81,7 @@
 .gwt/
 target/
 dependency-reduced-pom.xml
+pom.xml.versionsBackup
 
 # macOS specific stuff
 .DS_Store
