@@ -456,7 +456,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Java version -->
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.release>25</maven.compiler.release>
     <!-- PDS4 Information Model (IM) schema version used to generate JAXB classes.
          Update this when a new IM version is released and the schema XSDs have been
          added to src/build/resources/schema/<VERSION>/. See CLAUDE.md for the full
