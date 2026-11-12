@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 PDS4 JParser is a Java library providing APIs for parsing and exporting information on PDS4 (Planetary Data System version 4) table and image objects to various formats including CSV, PNG, VICAR, FITS, etc. This library is used by NASA's Planetary Data System to work with planetary science data products.
 
-**Requirements:** Java 17 or higher, Maven 3
+**Requirements:** Java 25 or higher, Maven 3
 
 ## Build Commands
 
