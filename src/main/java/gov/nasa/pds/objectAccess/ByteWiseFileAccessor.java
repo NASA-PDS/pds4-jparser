@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.foreign.Arena;
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -63,6 +64,9 @@ public class ByteWiseFileAccessor implements Closeable {
   // If uncommented, do not run validate on large files as you will run out of memory.
   // private static final int MAPPING_SIZE = 317; // TODO: Uncomment by developer only to split
   // small files into multiple chunks.
+  // Owns the memory mappings so that close() can unmap them deterministically instead of waiting
+  // for garbage collection (a lingering mapping keeps the file open on NFS).
+  private final Arena arena = Arena.ofShared();
   private final List<ByteBuffer> mappings = new ArrayList<>();
   private long curPosition = 0;
   private long totalBytesRead = 0;
@@ -143,7 +147,15 @@ public class ByteWiseFileAccessor implements Closeable {
     }
 
     this.fileAccessChannel = this.raf.getChannel();
-    initializeAccessor(url, offset, length, records, checkSize);
+    boolean initialized = false;
+    try {
+      initializeAccessor(url, offset, length, records, checkSize);
+      initialized = true;
+    } finally {
+      if (!initialized) {
+        releaseMappings();
+      }
+    }
   }
 
   private void initializeAccessor(URL url, long offset, int length, long records, boolean checkSize)
@@ -170,8 +182,9 @@ public class ByteWiseFileAccessor implements Closeable {
       long tmpSize = actualBytesToRead;
       for (long offset2 = 0; offset2 < actualBytesToRead; offset2 += MAPPING_SIZE) {
         long size2 = Math.min(tmpSize, MAPPING_SIZE);
-        mappings.add(
-            this.fileAccessChannel.map(FileChannel.MapMode.READ_ONLY, (offset2 + offset), size2));
+        mappings.add(this.fileAccessChannel
+            .map(FileChannel.MapMode.READ_ONLY, (offset2 + offset), size2, this.arena)
+            .asByteBuffer());
         tmpSize -= size2;
         LOGGER.debug("ByteWiseFileAccessor: mappings.add: offset2,offset {},{}", offset2, offset);
         LOGGER.debug("ByteWiseFileAccessor: mappings.add: size2,mappings.size {},{}", size2,
@@ -446,7 +459,21 @@ public class ByteWiseFileAccessor implements Closeable {
   @Override
   public void close() throws IOException {
     LOGGER.debug("Closing ByteWiseFileAccessor");
-    this.raf.close();
+    try {
+      releaseMappings();
+    } finally {
+      this.raf.close();
+    }
+  }
+
+  /**
+   * Unmaps all memory mappings. Safe to call more than once; reads after this throw {@link
+   * IllegalStateException}.
+   */
+  private void releaseMappings() {
+    if (this.arena.scope().isAlive()) {
+      this.arena.close();
+    }
   }
 
   public RandomAccessFile getRandomAccessFile() {

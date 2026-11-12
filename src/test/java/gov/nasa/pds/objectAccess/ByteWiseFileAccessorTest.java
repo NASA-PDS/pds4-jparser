@@ -31,10 +31,16 @@
 package gov.nasa.pds.objectAccess;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import org.testng.SkipException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -90,5 +96,39 @@ public class ByteWiseFileAccessorTest {
     ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(new File(BIN_DATA_FILE), 96, 96, 3);
     byte[] bytes = fileObject.readRecordBytes(3, 4, 2);
     assertEquals(bytes, new byte[] {0x04, (byte) 0xE4});
+  }
+
+  // Issue 230: closing the accessor must release the memory mappings.
+  @Test(expectedExceptions = {IllegalStateException.class})
+  public void testReadAfterCloseThrows() throws Exception {
+    ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(new File(BIN_DATA_FILE), 0, 96, 336);
+    fileObject.close();
+    fileObject.readRecordBytes(1, 0, 8);
+  }
+
+  @Test
+  public void testCloseIsIdempotent() throws Exception {
+    ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(new File(BIN_DATA_FILE), 0, 96, 336);
+    fileObject.close();
+    fileObject.close();
+  }
+
+  // Issue 230: a lingering mapping keeps the file open (and blocks deletion on NFS).
+  @Test
+  public void testMappingRemovedFromProcessAfterClose() throws Exception {
+    Path maps = Path.of("/proc/self/maps");
+    if (!Files.isReadable(maps)) {
+      throw new SkipException("/proc/self/maps is not available on this platform");
+    }
+    Path copy = Files.createTempFile("bytewise-issue230-", ".dat");
+    try {
+      Files.copy(Path.of(BIN_DATA_FILE), copy, StandardCopyOption.REPLACE_EXISTING);
+      ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(copy.toFile(), 0, 96, 336);
+      assertTrue(Files.readString(maps).contains(copy.toString()));
+      fileObject.close();
+      assertFalse(Files.readString(maps).contains(copy.toString()));
+    } finally {
+      Files.deleteIfExists(copy);
+    }
   }
 }
