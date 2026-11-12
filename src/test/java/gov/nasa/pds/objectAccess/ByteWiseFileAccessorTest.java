@@ -33,6 +33,7 @@ package gov.nasa.pds.objectAccess;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertThrows;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -107,6 +108,17 @@ public class ByteWiseFileAccessorTest {
   }
 
   @Test
+  public void testEveryReadOperationThrowsAfterClose() throws Exception {
+    ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(new File(BIN_DATA_FILE), 0, 96, 336);
+    fileObject.close();
+    assertThrows(IllegalStateException.class, fileObject::readByte);
+    assertThrows(IllegalStateException.class, () -> fileObject.readBytes(new byte[8], 0, 8));
+    assertThrows(IllegalStateException.class, () -> fileObject.readBytes(new byte[0], 0, 0));
+    assertThrows(IllegalStateException.class, fileObject::mark);
+    assertThrows(IllegalStateException.class, fileObject::reset);
+  }
+
+  @Test
   public void testCloseIsIdempotent() throws Exception {
     ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(new File(BIN_DATA_FILE), 0, 96, 336);
     fileObject.close();
@@ -123,9 +135,10 @@ public class ByteWiseFileAccessorTest {
     Path copy = Files.createTempFile("bytewise-issue230-", ".dat");
     try {
       Files.copy(Path.of(BIN_DATA_FILE), copy, StandardCopyOption.REPLACE_EXISTING);
-      ByteWiseFileAccessor fileObject = new ByteWiseFileAccessor(copy.toFile(), 0, 96, 336);
-      assertTrue(Files.readString(maps).contains(copy.toString()));
-      fileObject.close();
+      try (ByteWiseFileAccessor fileObject =
+          new ByteWiseFileAccessor(copy.toFile(), 0, 96, 336)) {
+        assertTrue(Files.readString(maps).contains(copy.toString()));
+      }
       assertFalse(Files.readString(maps).contains(copy.toString()));
     } finally {
       Files.deleteIfExists(copy);

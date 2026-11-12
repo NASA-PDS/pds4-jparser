@@ -154,6 +154,12 @@ public class ByteWiseFileAccessor implements Closeable {
     } finally {
       if (!initialized) {
         releaseMappings();
+        try {
+          this.raf.close();
+        } catch (IOException ex) {
+          // Do not mask the initialization failure that is propagating.
+          LOGGER.warn("Failed to close the data file after an initialization failure.", ex);
+        }
       }
     }
   }
@@ -313,6 +319,7 @@ public class ByteWiseFileAccessor implements Closeable {
    * @return an array of bytes
    */
   public byte[] readRecordBytes(long recordNum, int offset, int length) {
+    ensureOpen();
     assert recordNum > 0;
     // The offset within the mapped buffer
     long fileOffset = (recordNum - 1) * this.recordLength;
@@ -372,6 +379,7 @@ public class ByteWiseFileAccessor implements Closeable {
    * @return A byte.
    */
   public byte readByte() {
+    ensureOpen();
     int mapN = (int) (this.curPosition / MAPPING_SIZE);
     int offN = (int) (this.curPosition % MAPPING_SIZE);
     this.curPosition++;
@@ -388,6 +396,7 @@ public class ByteWiseFileAccessor implements Closeable {
    * @return the number of bytes actually read, or -1 if at end of data
    */
   public int readBytes(byte[] buf, int off, int len) {
+    ensureOpen();
     if (this.curPosition >= this.totalBytesRead) {
       return -1;
     }
@@ -416,6 +425,7 @@ public class ByteWiseFileAccessor implements Closeable {
    * 
    */
   public void mark() {
+    ensureOpen();
     int mapN = (int) (this.curPosition / MAPPING_SIZE);
     ((Buffer) mappings.get(mapN)).mark();
   }
@@ -425,6 +435,7 @@ public class ByteWiseFileAccessor implements Closeable {
    * 
    */
   public void reset() {
+    ensureOpen();
     // reset all buffer??
     for (ByteBuffer mapping : mappings) {
       ((Buffer) mapping).reset();
@@ -463,6 +474,12 @@ public class ByteWiseFileAccessor implements Closeable {
       releaseMappings();
     } finally {
       this.raf.close();
+    }
+  }
+
+  private void ensureOpen() {
+    if (!this.arena.scope().isAlive()) {
+      throw new IllegalStateException("ByteWiseFileAccessor is closed");
     }
   }
 
