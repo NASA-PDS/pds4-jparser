@@ -65,7 +65,9 @@ public class ByteWiseFileAccessor implements Closeable {
   // private static final int MAPPING_SIZE = 317; // TODO: Uncomment by developer only to split
   // small files into multiple chunks.
   // Owns the memory mappings so that close() can unmap them deterministically instead of waiting
-  // for garbage collection (a lingering mapping keeps the file open on NFS).
+  // for garbage collection (a lingering mapping keeps the file open on NFS). The arena is shared
+  // rather than confined because callers may close the accessor from a different thread than the
+  // one that opened it; a confined arena would throw WrongThreadException in that case.
   private final Arena arena = Arena.ofShared();
   private final List<ByteBuffer> mappings = new ArrayList<>();
   private long curPosition = 0;
@@ -469,6 +471,9 @@ public class ByteWiseFileAccessor implements Closeable {
 
   @Override
   public void close() throws IOException {
+    if (!this.arena.scope().isAlive()) {
+      return;
+    }
     LOGGER.debug("Closing ByteWiseFileAccessor");
     try {
       releaseMappings();
@@ -491,6 +496,7 @@ public class ByteWiseFileAccessor implements Closeable {
     if (this.arena.scope().isAlive()) {
       this.arena.close();
     }
+    this.mappings.clear();
   }
 
   public RandomAccessFile getRandomAccessFile() {

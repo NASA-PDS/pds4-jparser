@@ -135,11 +135,16 @@ public class ByteWiseFileAccessorTest {
     Path copy = Files.createTempFile("bytewise-issue230-", ".dat");
     try {
       Files.copy(Path.of(BIN_DATA_FILE), copy, StandardCopyOption.REPLACE_EXISTING);
+      // /proc/self/maps lists resolved paths, so compare against the real path.
+      String mappedPath = copy.toRealPath().toString();
+      String mapsWhileOpen;
       try (ByteWiseFileAccessor fileObject =
           new ByteWiseFileAccessor(copy.toFile(), 0, 96, 336)) {
-        assertTrue(Files.readString(maps).contains(copy.toString()));
+        mapsWhileOpen = Files.readString(maps);
       }
-      assertFalse(Files.readString(maps).contains(copy.toString()));
+      String mapsAfterClose = Files.readString(maps);
+      assertTrue(mapsWhileOpen.contains(mappedPath));
+      assertFalse(mapsAfterClose.contains(mappedPath));
     } finally {
       Files.deleteIfExists(copy);
     }
