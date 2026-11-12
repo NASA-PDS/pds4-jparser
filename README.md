@@ -13,7 +13,7 @@ Please visit the website https://NASA-PDS.github.io/pds4-jparser/ for informatio
 
 # System Requirements
 Current software requires:
-* Java 17 or higher
+* Java 25 or higher
 * Maven 3
 
 # Documentation
